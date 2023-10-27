@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import me.paladin.barsurasp.data.loaders.FacultyLoader
+import me.paladin.barsurasp.data.FacultyRepository
 import me.paladin.barsurasp.models.Faculty
 
 sealed interface FacultiesUiState {
@@ -28,7 +28,7 @@ class FacultiesViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            val groups = FacultyLoader.getFaculties()
+            val groups = FacultyRepository.getFaculties()
 
             if (groups.isNotEmpty()) {
                 _groupFlow.update { FacultiesUiState.Success(groups) }

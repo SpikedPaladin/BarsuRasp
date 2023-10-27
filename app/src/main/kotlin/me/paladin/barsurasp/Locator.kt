@@ -47,6 +47,8 @@ object Locator {
             incrementAdCounter = incrementAdCounter
         )
 
+    fun getCacheDir() = requireApplication.cacheDir
+
     private val getWeek get() = GetWeek(userPreferencesRepository)
     private val changeWeek get() = ChangeWeek(userPreferencesRepository)
 

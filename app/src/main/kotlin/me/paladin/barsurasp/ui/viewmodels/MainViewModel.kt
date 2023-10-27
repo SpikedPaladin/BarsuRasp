@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,7 +41,7 @@ class MainViewModel(
     private val _changeWeek: ChangeWeek
 ) : ViewModel() {
     private var currentJob: Job? = null
-    val mainGroup: StateFlow<String?> = getMainGroup().stateIn(
+    private val mainGroup: StateFlow<String?> = getMainGroup().stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         null
@@ -55,10 +54,6 @@ class MainViewModel(
 
     private val _timetableFlow = MutableStateFlow<UiState>(UiState.Loading)
     val timetableFlow: StateFlow<UiState> = _timetableFlow.asStateFlow()
-
-    val groupsFlow = flow {
-        emit(StudentLoader.getFaculties())
-    }
 
     init {
         viewModelScope.launch {
