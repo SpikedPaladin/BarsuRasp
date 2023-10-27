@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Расписание БарГУ</string>
+
+    <string name="widget_description">Расписание для группы</string>
+    <string name="unknown">Неизвестно</string>
+    <string name="monday">Понедельник</string>
+    <string name="tuesday">Вторник</string>
+    <string name="wednesday">Среда</string>
+    <string name="thursday">Четверг</string>
+    <string name="friday">Пятница</string>
+    <string name="saturday">Суббота</string>
+    <string name="sunday">Воскресенье</string>
+    <string name="timetable_loading">Загрузка расписания…</string>
+    <string name="timetable_next_week">Следующая неделя</string>
+    <string name="timetable_change_group">Изменить группу</string>
+    <string name="timetable_error_empty">Расписания пока что нет</string>
+    <string name="timetable_error_no_group">Группа не выбрана</string>
+    <string name="timetable_choose_group">Выбрать группу</string>
+    <string name="timetable_title">Расписание</string>
+    <string name="general_error_network">Ошибка подключения к сети\nПроверьте подключение к интернету</string>
+    <string name="general_refresh">Обновить</string>
+    <string name="description_settings">Открыть настройки</string>
+    <string name="faculty_loading">Загрузка факультетов...</string>
+    <string name="faculty_title">Выбери группу</string>
+    <string name="description_back">Назад</string>
+    <string name="settings_title">Настройки</string>
+    <string name="widget_error">Ошибка</string>
+    <string name="widget_error_no_timetable">На выбраную неделю нет расписания!</string>
+    <string name="widget_no_lessons">Пар нет!</string>
+    <string name="description_prev_day">Предыдущий день</string>
+    <string name="description_next_day">Следующий день</string>
+</resources>
