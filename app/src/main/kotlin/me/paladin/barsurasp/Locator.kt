@@ -3,6 +3,7 @@ package me.paladin.barsurasp
 import android.app.Application
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
+import io.ktor.client.HttpClient
 import me.paladin.barsurasp.data.UserPreferencesRepository
 import me.paladin.barsurasp.ui.viewmodels.MainViewModel
 import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
@@ -19,6 +20,7 @@ import me.paladin.barsurasp.usecase.IncrementAdCounter
 
 object Locator {
     private var application: Application? = null
+    val client = HttpClient()
 
     private inline val requireApplication
         get() = application ?: error("Missing call: initWith(application)")
