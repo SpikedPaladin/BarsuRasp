@@ -27,7 +27,7 @@ object StudentLoader {
         val days = mutableListOf<DaySchedule>()
         var lessons = mutableListOf<Lesson>()
         for (i in table.indices step 2) {
-            if (table[i].hasAttr("rows pan")) {
+            if (table[i].hasAttr("rowspan")) {
                 val day = table[i].text().replace(" ", "")
                 val date = table[i + 1].text().replace(" ", "")
 

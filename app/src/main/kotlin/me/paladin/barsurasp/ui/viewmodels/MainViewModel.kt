@@ -1,5 +1,6 @@
 package me.paladin.barsurasp.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -21,7 +22,7 @@ import me.paladin.barsurasp.utils.getCurrentWeek
 import me.paladin.barsurasp.utils.getNextWeek
 
 sealed interface UiState {
-    object Loading : UiState
+    data object Loading : UiState
 
     data class Success(
         val data: Timetable
@@ -96,6 +97,7 @@ class MainViewModel(
                         UiState.Error(noTimetable = true)
                 }
             } catch (e: Exception) {
+                Log.i("NetworkError", "updateTimetable: ${e.message}")
                 _timetableFlow.update {
                     UiState.Error(noInternet = true)
                 }
