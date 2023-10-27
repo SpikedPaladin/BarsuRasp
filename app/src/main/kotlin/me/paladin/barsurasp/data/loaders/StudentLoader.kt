@@ -100,22 +100,22 @@ object StudentLoader {
         val facultyForm = doc.getElementById("faculty")
         val specialityForm = doc.getElementById("speciality")
         val groupForm = doc.getElementById("groups")
-        facultyForm?.getElementsByTag("option")?.forEach {
-            val faculty = it.attr("value")
+        facultyForm?.getElementsByTag("option")?.forEach { facultyElement ->
+            val faculty = facultyElement.attr("value")
 
             if (faculty != "selectcard") {
                 val specialities = mutableListOf<Speciality>()
 
-                specialityForm?.getElementsByTag("option")?.forEach {
-                    val speciality = it.attr("value")
+                specialityForm?.getElementsByTag("option")?.forEach { specialityElement ->
+                    val speciality = specialityElement.attr("value")
 
-                    if (speciality != "selectcard" && it.attr("class") == faculty) {
+                    if (speciality != "selectcard" && specialityElement.attr("class") == faculty) {
                         val groups = mutableListOf<String>()
 
-                        groupForm?.getElementsByTag("option")?.forEach {
-                            val group = it.attr("value")
+                        groupForm?.getElementsByTag("option")?.forEach { groupElement ->
+                            val group = groupElement.attr("value")
 
-                            if (group != "selectcard" && it.attr("class") == speciality)
+                            if (group != "selectcard" && groupElement.attr("class") == speciality)
                                 groups += group
                         }
 
