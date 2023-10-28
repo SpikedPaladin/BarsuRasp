@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import me.paladin.barsurasp.data.loaders.StudentLoader
+import me.paladin.barsurasp.data.TimetableRepository
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.usecase.ChangeMainGroup
 import me.paladin.barsurasp.usecase.ChangeWeek
@@ -88,7 +88,7 @@ class MainViewModel(
 
         currentJob = viewModelScope.launch {
             try {
-                val timetable = StudentLoader.getTimetable(mainGroup.value!!, apiWeek)
+                val timetable = TimetableRepository.getTimetable(mainGroup.value!!, apiWeek)
 
                 _timetableFlow.update {
                     if (timetable != null)

@@ -8,9 +8,9 @@ import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.state.updateAppWidgetState
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import me.paladin.barsurasp.data.TimetableRepository
 import me.paladin.barsurasp.glance.TimetableWidget
 import me.paladin.barsurasp.glance.WidgetKeys
-import me.paladin.barsurasp.data.loaders.StudentLoader
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.getCurrentWeek
 import me.paladin.barsurasp.utils.getCurrentWeekEnd
@@ -35,7 +35,7 @@ class PreviousDayActionCallback : ActionCallback {
             Log.i("", "onAction: $prevDay, ${getCurrentWeekEnd("dd.MM")}")
             if (prevDay == getCurrentWeekEnd("dd.MM") || prefs[WidgetKeys.Prefs.networkError] == true) {
                 try {
-                    val timetable = StudentLoader.getTimetable(
+                    val timetable = TimetableRepository.getTimetable(
                         prefs[WidgetKeys.Prefs.group]!!,
                         getCurrentWeek()
                     )

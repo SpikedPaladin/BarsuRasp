@@ -17,9 +17,9 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.paladin.barsurasp.Locator
+import me.paladin.barsurasp.data.TimetableRepository
 import me.paladin.barsurasp.glance.TimetableWidget
 import me.paladin.barsurasp.glance.WidgetKeys
-import me.paladin.barsurasp.data.loaders.StudentLoader
 import me.paladin.barsurasp.models.AppTheme
 import me.paladin.barsurasp.ui.screens.FacultiesScreen
 import me.paladin.barsurasp.ui.theme.BarsuRaspTheme
@@ -58,7 +58,7 @@ class ConfigWidgetActivity : ComponentActivity() {
 
     private fun saveWidgetState(group: String) = lifecycleScope.launch(Dispatchers.IO) {
         val glanceId = GlanceAppWidgetManager(applicationContext).getGlanceIdBy(widgetId)
-        val timetable = StudentLoader.getTimetable(group, getCurrentWeek())
+        val timetable = TimetableRepository.getTimetable(group, getCurrentWeek())
 
         updateAppWidgetState(applicationContext, glanceId) { prefs ->
             prefs[WidgetKeys.Prefs.date] = getCurrentApiDate()
