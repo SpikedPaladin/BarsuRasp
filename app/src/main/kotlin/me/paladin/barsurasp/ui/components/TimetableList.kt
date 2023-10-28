@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.getCurrentApiDate
@@ -16,10 +18,11 @@ fun TimetableList(timetable: Timetable) {
     }, initialPage = timetable.getDayNumberFromDate(getCurrentApiDate()))
 
     HorizontalPager(
-        state = pagerState,
-        beyondBoundsPageCount = 7,
+        modifier = Modifier.animateContentSize(),
+        contentPadding = PaddingValues(20.dp),
+        verticalAlignment = Alignment.Top,
         pageSpacing = 8.dp,
-        contentPadding = PaddingValues(20.dp)
+        state = pagerState
     ) { page ->
         TimetablePage(day = timetable.days[page])
     }
