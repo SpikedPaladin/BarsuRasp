@@ -1,6 +1,6 @@
 package me.paladin.barsurasp.ui.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -9,7 +9,6 @@ import androidx.compose.ui.unit.dp
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.getCurrentApiDate
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TimetableList(timetable: Timetable) {
     val pagerState = rememberPagerState(pageCount = {

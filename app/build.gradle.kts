@@ -42,6 +42,8 @@ android {
 
         // Disable ExperimentalMaterial3Api warning
         freeCompilerArgs += "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+        // Disable ExperimentalFoundationApi warning
+        freeCompilerArgs += "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"
     }
     packaging {
         resources {
