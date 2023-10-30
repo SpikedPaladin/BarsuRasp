@@ -76,6 +76,11 @@ class MainViewModel(
         }
     }
 
+    fun refreshTimetable() {
+        mainGroup.value?.let(TimetableRepository::refreshTimetable)
+        updateTimetable()
+    }
+
     fun updateTimetable() {
         _timetableFlow.update { UiState.Loading }
 

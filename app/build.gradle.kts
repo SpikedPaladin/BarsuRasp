@@ -12,8 +12,8 @@ android {
         applicationId = "me.paladin.barsurasp"
         minSdk = 22
         targetSdk = 33
-        versionCode = 4
-        versionName = "1.0.3"
+        versionCode = 5
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,9 +53,15 @@ android {
 }
 
 dependencies {
-    implementation(libs.ktor.core)
     implementation(libs.ktor.android)
+    implementation(libs.ktor.core)
     implementation(libs.jsoup)
+    implementation(libs.json)
+    implementation(libs.ads)
+
+    // Glance
+    implementation(libs.glance.material)
+    implementation(libs.glance.widget)
 
     // Compose
     implementation(platform(libs.compose.bom))
@@ -80,8 +86,4 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-    implementation("com.yandex.android:mobileads:6.1.0")
-    implementation("androidx.glance:glance-appwidget:1.0.0")
-    implementation("androidx.glance:glance-material3:1.0.0")
 }

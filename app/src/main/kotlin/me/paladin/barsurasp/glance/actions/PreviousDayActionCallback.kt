@@ -13,8 +13,8 @@ import me.paladin.barsurasp.glance.TimetableWidget
 import me.paladin.barsurasp.glance.WidgetKeys
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.getCurrentWeek
-import me.paladin.barsurasp.utils.getCurrentWeekEnd
 import me.paladin.barsurasp.utils.getPrevApiDate
+import me.paladin.barsurasp.utils.getWeekForDate
 
 class PreviousDayActionCallback : ActionCallback {
 
@@ -32,24 +32,24 @@ class PreviousDayActionCallback : ActionCallback {
             if (prefs[WidgetKeys.Prefs.timetable] != null && prefs[WidgetKeys.Prefs.group] == null)
                 prefs[WidgetKeys.Prefs.group] = (Json.decodeFromString(prefs[WidgetKeys.Prefs.timetable]!!) as Timetable).group
 
-            Log.i("", "onAction: $prevDay, ${getCurrentWeekEnd("dd.MM")}")
-            if (prevDay == getCurrentWeekEnd("dd.MM") || prefs[WidgetKeys.Prefs.networkError] == true) {
-                try {
-                    val timetable = TimetableRepository.getTimetable(
-                        prefs[WidgetKeys.Prefs.group]!!,
-                        getCurrentWeek()
-                    )
-                    if (timetable != null)
-                        prefs[WidgetKeys.Prefs.timetable] = Json.encodeToString(timetable)
-                    else  prefs[WidgetKeys.Prefs.timetable] = ""
+            try {
+                val timetable = TimetableRepository.getTimetable(
+                    prefs[WidgetKeys.Prefs.group]!!,
+                    getWeekForDate(prevDay)
+                )
 
-                    prefs[WidgetKeys.Prefs.networkError] = false
-                } catch (_: Exception) {
-                    prefs[WidgetKeys.Prefs.networkError] = true
+                if (timetable != null)
+                    prefs[WidgetKeys.Prefs.timetable] = Json.encodeToString(timetable)
+                else
                     prefs[WidgetKeys.Prefs.timetable] = ""
-                }
+
+                prefs[WidgetKeys.Prefs.networkError] = false
+            } catch (_: Exception) {
+                prefs[WidgetKeys.Prefs.networkError] = true
+                prefs[WidgetKeys.Prefs.timetable] = ""
             }
 
+            Log.i("", "onAction: $prevDay, ${getWeekForDate(prevDay)}")
             prefs[WidgetKeys.Prefs.date] = prevDay
         }
         TimetableWidget().update(context, glanceId)

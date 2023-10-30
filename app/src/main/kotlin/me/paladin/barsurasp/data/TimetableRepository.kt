@@ -11,6 +11,12 @@ import java.io.File
 object TimetableRepository {
     private const val CACHE_FOLDER = "app/groups"
 
+    fun refreshTimetable(group: String) {
+        val groupFile = File(getCacheFolder().path, "$group.json")
+
+        groupFile.delete()
+    }
+
     suspend fun getTimetable(group: String, date: String): Timetable? {
         var timetable: Timetable?
         val cacheFolder = getCacheFolder()

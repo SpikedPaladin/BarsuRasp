@@ -13,9 +13,10 @@ import me.paladin.barsurasp.utils.getCurrentApiDate
 
 @Composable
 fun TimetableList(timetable: Timetable) {
-    val pagerState = rememberPagerState(pageCount = {
-        timetable.days.size
-    }, initialPage = timetable.getDayNumberFromDate(getCurrentApiDate()))
+    val pagerState = rememberPagerState(
+        pageCount = { timetable.days.size },
+        initialPage = timetable.getDayNumberFromDate(getCurrentApiDate())
+    )
 
     HorizontalPager(
         modifier = Modifier.animateContentSize(),

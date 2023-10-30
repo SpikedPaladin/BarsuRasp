@@ -14,7 +14,6 @@ import java.util.Calendar.MONDAY
 import java.util.Calendar.MONTH
 import java.util.Calendar.SATURDAY
 import java.util.Calendar.SECOND
-import java.util.Calendar.SUNDAY
 import java.util.Calendar.THURSDAY
 import java.util.Calendar.TUESDAY
 import java.util.Calendar.WEDNESDAY
@@ -54,8 +53,28 @@ fun getCurrentApiDate(): String {
         .format(Calendar.getInstance().time)
 }
 
+fun getWeekForDate(date: String): String {
+    Calendar.getInstance().apply {
+        firstDayOfWeek = MONDAY
+        set(DAY_OF_MONTH, date.split(".")[0].toInt())
+        set(MONTH, date.split(".")[1].toInt() - 1)
+
+        // Какая-то хуета непонятная но без этого не работает
+        time
+
+        set(DAY_OF_WEEK, MONDAY)
+        set(HOUR_OF_DAY, 0)
+        set(MINUTE, 0)
+        set(SECOND, 0)
+        set(MILLISECOND, 0)
+
+        return SimpleDateFormat("yyyy-MM-dd", Locale.US).format(time)
+    }
+}
+
 fun getNextApiDate(date: String): String {
     Calendar.getInstance().apply {
+        firstDayOfWeek = MONDAY
         set(DAY_OF_MONTH, date.split(".")[0].toInt())
         set(MONTH, date.split(".")[1].toInt() - 1)
         add(DAY_OF_YEAR, 1)
@@ -66,6 +85,7 @@ fun getNextApiDate(date: String): String {
 
 fun getPrevApiDate(date: String): String {
     Calendar.getInstance().apply {
+        firstDayOfWeek = MONDAY
         set(DAY_OF_MONTH, date.split(".")[0].toInt())
         set(MONTH, date.split(".")[1].toInt() - 1)
         add(DAY_OF_YEAR, -1)
@@ -76,6 +96,7 @@ fun getPrevApiDate(date: String): String {
 
 fun getCurrentWeek(format: String = "yyyy-MM-dd"): String {
     Calendar.getInstance().apply {
+        firstDayOfWeek = MONDAY
         set(DAY_OF_WEEK, MONDAY)
         set(HOUR_OF_DAY, 0)
         set(MINUTE, 0)
@@ -86,21 +107,9 @@ fun getCurrentWeek(format: String = "yyyy-MM-dd"): String {
     }
 }
 
-fun getCurrentWeekEnd(format: String = "yyyy-MM-dd"): String {
-    Calendar.getInstance().apply {
-        set(DAY_OF_WEEK, SUNDAY)
-        set(HOUR_OF_DAY, 0)
-        set(MINUTE, 0)
-        set(SECOND, 0)
-        set(MILLISECOND, 0)
-        add(WEEK_OF_YEAR, 1)
-
-        return SimpleDateFormat(format, Locale.US).format(time)
-    }
-}
-
 fun getNextWeek(format: String = "yyyy-MM-dd"): String {
     Calendar.getInstance().apply {
+        firstDayOfWeek = MONDAY
         set(DAY_OF_WEEK, MONDAY)
         set(HOUR_OF_DAY, 0)
         set(MINUTE, 0)

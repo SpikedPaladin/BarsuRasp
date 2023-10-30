@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -45,7 +49,15 @@ fun MainScreen(
     val week by viewModel.week.collectAsState()
 
     Scaffold(
-        topBar = { MainToolbar(navigateToSettings) }
+        topBar = { MainToolbar({ viewModel.refreshTimetable() }, navigateToSettings) },
+        floatingActionButton = {
+            FloatingActionButton(onClick = openFaculties) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_group),
+                    contentDescription = stringResource(R.string.timetable_change_group)
+                )
+            }
+        }
     ) { paddingValues ->
         Crossfade(
             modifier = Modifier
@@ -69,30 +81,31 @@ fun MainScreen(
 
                 is UiState.Success -> {
                     Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
                     ) {
                         TimetableList(state.data)
+
                         Spacer(modifier = Modifier.weight(1F))
 
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Text(
-                                style = MaterialTheme.typography.titleMedium,
-                                text = stringResource(R.string.timetable_next_week)
-                            )
-                            Switch(
-                                checked = week == "next",
-                                onCheckedChange = { viewModel.changeWeek(if (week == "current") "next" else "current") })
-                        }
-
-                        Button(
-                            modifier = Modifier.padding(top = 12.dp, bottom = 12.dp),
-                            onClick = openFaculties
-                        ) {
-                            Text(text = stringResource(R.string.timetable_change_group))
+                        Column() {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.height(48.dp)
+                            ) {
+                                Text(
+                                    style = MaterialTheme.typography.titleMedium,
+                                    text = stringResource(R.string.timetable_next_week)
+                                )
+                                Switch(
+                                    checked = week == "next",
+                                    onCheckedChange = { viewModel.changeWeek(if (week == "current") "next" else "current") })
+                            }
+                            Text(text = "Группа: ${state.data.group}", style = MaterialTheme.typography.labelMedium)
+                            Text(text = state.data.lastUpdate, style = MaterialTheme.typography.labelSmall)
                         }
                     }
                 }
@@ -122,13 +135,6 @@ fun MainScreen(
                                 Switch(
                                     checked = week == "next",
                                     onCheckedChange = { viewModel.changeWeek(if (week == "current") "next" else "current") })
-                            }
-
-                            Button(
-                                modifier = Modifier.padding(top = 12.dp, bottom = 12.dp),
-                                onClick = openFaculties
-                            ) {
-                                Text(text = stringResource(R.string.timetable_change_group))
                             }
                         }
                     } else if (state.noGroup) {
@@ -163,12 +169,21 @@ fun MainScreen(
 }
 
 @Composable
-fun MainToolbar(settingsAction: () -> Unit) {
+fun MainToolbar(
+    refreshAction: () -> Unit,
+    settingsAction: () -> Unit
+) {
     TopAppBar(
         title = {
             Text(text = stringResource(R.string.timetable_title))
         },
         actions = {
+            IconButton(onClick = refreshAction) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_refresh),
+                    contentDescription = null
+                )
+            }
             IconButton(onClick = settingsAction) {
                 Icon(
                     imageVector = Icons.Outlined.Settings,
