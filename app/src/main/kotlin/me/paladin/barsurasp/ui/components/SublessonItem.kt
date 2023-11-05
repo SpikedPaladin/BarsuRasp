@@ -3,6 +3,7 @@ package me.paladin.barsurasp.ui.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Person
@@ -21,21 +22,29 @@ fun SublessonItem(sublesson: Sublesson) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = sublesson.name,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleMedium
             )
             sublesson.subgroup?.let {
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = it)
+                Text(text = it, style = MaterialTheme.typography.bodyMedium)
             }
             Spacer(modifier = Modifier.weight(1F))
             LessonType(sublesson.type)
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(imageVector = Icons.Outlined.Person, contentDescription = "Aga")
-            Text(text = sublesson.teacher)
+            Icon(
+                modifier = Modifier.size(18.dp),
+                imageVector = Icons.Outlined.Person,
+                contentDescription = null
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = sublesson.teacher,
+                style = MaterialTheme.typography.bodyMedium
+            )
             sublesson.place?.let {
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = it)
+                Text(text = it, style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

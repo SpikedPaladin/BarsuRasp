@@ -55,6 +55,17 @@ fun TimetablePagePreview() {
                                 name = "Хуйня"
                             )
                         )
+                    ),
+                    Lesson(
+                        time = "9.35-11.00",
+                        sublessons = listOf(
+                            Sublesson(
+                                type = "ПЗ",
+                                teacher = "Чучело",
+                                name = "Уебанство",
+                                place = "4/307 Парк"
+                            )
+                        )
                     )
                 )
             )

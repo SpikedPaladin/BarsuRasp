@@ -24,16 +24,16 @@ fun LessonType(
     Text(
         text = type,
         color = color,
-        style = MaterialTheme.typography.labelLarge,
+        style = MaterialTheme.typography.labelMedium,
         modifier = Modifier
             .padding(end = 8.dp)
             .drawBehind {
                 drawRoundRect(
                     color = color,
                     alpha = 0.2F,
-                    topLeft = Offset(0F - 6.dp.toPx(), 0F),
-                    size = Size(this.size.width + 12.dp.toPx(), this.size.height),
-                    cornerRadius = CornerRadius(this.size.height / 2F)
+                    topLeft = Offset(0F - 6.dp.toPx(), 0F - 2.dp.toPx()),
+                    size = Size(this.size.width + 12.dp.toPx(), this.size.height + 4.dp.toPx()),
+                    cornerRadius = CornerRadius((this.size.height + 4.dp.toPx()) / 2F)
                 )
             }
     )
