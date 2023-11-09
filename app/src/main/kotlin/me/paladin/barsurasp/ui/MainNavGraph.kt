@@ -1,4 +1,4 @@
-package me.paladin.barsurasp
+package me.paladin.barsurasp.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,9 +9,13 @@ import androidx.navigation.compose.rememberNavController
 import me.paladin.barsurasp.ui.screens.FacultiesScreen
 import me.paladin.barsurasp.ui.screens.MainScreen
 import me.paladin.barsurasp.ui.screens.SettingsScreen
+import me.paladin.barsurasp.ui.viewmodels.MainViewModel
+import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
 
 @Composable
-fun NavGraph(
+fun MainNavGraph(
+    mainViewModel: MainViewModel,
+    settingsViewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ) {
@@ -22,17 +26,18 @@ fun NavGraph(
     ) {
         composable("main") {
             MainScreen(
+                mainViewModel,
                 navigateToSettings = { navController.navigate("settings") },
                 openFaculties = { navController.navigate("faculties") }
             )
         }
         composable("faculties") {
-            FacultiesScreen(updateMainGroup = true) {
+            FacultiesScreen(mainViewModel, updateMainGroup = true) {
                 navController.popBackStack("main", false)
             }
         }
         composable("settings") {
-            SettingsScreen()
+            SettingsScreen(settingsViewModel)
         }
     }
 }

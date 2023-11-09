@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat.startActivity
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yandex.mobile.ads.common.AdError
 import com.yandex.mobile.ads.common.AdRequestConfiguration
 import com.yandex.mobile.ads.common.AdRequestError
@@ -39,9 +38,8 @@ import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
 
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(viewModel: SettingsViewModel) {
     val context = LocalContext.current
-    val viewModel: SettingsViewModel = viewModel()
     val theme by viewModel.theme.collectAsState()
     val monet by viewModel.monet.collectAsState()
     val adCounter by viewModel.adCounter.collectAsState()

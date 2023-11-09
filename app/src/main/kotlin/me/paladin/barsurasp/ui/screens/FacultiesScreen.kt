@@ -30,9 +30,12 @@ import me.paladin.barsurasp.ui.viewmodels.FacultiesViewModel
 import me.paladin.barsurasp.ui.viewmodels.MainViewModel
 
 @Composable
-fun FacultiesScreen(updateMainGroup: Boolean = false, groupSelected: (group: String?) -> Unit) {
+fun FacultiesScreen(
+    mainViewModel: MainViewModel = viewModel(),
+    updateMainGroup: Boolean = false,
+    groupSelected: (group: String?) -> Unit
+) {
     val viewModel: FacultiesViewModel = viewModel()
-    val mVM: MainViewModel = viewModel()
     val uiState by viewModel.groupFlow.collectAsState()
 
     Scaffold(
@@ -73,7 +76,7 @@ fun FacultiesScreen(updateMainGroup: Boolean = false, groupSelected: (group: Str
                                                 groupSelected(selectedGroup)
 
                                                 if (updateMainGroup)
-                                                    mVM.setMainGroup(selectedGroup)
+                                                    mainViewModel.setMainGroup(selectedGroup)
                                             }
                                         }
                                     }
