@@ -20,7 +20,12 @@ fun TimetableList(timetable: Timetable) {
 
     HorizontalPager(
         modifier = Modifier.animateContentSize(),
-        contentPadding = PaddingValues(20.dp),
+        contentPadding = PaddingValues(
+            bottom = 8.dp,
+            top = 4.dp,
+            start = 20.dp,
+            end = 20.dp
+        ),
         verticalAlignment = Alignment.Top,
         pageSpacing = 8.dp,
         state = pagerState
