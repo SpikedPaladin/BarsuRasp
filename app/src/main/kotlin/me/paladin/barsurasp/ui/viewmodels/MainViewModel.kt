@@ -2,7 +2,6 @@ package me.paladin.barsurasp.ui.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,12 +11,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.paladin.barsurasp.App
+import me.paladin.barsurasp.data.BusRepository
 import me.paladin.barsurasp.data.TimetableRepository
 import me.paladin.barsurasp.models.Timetable
-import me.paladin.barsurasp.usecase.ChangeMainGroup
-import me.paladin.barsurasp.usecase.ChangeWeek
-import me.paladin.barsurasp.usecase.GetMainGroup
-import me.paladin.barsurasp.usecase.GetWeek
 import me.paladin.barsurasp.utils.getCurrentWeek
 import me.paladin.barsurasp.utils.getNextWeek
 
@@ -35,19 +32,14 @@ sealed interface UiState {
     ) : UiState
 }
 
-class MainViewModel(
-    getMainGroup: GetMainGroup,
-    private val _changeGroup: ChangeMainGroup,
-    getWeek: GetWeek,
-    private val _changeWeek: ChangeWeek
-) : ViewModel() {
+class MainViewModel : ViewModel() {
     private var currentJob: Job? = null
-    private val mainGroup: StateFlow<String?> = getMainGroup().stateIn(
+    private val mainGroup: StateFlow<String?> = App.preferences.mainGroup.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         null
     )
-    val week: StateFlow<String> = getWeek().stateIn(
+    val week: StateFlow<String> = App.preferences.week.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         "current"
@@ -111,30 +103,10 @@ class MainViewModel(
     }
 
     fun changeWeek(week: String) {
-        viewModelScope.launch { _changeWeek.invoke(week) }
+        viewModelScope.launch { App.preferences.changeWeek(week) }
     }
 
     fun setMainGroup(group: String) {
-        viewModelScope.launch { _changeGroup.invoke(group) }
-    }
-
-    class Factory(
-        private val getMainGroup: GetMainGroup,
-        private val changeMainGroup: ChangeMainGroup,
-        private val getWeek: GetWeek,
-        private val changeWeek: ChangeWeek
-    ) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return MainViewModel(
-                    getMainGroup = getMainGroup,
-                    _changeGroup = changeMainGroup,
-                    getWeek = getWeek,
-                    _changeWeek = changeWeek
-                ) as T
-            }
-            error("Unknown ViewModel class: $modelClass")
-        }
+        viewModelScope.launch { App.preferences.changeMainGroup(group) }
     }
 }

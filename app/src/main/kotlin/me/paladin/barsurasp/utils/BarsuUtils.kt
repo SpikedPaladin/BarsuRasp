@@ -4,7 +4,7 @@ import io.ktor.client.call.body
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.http.Parameters
-import me.paladin.barsurasp.Locator
+import me.paladin.barsurasp.App
 
 private const val BASE_URL = "https://rasp.barsu.by/stud.php"
 
@@ -17,8 +17,8 @@ suspend fun getTimetablePage(group: String? = null, date: String? = null): Strin
             append("weekbegindate", date)
         }
 
-        return Locator.client.submitForm(BASE_URL, params).body()
+        return App.client.submitForm(BASE_URL, params).body()
     }
 
-    return Locator.client.get(BASE_URL).body()
+    return App.client.get(BASE_URL).body()
 }

@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import me.paladin.barsurasp.Locator
 import me.paladin.barsurasp.data.TimetableRepository
 import me.paladin.barsurasp.glance.TimetableWidget
 import me.paladin.barsurasp.glance.WidgetKeys
@@ -28,7 +27,7 @@ import me.paladin.barsurasp.utils.getCurrentApiDate
 import me.paladin.barsurasp.utils.getCurrentWeek
 
 class ConfigWidgetActivity : ComponentActivity() {
-    private val viewModel by viewModels<SettingsViewModel>(factoryProducer = { Locator.settingsViewModelFactory })
+    private val viewModel by viewModels<SettingsViewModel>()
     private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
     private val result = Intent()
 

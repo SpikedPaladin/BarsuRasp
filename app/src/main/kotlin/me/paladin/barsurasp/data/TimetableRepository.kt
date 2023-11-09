@@ -2,7 +2,7 @@ package me.paladin.barsurasp.data
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import me.paladin.barsurasp.Locator
+import me.paladin.barsurasp.App
 import me.paladin.barsurasp.data.loaders.StudentLoader
 import me.paladin.barsurasp.models.CachedTimetable
 import me.paladin.barsurasp.models.Timetable
@@ -48,5 +48,5 @@ object TimetableRepository {
         return timetable
     }
 
-    private fun getCacheFolder() = File(Locator.getCacheDir(), CACHE_FOLDER)
+    private fun getCacheFolder() = File(App.getCacheDir(), CACHE_FOLDER)
 }

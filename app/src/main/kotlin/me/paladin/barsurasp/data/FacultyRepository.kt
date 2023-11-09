@@ -2,7 +2,7 @@ package me.paladin.barsurasp.data
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import me.paladin.barsurasp.Locator
+import me.paladin.barsurasp.App
 import me.paladin.barsurasp.data.loaders.FacultyLoader
 import me.paladin.barsurasp.models.BarsuFaculties
 import me.paladin.barsurasp.models.Faculty
@@ -26,5 +26,5 @@ object FacultyRepository {
         return faculties
     }
 
-    private fun getFacultiesFile() = File(Locator.getCacheDir(), CACHE_FILE)
+    private fun getFacultiesFile() = File(App.getCacheDir(), CACHE_FILE)
 }

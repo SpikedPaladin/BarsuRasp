@@ -33,8 +33,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import me.paladin.barsurasp.Locator
 import me.paladin.barsurasp.R
+import me.paladin.barsurasp.ui.components.BusesCard
 import me.paladin.barsurasp.ui.components.TimetableList
 import me.paladin.barsurasp.ui.viewmodels.MainViewModel
 import me.paladin.barsurasp.ui.viewmodels.UiState
@@ -44,7 +44,7 @@ fun MainScreen(
     navigateToSettings: () -> Unit,
     openFaculties: () -> Unit
 ) {
-    val viewModel: MainViewModel = viewModel(factory = Locator.mainViewModelFactory)
+    val viewModel: MainViewModel = viewModel()
     val uiState by viewModel.timetableFlow.collectAsState()
     val week by viewModel.week.collectAsState()
 
@@ -90,7 +90,7 @@ fun MainScreen(
 
                         Spacer(modifier = Modifier.weight(1F))
 
-                        Column() {
+                        Column {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),

@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
-import me.paladin.barsurasp.Locator
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.ui.components.ExpandableCard
 import me.paladin.barsurasp.ui.components.GroupItem
@@ -33,7 +32,7 @@ import me.paladin.barsurasp.ui.viewmodels.MainViewModel
 @Composable
 fun FacultiesScreen(updateMainGroup: Boolean = false, groupSelected: (group: String?) -> Unit) {
     val viewModel: FacultiesViewModel = viewModel()
-    val mVM: MainViewModel = viewModel(factory = Locator.mainViewModelFactory)
+    val mVM: MainViewModel = viewModel()
     val uiState by viewModel.groupFlow.collectAsState()
 
     Scaffold(

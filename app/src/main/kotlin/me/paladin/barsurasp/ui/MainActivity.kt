@@ -14,7 +14,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.yandex.mobile.ads.banner.BannerAdSize
 import com.yandex.mobile.ads.banner.BannerAdView
 import com.yandex.mobile.ads.common.AdRequest
-import me.paladin.barsurasp.Locator
 import me.paladin.barsurasp.NavGraph
 import me.paladin.barsurasp.models.AppTheme
 import me.paladin.barsurasp.ui.theme.BarsuRaspTheme
@@ -22,7 +21,7 @@ import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
 import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
-    private val viewModel by viewModels<SettingsViewModel>(factoryProducer = { Locator.settingsViewModelFactory })
+    private val viewModel by viewModels<SettingsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -29,7 +29,6 @@ import com.yandex.mobile.ads.rewarded.RewardedAd
 import com.yandex.mobile.ads.rewarded.RewardedAdEventListener
 import com.yandex.mobile.ads.rewarded.RewardedAdLoadListener
 import com.yandex.mobile.ads.rewarded.RewardedAdLoader
-import me.paladin.barsurasp.Locator
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.models.AppTheme
 import me.paladin.barsurasp.ui.components.AdminBottomSheet
@@ -42,7 +41,7 @@ import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
 @Composable
 fun SettingsScreen() {
     val context = LocalContext.current
-    val viewModel: SettingsViewModel = viewModel(factory = Locator.settingsViewModelFactory)
+    val viewModel: SettingsViewModel = viewModel()
     val theme by viewModel.theme.collectAsState()
     val monet by viewModel.monet.collectAsState()
     val adCounter by viewModel.adCounter.collectAsState()
