@@ -6,6 +6,10 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -36,9 +40,11 @@ import me.paladin.barsurasp.ui.components.settings.ClickableRow
 import me.paladin.barsurasp.ui.components.settings.SwitchRow
 import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
 
-
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel) {
+fun SettingsScreen(
+    viewModel: SettingsViewModel,
+    backAction: () -> Unit
+) {
     val context = LocalContext.current
     val theme by viewModel.theme.collectAsState()
     val monet by viewModel.monet.collectAsState()
@@ -72,7 +78,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
     )
 
     Scaffold(
-        topBar = { SettingsToolbar() }
+        topBar = { SettingsToolbar(backAction) }
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues)) {
             ChooseRow(
@@ -170,10 +176,20 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
 }
 
 @Composable
-fun SettingsToolbar() {
+fun SettingsToolbar(backAction: (() -> Unit)? = null) {
     TopAppBar(
         title = {
             Text(text = stringResource(R.string.settings_title))
+        },
+        navigationIcon = {
+            if (backAction != null) {
+                IconButton(onClick = backAction) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                        contentDescription = stringResource(R.string.description_back)
+                    )
+                }
+            }
         }
     )
 }
