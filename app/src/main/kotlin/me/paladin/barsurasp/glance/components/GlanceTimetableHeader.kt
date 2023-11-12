@@ -9,6 +9,7 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
+import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.layout.Alignment
@@ -22,6 +23,7 @@ import androidx.glance.text.TextStyle
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.glance.actions.NextDayActionCallback
 import me.paladin.barsurasp.glance.actions.PreviousDayActionCallback
+import me.paladin.barsurasp.ui.MainActivity
 import me.paladin.barsurasp.utils.getApiDay
 
 @Composable
@@ -35,7 +37,7 @@ fun GlanceTimetableHeader(
     ) {
         Text(
             style = TextStyle(color = GlanceTheme.colors.onBackground, fontSize = 20.sp),
-            modifier = GlanceModifier.defaultWeight(),
+            modifier = GlanceModifier.defaultWeight().clickable(actionStartActivity<MainActivity>()),
             text = group
         )
 
