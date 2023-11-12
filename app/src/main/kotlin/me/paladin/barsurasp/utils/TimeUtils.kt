@@ -14,12 +14,33 @@ import java.util.Calendar.MONDAY
 import java.util.Calendar.MONTH
 import java.util.Calendar.SATURDAY
 import java.util.Calendar.SECOND
+import java.util.Calendar.SUNDAY
 import java.util.Calendar.THURSDAY
 import java.util.Calendar.TUESDAY
 import java.util.Calendar.WEDNESDAY
 import java.util.Calendar.WEEK_OF_YEAR
 import java.util.Locale
 
+fun getDurationToNextMinute(): Long {
+    Calendar.getInstance().apply {
+        val now = timeInMillis
+        set(SECOND, 0)
+        set(MILLISECOND, 0)
+        add(MINUTE, 1)
+
+        return timeInMillis - now
+    }
+}
+
+fun getCurrentHour() = Calendar.getInstance().get(HOUR_OF_DAY)
+
+fun getCurrentMinute() = Calendar.getInstance().get(MINUTE)
+
+fun isWeekends(): Boolean {
+    Calendar.getInstance().get(DAY_OF_WEEK).apply {
+        return this == SATURDAY || this == SUNDAY
+    }
+}
 fun readableDay(apiDay: String) = when (apiDay) {
     "ПН" -> R.string.monday
     "ВТ" -> R.string.tuesday

@@ -18,3 +18,11 @@ fun Element.splitString(): List<String> {
 
     return string.split("|")
 }
+
+fun Element.parseLastUpdate(): String {
+    val parts = text().split(" ")
+    val dateParts = parts[2].split("-")
+    val timeParts = parts[3].split(":")
+
+    return "$dateParts, $timeParts"
+}

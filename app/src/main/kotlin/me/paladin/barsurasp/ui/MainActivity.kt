@@ -16,12 +16,16 @@ import com.yandex.mobile.ads.banner.BannerAdView
 import com.yandex.mobile.ads.common.AdRequest
 import me.paladin.barsurasp.models.AppTheme
 import me.paladin.barsurasp.ui.theme.BarsuRaspTheme
+import me.paladin.barsurasp.ui.viewmodels.BusPathViewModel
+import me.paladin.barsurasp.ui.viewmodels.BusesViewModel
 import me.paladin.barsurasp.ui.viewmodels.MainViewModel
 import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
 import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
     private val settingsViewModel by viewModels<SettingsViewModel>()
+    private val busPathViewModel by viewModels<BusPathViewModel>()
+    private val busesViewModel by viewModels<BusesViewModel>()
     private val mainViewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +45,8 @@ class MainActivity : ComponentActivity() {
                 Column {
                     MainNavGraph(
                         mainViewModel,
+                        busesViewModel,
+                        busPathViewModel,
                         settingsViewModel,
                         modifier = Modifier.weight(1F)
                     )

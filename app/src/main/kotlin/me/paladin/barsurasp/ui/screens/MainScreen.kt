@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,20 +30,25 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelStoreOwner
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.ui.components.BusesCard
 import me.paladin.barsurasp.ui.components.TimetableList
+import me.paladin.barsurasp.ui.icons.Group
+import me.paladin.barsurasp.ui.viewmodels.BusesViewModel
 import me.paladin.barsurasp.ui.viewmodels.MainViewModel
 import me.paladin.barsurasp.ui.viewmodels.UiState
 
 @Composable
 fun MainScreen(
     viewModel: MainViewModel,
+    busesViewModel: BusesViewModel,
+    viewModelStoreOwner: ViewModelStoreOwner,
     navigateToSettings: () -> Unit,
-    openFaculties: () -> Unit
+    openFaculties: () -> Unit,
+    openBusConfig: () -> Unit
 ) {
     val uiState by viewModel.timetableFlow.collectAsState()
     val week by viewModel.week.collectAsState()
@@ -52,7 +58,7 @@ fun MainScreen(
         floatingActionButton = {
             FloatingActionButton(onClick = openFaculties) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_group),
+                    imageVector = Icons.Outlined.Group,
                     contentDescription = stringResource(R.string.timetable_change_group)
                 )
             }
@@ -86,7 +92,7 @@ fun MainScreen(
                             .verticalScroll(rememberScrollState())
                     ) {
                         TimetableList(state.data)
-                        BusesCard()
+                        BusesCard(busesViewModel, viewModelStoreOwner, openBusConfig)
 
                         Spacer(modifier = Modifier.weight(1F))
 
@@ -180,7 +186,7 @@ fun MainToolbar(
         actions = {
             IconButton(onClick = refreshAction) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_refresh),
+                    imageVector = Icons.Outlined.Refresh,
                     contentDescription = null
                 )
             }
