@@ -1,5 +1,6 @@
 package me.paladin.barsurasp.ui.screens
 
+import android.widget.Toast
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
@@ -57,6 +59,7 @@ fun BusInfoScreen(
 
     val busState by viewModel.busState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = { BusInfoToolbar(number, scrollBehavior) },
@@ -140,7 +143,13 @@ fun BusInfoScreen(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Text(text = "Расписание для этого автобуса не загружено. Нажми кнопку ниже чтобы загрузить.", textAlign = TextAlign.Center)
-                            Button(onClick = { viewModel.load() }) {
+                            Button(
+                                onClick = {
+                                    viewModel.load {
+                                        Toast.makeText(context, "Ошибка подключения к сети!", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            ) {
                                 Text("Загрузить")
                             }
                         }

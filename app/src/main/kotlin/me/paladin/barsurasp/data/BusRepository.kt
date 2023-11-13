@@ -60,6 +60,8 @@ object BusRepository {
         return directions
     }
 
+    fun isLoaded() = getDirectionsFile().exists()
+
     fun BusDirection.isLoaded() = getBusFile(busNumber).exists()
 
     private fun getBusFile(number: Int) = File(App.getCacheDir(), "app/buses/$number.json")

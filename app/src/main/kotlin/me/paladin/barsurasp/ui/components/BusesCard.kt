@@ -1,5 +1,6 @@
 package me.paladin.barsurasp.ui.components
 
+import android.widget.Toast
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
@@ -115,6 +117,7 @@ fun BusInfoItem(
     )
 ) {
     val busState by viewModel.busState.collectAsState()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier.padding(4.dp)
@@ -173,7 +176,13 @@ fun BusInfoItem(
                 BusState.None -> {
                     Column {
                         Text("Расписание не загружено")
-                        Button(onClick = { viewModel.load() }) {
+                        Button(
+                            onClick = {
+                                viewModel.load {
+                                    Toast.makeText(context, "Ошибка подключения к сети!", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        ) {
                             Text("Загрузить")
                         }
                     }

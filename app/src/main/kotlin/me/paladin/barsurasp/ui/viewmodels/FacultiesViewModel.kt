@@ -17,7 +17,7 @@ sealed interface FacultiesUiState {
     ) : FacultiesUiState
 
     data class Error(
-        val noTimetable: Boolean = false
+        val networkError: Boolean = false
     ) : FacultiesUiState
 }
 
@@ -26,26 +26,21 @@ class FacultiesViewModel : ViewModel() {
     val uiState = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            val groups = FacultyRepository.getFaculties()
-
-            if (groups.isNotEmpty()) {
-                _uiState.update { FacultiesUiState.Success(groups) }
-            } else {
-                _uiState.update { FacultiesUiState.Error() }
-            }
-        }
+        load()
     }
 
     fun refresh() {
-        viewModelScope.launch {
-            _uiState.update { FacultiesUiState.Loading }
+        load(false)
+    }
 
-            val groups = FacultyRepository.getFaculties(false)
-            if (groups.isNotEmpty()) {
+    private fun load(useCache: Boolean = true) {
+        viewModelScope.launch {
+            try {
+                val groups = FacultyRepository.getFaculties(useCache)
+
                 _uiState.update { FacultiesUiState.Success(groups) }
-            } else {
-                _uiState.update { FacultiesUiState.Error() }
+            } catch (_: Exception) {
+                _uiState.update { FacultiesUiState.Error(networkError = true) }
             }
         }
     }
