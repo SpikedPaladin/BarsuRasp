@@ -12,12 +12,12 @@ import me.paladin.barsurasp.data.BusRepository
 import me.paladin.barsurasp.models.BusPath
 
 class BusesViewModel : ViewModel() {
-    val paths = App.preferences.buses.stateIn(
+    val paths = App.prefs.buses.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         listOf()
     )
-    val selectedPath = App.preferences.selectedPath.stateIn(
+    val selectedPath = App.prefs.selectedPath.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         0
@@ -46,19 +46,19 @@ class BusesViewModel : ViewModel() {
 
     fun selectPath(index: Int) {
         viewModelScope.launch {
-            App.preferences.selectPath(index)
+            App.prefs.selectPath(index)
         }
     }
 
     fun addPath(path: BusPath) {
         viewModelScope.launch {
-            App.preferences.addPath(path)
+            App.prefs.addPath(path)
         }
     }
 
     fun deletePath(index: Int) {
         viewModelScope.launch {
-            App.preferences.deletePath(index)
+            App.prefs.deletePath(index)
         }
     }
 }

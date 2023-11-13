@@ -3,7 +3,6 @@ package me.paladin.barsurasp.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,30 +22,30 @@ sealed interface FacultiesUiState {
 }
 
 class FacultiesViewModel : ViewModel() {
-    private val _groupFlow = MutableStateFlow<FacultiesUiState>(FacultiesUiState.Loading)
-    val groupFlow: StateFlow<FacultiesUiState> = _groupFlow.asStateFlow()
+    private val _uiState = MutableStateFlow<FacultiesUiState>(FacultiesUiState.Loading)
+    val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
             val groups = FacultyRepository.getFaculties()
 
             if (groups.isNotEmpty()) {
-                _groupFlow.update { FacultiesUiState.Success(groups) }
+                _uiState.update { FacultiesUiState.Success(groups) }
             } else {
-                _groupFlow.update { FacultiesUiState.Error() }
+                _uiState.update { FacultiesUiState.Error() }
             }
         }
     }
 
     fun refresh() {
         viewModelScope.launch {
-            _groupFlow.update { FacultiesUiState.Loading }
+            _uiState.update { FacultiesUiState.Loading }
 
             val groups = FacultyRepository.getFaculties(false)
             if (groups.isNotEmpty()) {
-                _groupFlow.update { FacultiesUiState.Success(groups) }
+                _uiState.update { FacultiesUiState.Success(groups) }
             } else {
-                _groupFlow.update { FacultiesUiState.Error() }
+                _uiState.update { FacultiesUiState.Error() }
             }
         }
     }

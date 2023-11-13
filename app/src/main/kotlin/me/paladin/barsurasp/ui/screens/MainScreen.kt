@@ -51,7 +51,7 @@ fun MainScreen(
     openBusConfig: () -> Unit
 ) {
     val showBuses by viewModel.showBuses.collectAsState()
-    val uiState by viewModel.timetableFlow.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
     val week by viewModel.week.collectAsState()
 
     Scaffold(

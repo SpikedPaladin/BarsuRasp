@@ -73,7 +73,7 @@ class App : Application() {
             corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() }
         )
 
-        val preferences by lazy {
+        val prefs by lazy {
             UserPreferencesRepository(application.dataStore)
         }
 

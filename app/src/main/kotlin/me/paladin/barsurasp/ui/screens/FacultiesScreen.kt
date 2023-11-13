@@ -37,7 +37,7 @@ fun FacultiesScreen(
     groupSelected: (group: String?) -> Unit
 ) {
     val viewModel: FacultiesViewModel = viewModel()
-    val uiState by viewModel.groupFlow.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {

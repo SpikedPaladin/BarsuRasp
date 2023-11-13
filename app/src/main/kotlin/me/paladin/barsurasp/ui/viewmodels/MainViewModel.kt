@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -33,24 +32,24 @@ sealed interface UiState {
 
 class MainViewModel : ViewModel() {
     private var currentJob: Job? = null
-    private val mainGroup: StateFlow<String?> = App.preferences.mainGroup.stateIn(
+    private val mainGroup = App.prefs.mainGroup.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         null
     )
-    val week: StateFlow<String> = App.preferences.week.stateIn(
+    val week = App.prefs.week.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         "current"
     )
-    val showBuses: StateFlow<Boolean> = App.preferences.showBuses.stateIn(
+    val showBuses = App.prefs.showBuses.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         true
     )
 
-    private val _timetableFlow = MutableStateFlow<UiState>(UiState.Loading)
-    val timetableFlow: StateFlow<UiState> = _timetableFlow.asStateFlow()
+    private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
+    val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -61,7 +60,7 @@ class MainViewModel : ViewModel() {
                 if (value != "") {
                     updateTimetable()
                 } else {
-                    _timetableFlow.update { UiState.Error(noGroup = true) }
+                    _uiState.update { UiState.Error(noGroup = true) }
                 }
             }
         }
@@ -78,7 +77,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun updateTimetable() {
-        _timetableFlow.update { UiState.Loading }
+        _uiState.update { UiState.Loading }
 
         val apiWeek = if (week.value == "current") getCurrentWeek() else getNextWeek()
 
@@ -91,7 +90,7 @@ class MainViewModel : ViewModel() {
             try {
                 val timetable = TimetableRepository.getTimetable(mainGroup.value!!, apiWeek)
 
-                _timetableFlow.update {
+                _uiState.update {
                     if (timetable != null)
                         UiState.Success(timetable)
                     else
@@ -99,7 +98,7 @@ class MainViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 Log.i("NetworkError", "updateTimetable: ${e.message}")
-                _timetableFlow.update {
+                _uiState.update {
                     UiState.Error(noInternet = true)
                 }
             }
@@ -107,10 +106,10 @@ class MainViewModel : ViewModel() {
     }
 
     fun changeWeek(week: String) {
-        viewModelScope.launch { App.preferences.changeWeek(week) }
+        viewModelScope.launch { App.prefs.changeWeek(week) }
     }
 
     fun setMainGroup(group: String) {
-        viewModelScope.launch { App.preferences.changeMainGroup(group) }
+        viewModelScope.launch { App.prefs.changeMainGroup(group) }
     }
 }
