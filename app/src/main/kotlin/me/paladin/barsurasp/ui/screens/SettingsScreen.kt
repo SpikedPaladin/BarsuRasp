@@ -49,6 +49,7 @@ fun SettingsScreen(
     val theme by viewModel.theme.collectAsState()
     val monet by viewModel.monet.collectAsState()
     val adCounter by viewModel.adCounter.collectAsState()
+    val showBuses by viewModel.showBuses.collectAsState()
     var showAdmin by remember { mutableStateOf(false) }
     val adLoader = RewardedAdLoader(context)
 
@@ -109,6 +110,13 @@ fun SettingsScreen(
                 title = { Text(text = "Динамические цвета") },
                 subtitle = { Text(text = "Только для Android 12+") },
                 onCheckedChange = { viewModel.changeMonet(!monet) }
+            )
+
+            SwitchRow(
+                checked = showBuses,
+                title = { Text("Расписание автобусов") },
+                subtitle = { Text("Отображение расписания автобусов на главном экране") },
+                onCheckedChange = { viewModel.setShowBuses(!showBuses) }
             )
 
             ClickableRow(

@@ -50,6 +50,7 @@ fun MainScreen(
     openFaculties: () -> Unit,
     openBusConfig: () -> Unit
 ) {
+    val showBuses by viewModel.showBuses.collectAsState()
     val uiState by viewModel.timetableFlow.collectAsState()
     val week by viewModel.week.collectAsState()
 
@@ -92,7 +93,9 @@ fun MainScreen(
                             .verticalScroll(rememberScrollState())
                     ) {
                         TimetableList(state.data)
-                        BusesCard(busesViewModel, viewModelStoreOwner, openBusConfig)
+
+                        if (showBuses)
+                            BusesCard(busesViewModel, viewModelStoreOwner, openBusConfig)
 
                         Spacer(modifier = Modifier.weight(1F))
 

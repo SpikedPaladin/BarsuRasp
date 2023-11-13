@@ -28,6 +28,11 @@ class SettingsViewModel : ViewModel() {
         SharingStarted.Eagerly,
         0
     )
+    val showBuses: StateFlow<Boolean> = App.preferences.showBuses.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        true
+    )
 
     fun changeTheme(theme: AppTheme) {
         viewModelScope.launch { App.preferences.changeTheme(theme) }
@@ -39,6 +44,10 @@ class SettingsViewModel : ViewModel() {
 
     fun adWatched() {
         viewModelScope.launch { App.preferences.incrementAdCounter() }
+    }
+
+    fun setShowBuses(enabled: Boolean) {
+        viewModelScope.launch { App.preferences.setShowBuses(enabled) }
     }
 
     fun updateWidgets(context: Context) {

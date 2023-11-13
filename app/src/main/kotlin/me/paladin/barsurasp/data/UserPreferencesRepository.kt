@@ -24,6 +24,7 @@ class UserPreferencesRepository(
         val monet = booleanPreferencesKey("monet")
         val theme = stringPreferencesKey("theme")
         val buses = stringPreferencesKey("buses")
+        val showBuses = booleanPreferencesKey("showBuses")
         val selectedPath = intPreferencesKey("selectedPath")
         val mainGroup = stringPreferencesKey("mainGroup")
         val adsWatched = intPreferencesKey("adsWatched")
@@ -36,6 +37,8 @@ class UserPreferencesRepository(
         get() = this[Keys.monet] ?: true
     private inline val Preferences.buses
         get() = this[Keys.buses] ?: ""
+    private inline val Preferences.showBuses
+        get() = this[Keys.showBuses] ?: true
     private inline val Preferences.selectedPath
         get() = this[Keys.selectedPath] ?: -1
     private inline val Preferences.mainGroup
@@ -147,6 +150,15 @@ class UserPreferencesRepository(
 
             it[Keys.buses] = Json.encodeToString(buses)
         }
+    }
+
+    val showBuses: Flow<Boolean> = dataStore.data
+        .map {
+            it.showBuses
+        }.distinctUntilChanged()
+
+    suspend fun setShowBuses(enabled: Boolean) {
+        dataStore.edit { it[Keys.showBuses] = enabled }
     }
 
     val starredGroups: Flow<Set<String>?> = dataStore.data

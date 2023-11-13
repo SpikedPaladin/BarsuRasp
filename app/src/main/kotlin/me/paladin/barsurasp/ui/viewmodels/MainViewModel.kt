@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.paladin.barsurasp.App
-import me.paladin.barsurasp.data.BusRepository
 import me.paladin.barsurasp.data.TimetableRepository
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.getCurrentWeek
@@ -43,6 +42,11 @@ class MainViewModel : ViewModel() {
         viewModelScope,
         SharingStarted.Eagerly,
         "current"
+    )
+    val showBuses: StateFlow<Boolean> = App.preferences.showBuses.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        true
     )
 
     private val _timetableFlow = MutableStateFlow<UiState>(UiState.Loading)
