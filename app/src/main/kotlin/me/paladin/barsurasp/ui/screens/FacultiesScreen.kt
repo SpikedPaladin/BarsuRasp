@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,7 +41,7 @@ fun FacultiesScreen(
 
     Scaffold(
         topBar = {
-            FacultiesToolbar {
+            FacultiesToolbar(refreshAction = { viewModel.refresh() }) {
                 if (updateMainGroup)
                     groupSelected(null)
             }
@@ -95,7 +96,10 @@ fun FacultiesScreen(
 }
 
 @Composable
-fun FacultiesToolbar(backAction: (() -> Unit)? = null) {
+fun FacultiesToolbar(
+    refreshAction: () -> Unit,
+    backAction: (() -> Unit)? = null
+) {
     TopAppBar(
         title = {
             Text(text = stringResource(R.string.faculty_title))
@@ -108,6 +112,11 @@ fun FacultiesToolbar(backAction: (() -> Unit)? = null) {
                         contentDescription = stringResource(R.string.description_back)
                     )
                 }
+            }
+        },
+        actions = {
+            IconButton(onClick = refreshAction) {
+                Icon(imageVector = Icons.Filled.Refresh, contentDescription = null)
             }
         }
     )

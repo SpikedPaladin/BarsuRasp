@@ -37,4 +37,17 @@ class FacultiesViewModel : ViewModel() {
             }
         }
     }
+
+    fun refresh() {
+        viewModelScope.launch {
+            _groupFlow.update { FacultiesUiState.Loading }
+
+            val groups = FacultyRepository.getFaculties(false)
+            if (groups.isNotEmpty()) {
+                _groupFlow.update { FacultiesUiState.Success(groups) }
+            } else {
+                _groupFlow.update { FacultiesUiState.Error() }
+            }
+        }
+    }
 }

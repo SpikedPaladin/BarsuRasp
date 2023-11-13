@@ -12,10 +12,10 @@ import java.util.Calendar
 object FacultyRepository {
     private const val CACHE_FILE = "app/faculties.json"
 
-    suspend fun getFaculties(): List<Faculty> {
+    suspend fun getFaculties(useCache: Boolean = true): List<Faculty> {
         val faculties: List<Faculty>
         val file = getFacultiesFile()
-        if (file.exists()) {
+        if (file.exists() && useCache) {
             faculties = Json.decodeFromString<BarsuFaculties>(file.readText()).faculties
         } else {
             faculties = FacultyLoader.getFaculties()
