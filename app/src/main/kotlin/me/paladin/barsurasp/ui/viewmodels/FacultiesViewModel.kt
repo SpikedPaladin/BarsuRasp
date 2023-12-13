@@ -34,6 +34,9 @@ class FacultiesViewModel : ViewModel() {
     }
 
     private fun load(useCache: Boolean = true) {
+        if (!useCache)
+            _uiState.update { FacultiesUiState.Loading }
+
         viewModelScope.launch {
             try {
                 val groups = FacultyRepository.getFaculties(useCache)
