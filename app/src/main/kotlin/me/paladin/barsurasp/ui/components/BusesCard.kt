@@ -171,7 +171,7 @@ private fun BusInfoItem(
                     val progress by viewModel.progress.collectAsState()
                     Column {
                         Text("Загрузка...")
-                        LinearProgressIndicator(progress = progress)
+                        LinearProgressIndicator(progress = { progress })
                     }
                 }
                 BusState.None -> {
