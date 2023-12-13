@@ -37,10 +37,10 @@ fun ColorScheme.applyCustomColors(darkTheme: Boolean) {
         green = Color(0xFFB2FF59)
         yellow = Color(0xFFFFF176)
         cyan = Color(0xFF4DD0E1)
-        purple = Color(0xFF9575CD)
+        purple = Color(0xFFB39DDB)
     } else {
         green = Color(0xFF689F38)
-        yellow = Color(0xFFFDD835)
+        yellow = Color(0xFFF9A825)
         cyan = Color(0xFF00BCD4)
         purple = Color(0xFF673AB7)
     }

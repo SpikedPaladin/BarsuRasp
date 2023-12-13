@@ -40,7 +40,7 @@ fun LessonType(
 }
 
 @Composable
-fun getTypeColor(type: String) = when (type) {
+fun getTypeColor(type: String) = when (type.uppercase()) {
     "ЛК" -> MaterialTheme.colorScheme.green
     "ПЗ" -> MaterialTheme.colorScheme.error
     "ЛЗ" -> MaterialTheme.colorScheme.yellow
