@@ -119,7 +119,7 @@ fun FacultiesScreen(
 }
 
 @Composable
-fun FacultiesToolbar(
+private fun FacultiesToolbar(
     refreshAction: () -> Unit,
     backAction: (() -> Unit)? = null
 ) {

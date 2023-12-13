@@ -159,7 +159,7 @@ fun BusInfoScreen(
 }
 
 @Composable
-fun BusInfoToolbar(number: Int, scrollBehavior: TopAppBarScrollBehavior) {
+private fun BusInfoToolbar(number: Int, scrollBehavior: TopAppBarScrollBehavior) {
     TopAppBar(
         title = {
             Text(text = "Автобус №$number")

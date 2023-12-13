@@ -91,7 +91,7 @@ fun BusesCard(
 }
 
 @Composable
-fun BusInfoColumn(
+private fun BusInfoColumn(
     path: BusPath?,
     viewModelStoreOwner: ViewModelStoreOwner
 ) {
@@ -105,7 +105,7 @@ fun BusInfoColumn(
 }
 
 @Composable
-fun BusInfoItem(
+private fun BusInfoItem(
     number: Int,
     stop: String,
     backward: Boolean,

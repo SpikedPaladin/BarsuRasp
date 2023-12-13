@@ -178,7 +178,7 @@ fun MainScreen(
 }
 
 @Composable
-fun MainToolbar(
+private fun MainToolbar(
     refreshAction: () -> Unit,
     settingsAction: () -> Unit
 ) {

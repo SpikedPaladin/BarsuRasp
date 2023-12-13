@@ -148,7 +148,7 @@ fun BusStopScreen(
 }
 
 @Composable
-fun StopSchedule(list: List<BusStop.Time>) {
+private fun StopSchedule(list: List<BusStop.Time>) {
     LazyColumn {
         itemsIndexed(list) {index, item ->
             TimeItem(item = item)
@@ -160,12 +160,12 @@ fun StopSchedule(list: List<BusStop.Time>) {
 }
 
 @Composable
-fun TimeItem(item: BusStop.Time) {
+private fun TimeItem(item: BusStop.Time) {
     Text(text = "${item.hour}:${item.minute}", modifier = Modifier.height(24.dp))
 }
 
 @Composable
-fun BusStopToolbar() {
+private fun BusStopToolbar() {
     TopAppBar(
         title = {
             Text(text = "Расписание")

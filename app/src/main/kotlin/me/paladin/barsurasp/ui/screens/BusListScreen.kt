@@ -90,7 +90,7 @@ fun BusListScreen(
 }
 
 @Composable
-fun BusItem(
+private fun BusItem(
     direction: BusDirection,
     viewModelStoreOwner: ViewModelStoreOwner,
     busClicked: (Int) -> Unit
@@ -192,7 +192,7 @@ fun BusItem(
 }
 
 @Composable
-fun BusListToolbar() {
+private fun BusListToolbar() {
     TopAppBar(
         title = {
             Text(text = "Автобусы")

@@ -184,7 +184,7 @@ fun SettingsScreen(
 }
 
 @Composable
-fun SettingsToolbar(backAction: (() -> Unit)? = null) {
+private fun SettingsToolbar(backAction: (() -> Unit)? = null) {
     TopAppBar(
         title = {
             Text(text = stringResource(R.string.settings_title))

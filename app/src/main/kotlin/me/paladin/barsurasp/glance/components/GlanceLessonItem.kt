@@ -45,7 +45,7 @@ fun GlanceLessonItem(lesson: Lesson, showDivider: Boolean) {
 }
 
 @Composable
-fun GlanceSublessonItem(sublesson: Sublesson) {
+private fun GlanceSublessonItem(sublesson: Sublesson) {
     Row {
         Text(
             text = sublesson.name,

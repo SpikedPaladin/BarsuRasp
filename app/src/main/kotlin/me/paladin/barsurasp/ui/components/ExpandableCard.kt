@@ -104,7 +104,7 @@ fun ExpandableCard(
 }
 
 @Composable
-fun CardTitle(title: String) {
+private fun CardTitle(title: String) {
     Text(
         text = title,
         modifier = Modifier
@@ -115,7 +115,7 @@ fun CardTitle(title: String) {
 }
 
 @Composable
-fun ExpandableContent(
+private fun ExpandableContent(
     visible: Boolean = true,
     content: @Composable ColumnScope.() -> Unit
 ) {

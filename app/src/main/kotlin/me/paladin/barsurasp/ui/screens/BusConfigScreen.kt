@@ -129,7 +129,7 @@ fun BusConfigScreen(
 }
 
 @Composable
-fun SavedPath(path: BusPath, deleteClicked: () -> Unit) {
+private fun SavedPath(path: BusPath, deleteClicked: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(text = path.title, modifier = Modifier.weight(1F))
         IconButton(onClick = deleteClicked) {
@@ -139,7 +139,7 @@ fun SavedPath(path: BusPath, deleteClicked: () -> Unit) {
 }
 
 @Composable
-fun RecommendedPath(
+private fun RecommendedPath(
     title: String,
     subtitle: String,
     onClick: () -> Unit
@@ -159,7 +159,7 @@ fun RecommendedPath(
 }
 
 @Composable
-fun BusConfigToolbar() {
+private fun BusConfigToolbar() {
     TopAppBar(
         title = {
             Text(text = "Маршруты")

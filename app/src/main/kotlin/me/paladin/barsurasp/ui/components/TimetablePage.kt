@@ -38,7 +38,7 @@ fun TimetablePage(day: DaySchedule) {
 
 @Preview
 @Composable
-fun TimetablePagePreview() {
+private fun TimetablePagePreview() {
     BarsuRaspTheme {
         TimetablePage(
             day = DaySchedule(

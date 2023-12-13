@@ -121,7 +121,7 @@ fun BusPathScreen(
 }
 
 @Composable
-fun BusPathToolbar() {
+private fun BusPathToolbar() {
     TopAppBar(
         title = {
             Text(text = "Новый маршрут")
