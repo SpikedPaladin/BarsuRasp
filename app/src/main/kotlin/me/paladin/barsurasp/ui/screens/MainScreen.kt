@@ -3,7 +3,7 @@ package me.paladin.barsurasp.ui.screens
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -34,12 +33,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import me.paladin.barsurasp.R
+import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.ui.components.BusesCard
 import me.paladin.barsurasp.ui.components.TimetableList
+import me.paladin.barsurasp.ui.components.WeekSelector
 import me.paladin.barsurasp.ui.icons.Group
 import me.paladin.barsurasp.ui.viewmodels.BusesViewModel
 import me.paladin.barsurasp.ui.viewmodels.MainViewModel
 import me.paladin.barsurasp.ui.viewmodels.UiState
+import me.paladin.barsurasp.utils.getCurrentWeek
+import me.paladin.barsurasp.utils.getNextWeek
+import me.paladin.barsurasp.utils.getPrevWeek
 
 @Composable
 fun MainScreen(
@@ -50,12 +54,19 @@ fun MainScreen(
     openFaculties: () -> Unit,
     openBusConfig: () -> Unit
 ) {
+    val selectedWeek by viewModel.week.collectAsState()
     val showBuses by viewModel.showBuses.collectAsState()
+    val mainGroup by viewModel.mainGroup.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
-    val week by viewModel.week.collectAsState()
 
     Scaffold(
-        topBar = { MainToolbar({ viewModel.refreshTimetable() }, navigateToSettings) },
+        topBar = {
+            MainToolbar(
+                title = if (mainGroup != "") mainGroup else null,
+                refreshAction = { viewModel.refreshTimetable() },
+                settingsAction = navigateToSettings
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = openFaculties) {
                 Icon(
@@ -67,124 +78,166 @@ fun MainScreen(
     ) { paddingValues ->
         Crossfade(
             modifier = Modifier
+                .verticalScroll(rememberScrollState())
                 .padding(paddingValues)
                 .fillMaxWidth(),
             targetState = uiState,
             label = "mainState"
         ) { state ->
             when (state) {
-                UiState.Loading -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CircularProgressIndicator()
-                        Spacer(modifier = Modifier.size(8.dp))
-                        Text(text = stringResource(R.string.timetable_loading))
-                    }
-                }
+                UiState.Loading -> LoadingState()
 
-                is UiState.Success -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        TimetableList(state.data)
+                is UiState.Success -> SuccessState(
+                    viewModel = viewModel,
+                    timetable = state.data,
+                    showBuses = showBuses,
+                    busesViewModel = busesViewModel,
+                    viewModelStoreOwner = viewModelStoreOwner,
+                    selectedWeek = selectedWeek,
+                    openBusConfig = openBusConfig
+                )
 
-                        if (showBuses)
-                            BusesCard(busesViewModel, viewModelStoreOwner, openBusConfig)
-
-                        Spacer(modifier = Modifier.weight(1F))
-
-                        Column {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.height(48.dp)
-                            ) {
-                                Text(
-                                    style = MaterialTheme.typography.titleMedium,
-                                    text = stringResource(R.string.timetable_next_week)
-                                )
-                                Switch(
-                                    checked = week == "next",
-                                    onCheckedChange = { viewModel.changeWeek(if (week == "current") "next" else "current") })
-                            }
-                            Text(text = "Группа: ${state.data.group}", style = MaterialTheme.typography.labelMedium)
-                            Text(text = state.data.lastUpdate, style = MaterialTheme.typography.labelSmall)
-                        }
-                    }
-                }
-
-                is UiState.Error -> {
-                    if (state.noTimetable) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Spacer(modifier = Modifier.height(24.dp))
-                            Text(
-                                style = MaterialTheme.typography.titleLarge,
-                                text = stringResource(R.string.timetable_error_empty)
-                            )
-                            Spacer(modifier = Modifier.weight(1F))
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text(
-                                    style = MaterialTheme.typography.titleMedium,
-                                    text = stringResource(R.string.timetable_next_week)
-                                )
-                                Switch(
-                                    checked = week == "next",
-                                    onCheckedChange = { viewModel.changeWeek(if (week == "current") "next" else "current") })
-                            }
-                        }
-                    } else if (state.noGroup) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(text = stringResource(R.string.timetable_error_no_group))
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Button(onClick = openFaculties) {
-                                Text(text = stringResource(R.string.timetable_choose_group))
-                            }
-                        }
-                    } else if (state.noInternet) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(text = stringResource(R.string.general_error_network))
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Button(onClick = { viewModel.updateTimetable() }) {
-                                Text(text = stringResource(R.string.general_refresh))
-                            }
-                        }
-                    }
-                }
+                is UiState.Error -> ErrorState(
+                    state = state,
+                    viewModel = viewModel,
+                    showBuses = showBuses,
+                    busesViewModel = busesViewModel,
+                    viewModelStoreOwner = viewModelStoreOwner,
+                    week = selectedWeek,
+                    openFaculties = openFaculties,
+                    openBusConfig = openBusConfig,
+                    updateTimetable = { viewModel.updateTimetable() },
+                )
             }
         }
     }
 }
 
 @Composable
+private fun SuccessState(
+    viewModel: MainViewModel,
+    timetable: Timetable,
+    showBuses: Boolean,
+    busesViewModel: BusesViewModel,
+    viewModelStoreOwner: ViewModelStoreOwner,
+    selectedWeek: String,
+    openBusConfig: () -> Unit
+) {
+    BaseState(
+        viewModel = viewModel,
+        showBuses = showBuses,
+        selectedWeek = selectedWeek,
+        busesViewModel = busesViewModel,
+        viewModelStoreOwner = viewModelStoreOwner,
+        openBusConfig = openBusConfig
+    ) {
+        TimetableList(timetable)
+    }
+}
+
+@Composable
+private fun LoadingState() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator()
+        Spacer(modifier = Modifier.size(8.dp))
+        Text(text = stringResource(R.string.timetable_loading))
+    }
+}
+
+@Composable
+private fun ErrorState(
+    state: UiState.Error,
+    viewModel: MainViewModel,
+    showBuses: Boolean,
+    week: String,
+    busesViewModel: BusesViewModel,
+    viewModelStoreOwner: ViewModelStoreOwner,
+    openBusConfig: () -> Unit,
+    openFaculties: () -> Unit,
+    updateTimetable: () -> Unit,
+) {
+    BaseState(
+        viewModel = viewModel,
+        showBuses = showBuses,
+        showWeek = !state.noGroup,
+        selectedWeek = week,
+        busesViewModel = busesViewModel,
+        viewModelStoreOwner = viewModelStoreOwner,
+        openBusConfig = openBusConfig
+    ) {
+        if (state.noTimetable) {
+            Text(
+                style = MaterialTheme.typography.titleLarge,
+                text = stringResource(R.string.timetable_error_empty)
+            )
+        } else if (state.noGroup) {
+            Text(text = stringResource(R.string.timetable_error_no_group))
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(onClick = openFaculties) {
+                Text(text = stringResource(R.string.timetable_choose_group))
+            }
+        } else if (state.noInternet) {
+            Text(text = stringResource(R.string.general_error_network))
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(onClick = updateTimetable) {
+                Text(text = stringResource(R.string.general_refresh))
+            }
+        }
+    }
+}
+
+@Composable
+private fun BaseState(
+    viewModel: MainViewModel,
+    showWeek: Boolean = true,
+    showBuses: Boolean,
+    selectedWeek: String,
+    busesViewModel: BusesViewModel,
+    viewModelStoreOwner: ViewModelStoreOwner,
+    openBusConfig: () -> Unit,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (showWeek)
+            WeekSelector(
+                modifier = Modifier.padding(
+                    top = 8.dp,
+                    bottom = 8.dp
+                ),
+                week = selectedWeek,
+                prevClicked = { viewModel.setWeek(getPrevWeek(selectedWeek)) },
+                nextClicked = { viewModel.setWeek(getNextWeek(selectedWeek)) },
+                weekClicked = { viewModel.setWeek(getCurrentWeek()) }
+            )
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            content = content
+        )
+
+        if (showBuses)
+            BusesCard(busesViewModel, viewModelStoreOwner, openBusConfig)
+    }
+}
+
+@Composable
 private fun MainToolbar(
+    title: String? = null,
     refreshAction: () -> Unit,
     settingsAction: () -> Unit
 ) {
     TopAppBar(
         title = {
-            Text(text = stringResource(R.string.timetable_title))
+            Text(text = title ?: stringResource(R.string.timetable_title))
         },
         actions = {
             IconButton(onClick = refreshAction) {

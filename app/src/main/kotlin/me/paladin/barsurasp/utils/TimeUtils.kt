@@ -19,6 +19,7 @@ import java.util.Calendar.THURSDAY
 import java.util.Calendar.TUESDAY
 import java.util.Calendar.WEDNESDAY
 import java.util.Calendar.WEEK_OF_YEAR
+import java.util.Calendar.YEAR
 import java.util.Locale
 
 fun getDurationToNextMinute(): Long {
@@ -128,7 +129,8 @@ fun getCurrentWeek(format: String = "yyyy-MM-dd"): String {
     }
 }
 
-fun getNextWeek(format: String = "yyyy-MM-dd"): String {
+fun getPrevWeek(fromWeek: String, format: String = "yyyy-MM-dd"): String {
+    val parts = fromWeek.split("-")
     Calendar.getInstance().apply {
         firstDayOfWeek = MONDAY
         set(DAY_OF_WEEK, MONDAY)
@@ -136,8 +138,37 @@ fun getNextWeek(format: String = "yyyy-MM-dd"): String {
         set(MINUTE, 0)
         set(SECOND, 0)
         set(MILLISECOND, 0)
+        set(YEAR, parts[0].toInt())
+        set(MONTH, parts[1].toInt() - 1)
+        set(DAY_OF_MONTH, parts[2].toInt())
+        add(WEEK_OF_YEAR, -1)
+
+        return SimpleDateFormat(format, Locale.US).format(time)
+    }
+}
+
+fun getNextWeek(fromWeek: String? = null, format: String = "yyyy-MM-dd"): String {
+    Calendar.getInstance().apply {
+        firstDayOfWeek = MONDAY
+        set(DAY_OF_WEEK, MONDAY)
+        set(HOUR_OF_DAY, 0)
+        set(MINUTE, 0)
+        set(SECOND, 0)
+        set(MILLISECOND, 0)
+        if (fromWeek != null) {
+            val parts = fromWeek.split("-")
+
+            set(YEAR, parts[0].toInt())
+            set(MONTH, parts[1].toInt() - 1)
+            set(DAY_OF_MONTH, parts[2].toInt())
+        }
         add(WEEK_OF_YEAR, 1)
         
         return SimpleDateFormat(format, Locale.US).format(time)
     }
+}
+
+fun formatWeek(apiWeek: String): String {
+    val parts = apiWeek.split("-")
+    return "${parts[2]}.${parts[1]}.${parts[0]}"
 }

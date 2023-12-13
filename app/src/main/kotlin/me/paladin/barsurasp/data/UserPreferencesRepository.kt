@@ -31,8 +31,6 @@ class UserPreferencesRepository(
         val starredGroups = stringSetPreferencesKey("starredGroups")
     }
 
-    private inline val Preferences.week
-        get() = this[Keys.week] ?: "current"
     private inline val Preferences.monet
         get() = this[Keys.monet] ?: true
     private inline val Preferences.buses
@@ -47,16 +45,6 @@ class UserPreferencesRepository(
         get() = this[Keys.adsWatched] ?: 0
     private inline val Preferences.starredGroups
         get() = this[Keys.starredGroups]
-
-    val week: Flow<String> = dataStore.data
-        .map { preferences ->
-            preferences.week
-        }
-        .distinctUntilChanged()
-
-    suspend fun changeWeek(week: String) {
-        dataStore.edit { it[Keys.week] = week }
-    }
 
     val monet: Flow<Boolean> = dataStore.data
         .map { preferences ->

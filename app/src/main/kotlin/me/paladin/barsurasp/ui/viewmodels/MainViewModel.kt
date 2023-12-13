@@ -14,7 +14,6 @@ import me.paladin.barsurasp.App
 import me.paladin.barsurasp.data.TimetableRepository
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.getCurrentWeek
-import me.paladin.barsurasp.utils.getNextWeek
 
 sealed interface UiState {
     data object Loading : UiState
@@ -32,15 +31,10 @@ sealed interface UiState {
 
 class MainViewModel : ViewModel() {
     private var currentJob: Job? = null
-    private val mainGroup = App.prefs.mainGroup.stateIn(
+    val mainGroup = App.prefs.mainGroup.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         null
-    )
-    val week = App.prefs.week.stateIn(
-        viewModelScope,
-        SharingStarted.Eagerly,
-        "current"
     )
     val showBuses = App.prefs.showBuses.stateIn(
         viewModelScope,
@@ -48,6 +42,8 @@ class MainViewModel : ViewModel() {
         true
     )
 
+    private val _week = MutableStateFlow(getCurrentWeek())
+    val week = _week.asStateFlow()
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState = _uiState.asStateFlow()
 
@@ -71,24 +67,25 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun setWeek(value: String) = _week.update { value }
+
     fun refreshTimetable() {
         mainGroup.value?.let(TimetableRepository::refreshTimetable)
         updateTimetable()
     }
 
     fun updateTimetable() {
-        _uiState.update { UiState.Loading }
+        if (mainGroup.value == null || mainGroup.value == "")
+            return
 
-        val apiWeek = if (week.value == "current") getCurrentWeek() else getNextWeek()
+        _uiState.update { UiState.Loading }
 
         currentJob?.cancel()
 
-        if (mainGroup.value == null)
-            return
 
         currentJob = viewModelScope.launch {
             try {
-                val timetable = TimetableRepository.getTimetable(mainGroup.value!!, apiWeek)
+                val timetable = TimetableRepository.getTimetable(mainGroup.value!!, _week.value)
 
                 _uiState.update {
                     if (timetable != null)
@@ -103,10 +100,6 @@ class MainViewModel : ViewModel() {
                 }
             }
         }
-    }
-
-    fun changeWeek(week: String) {
-        viewModelScope.launch { App.prefs.changeWeek(week) }
     }
 
     fun setMainGroup(group: String) {
