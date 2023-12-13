@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -99,11 +100,8 @@ fun BusInfoScreen(
                             }
                             LazyColumn {
                                 items(if (showBackward) info.backwardStops!! else info.stops) {
-                                    Row(
-                                        Modifier
-                                            .height(48.dp)
-                                            .clickable { stopClicked(it.name, showBackward) }) {
-                                        Text(text = it.name)
+                                    BusStopItem(name = it.name) {
+                                        stopClicked(it.name, showBackward)
                                     }
                                 }
                             }
@@ -168,4 +166,17 @@ fun BusInfoToolbar(number: Int, scrollBehavior: TopAppBarScrollBehavior) {
         },
         scrollBehavior = scrollBehavior
     )
+}
+
+@Composable
+private fun BusStopItem(name: String, onClick: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .clickable(onClick = onClick)
+    ) {
+        Text(text = name)
+    }
 }
