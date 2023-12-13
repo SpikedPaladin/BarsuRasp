@@ -21,9 +21,13 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -63,6 +67,9 @@ fun MainScreen(
         topBar = {
             MainToolbar(
                 title = if (mainGroup != "") mainGroup else null,
+                lastUpdate = if (uiState is UiState.Success) {
+                    (uiState as UiState.Success).data.lastUpdate
+                } else null,
                 refreshAction = { viewModel.refreshTimetable() },
                 settingsAction = navigateToSettings
             )
@@ -232,6 +239,7 @@ private fun BaseState(
 @Composable
 private fun MainToolbar(
     title: String? = null,
+    lastUpdate: String? = null,
     refreshAction: () -> Unit,
     settingsAction: () -> Unit
 ) {
@@ -240,12 +248,27 @@ private fun MainToolbar(
             Text(text = title ?: stringResource(R.string.timetable_title))
         },
         actions = {
-            IconButton(onClick = refreshAction) {
-                Icon(
-                    imageVector = Icons.Outlined.Refresh,
-                    contentDescription = null
-                )
+            val tooltipState = rememberTooltipState()
+
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
+                tooltip = {
+                    RichTooltip(
+                        title = { Text("Последнее обновление на сайте") }
+                    ) {
+                        Text(text = lastUpdate ?: "Нет информации")
+                    }
+                },
+                state = tooltipState
+            ) {
+                IconButton(onClick = refreshAction) {
+                    Icon(
+                        imageVector = Icons.Outlined.Refresh,
+                        contentDescription = null
+                    )
+                }
             }
+
             IconButton(onClick = settingsAction) {
                 Icon(
                     imageVector = Icons.Outlined.Settings,
