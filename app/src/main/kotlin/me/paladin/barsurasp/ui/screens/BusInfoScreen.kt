@@ -119,7 +119,7 @@ fun BusInfoScreen(
                                     .fillMaxSize()
                             ) {
                                 CircularProgressIndicator(
-                                    progress = progress,
+                                    progress = { progress },
                                     modifier = Modifier.size(96.dp)
                                 )
                                 Text(text = "Загрузка расписания...")

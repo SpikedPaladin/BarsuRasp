@@ -167,7 +167,7 @@ private fun BusItem(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator(progress)
+                        CircularProgressIndicator(progress = { progress })
                     }
                 }
                 BusState.None -> {
