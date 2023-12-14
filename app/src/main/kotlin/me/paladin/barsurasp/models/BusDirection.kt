@@ -15,4 +15,6 @@ data class BusDirection(
     var backwardName: String? = null,
     val forward: Int,
     var backward: Int? = null
-)
+) {
+    val hasBackward = backwardName != null
+}

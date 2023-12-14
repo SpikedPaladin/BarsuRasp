@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.ui.components.ExpandableCard
-import me.paladin.barsurasp.ui.components.GroupItem
+import me.paladin.barsurasp.ui.components.barsu.GroupItem
 import me.paladin.barsurasp.ui.viewmodels.FacultiesUiState
 import me.paladin.barsurasp.ui.viewmodels.FacultiesViewModel
 import me.paladin.barsurasp.ui.viewmodels.MainViewModel

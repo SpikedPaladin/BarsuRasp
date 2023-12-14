@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
@@ -24,24 +25,27 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import me.paladin.barsurasp.R
+import me.paladin.barsurasp.models.BusDirection
+import me.paladin.barsurasp.ui.components.CustomToolbar
+import me.paladin.barsurasp.ui.components.CustomToolbarScrollBehavior
 import me.paladin.barsurasp.ui.components.RoundedBox
+import me.paladin.barsurasp.ui.components.rememberToolbarScrollBehavior
 import me.paladin.barsurasp.ui.icons.Bus
 import me.paladin.barsurasp.ui.viewmodels.BusState
 import me.paladin.barsurasp.ui.viewmodels.BusViewModel
@@ -50,6 +54,7 @@ import me.paladin.barsurasp.ui.viewmodels.BusViewModel
 fun BusInfoScreen(
     number: Int,
     viewModelStoreOwner: ViewModelStoreOwner,
+    backAction: () -> Unit,
     stopClicked: (String, Boolean) -> Unit
 ) {
     val viewModel: BusViewModel = viewModel(
@@ -59,11 +64,19 @@ fun BusInfoScreen(
     )
 
     val busState by viewModel.busState.collectAsState()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollBehavior = rememberToolbarScrollBehavior()
+    var showBackward by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
 
     Scaffold(
-        topBar = { BusInfoToolbar(number, scrollBehavior) },
+        topBar = {
+            BusInfoToolbar(
+                direction = viewModel.direction,
+                scrollBehavior = scrollBehavior,
+                showBackward = showBackward,
+                backAction = backAction
+            ) { showBackward = !showBackward }
+        },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
         Column(
@@ -74,39 +87,17 @@ fun BusInfoScreen(
             Crossfade(targetState = busState, label = "busInfoScreen") { state ->
                 when (state) {
                     is BusState.Loaded -> {
-                        var showBackward by remember { mutableStateOf(false) }
                         val info = state.info
 
-                        Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                RoundedBox(Modifier.size(48.dp)) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Bus,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                                Spacer(Modifier.size(8.dp))
-                                Text(text = if (showBackward) info.backwardName!! else info.name)
-
-                                if (info.hasBackward) {
-                                    IconButton(
-                                        modifier = Modifier.weight(1F),
-                                        onClick = { showBackward = !showBackward }
-                                    ) {
-                                        Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
-                                    }
-                                }
-                            }
-                            LazyColumn {
-                                items(if (showBackward) info.backwardStops!! else info.stops) {
-                                    BusStopItem(name = it.name) {
-                                        stopClicked(it.name, showBackward)
-                                    }
+                        LazyColumn {
+                            items(if (showBackward) info.backwardStops!! else info.stops) {
+                                BusStopItem(name = it.name) {
+                                    stopClicked(it.name, showBackward)
                                 }
                             }
                         }
                     }
+
                     is BusState.Loading -> {
                         val progress by viewModel.progress.collectAsState()
 
@@ -126,6 +117,7 @@ fun BusInfoScreen(
                             }
                         }
                     }
+
                     BusState.None -> {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -140,11 +132,18 @@ fun BusInfoScreen(
                                 modifier = Modifier.size(96.dp),
                                 tint = MaterialTheme.colorScheme.primary
                             )
-                            Text(text = "Расписание для этого автобуса не загружено. Нажми кнопку ниже чтобы загрузить.", textAlign = TextAlign.Center)
+                            Text(
+                                text = "Расписание для этого автобуса не загружено. Нажми кнопку ниже чтобы загрузить.",
+                                textAlign = TextAlign.Center
+                            )
                             Button(
                                 onClick = {
                                     viewModel.load {
-                                        Toast.makeText(context, "Ошибка подключения к сети!", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            "Ошибка подключения к сети!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 }
                             ) {
@@ -159,10 +158,62 @@ fun BusInfoScreen(
 }
 
 @Composable
-private fun BusInfoToolbar(number: Int, scrollBehavior: TopAppBarScrollBehavior) {
-    TopAppBar(
-        title = {
-            Text(text = "Автобус №$number")
+private fun BusInfoToolbar(
+    direction: BusDirection,
+    showBackward: Boolean,
+    scrollBehavior: CustomToolbarScrollBehavior,
+    backAction: () -> Unit,
+    changeDirection: () -> Unit
+) {
+    CustomToolbar(
+        centralContent = { Text("Остановки") },
+        expandedContent = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RoundedBox(Modifier.size(48.dp)) {
+                    Icon(
+                        imageVector = Icons.Outlined.Bus,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Spacer(Modifier.size(8.dp))
+                Text(
+                    text = if (showBackward) direction.backwardName!! else direction.name,
+                    modifier = Modifier.weight(1F)
+                )
+
+                if (direction.hasBackward) {
+                    IconButton(
+                        onClick = changeDirection
+                    ) {
+                        Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
+                }
+            }
+        },
+        collapsedContent = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RoundedBox(Modifier.size(48.dp)) {
+                    Icon(
+                        imageVector = Icons.Outlined.Bus,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Spacer(Modifier.size(8.dp))
+                Text(
+                    text = if (showBackward) direction.backwardName!! else direction.name,
+                    modifier = Modifier.weight(1F)
+                )
+            }
+        },
+        navigationIcon = {
+            IconButton(onClick = {}) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.description_back)
+                )
+            }
         },
         scrollBehavior = scrollBehavior
     )

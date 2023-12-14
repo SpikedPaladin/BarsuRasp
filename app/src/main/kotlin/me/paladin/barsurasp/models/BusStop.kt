@@ -13,6 +13,9 @@ data class BusStop(
     var workdays: List<Time>? = null,
     var weekends: List<Time>? = null
 ) {
+    val hasWorkdays = workdays != null
+    val hasWeekends = weekends != null
+
     constructor(name: String, tables: Elements) : this(name) {
         workdays = parseTime(tables[0])
         weekends = parseTime(tables[1])

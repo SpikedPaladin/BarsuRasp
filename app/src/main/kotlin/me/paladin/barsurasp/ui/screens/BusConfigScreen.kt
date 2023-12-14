@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedButton
@@ -26,8 +27,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import me.paladin.barsurasp.R
 import me.paladin.barsurasp.models.BusPath
 import me.paladin.barsurasp.ui.icons.Bus
 import me.paladin.barsurasp.ui.viewmodels.BusesViewModel
@@ -36,17 +39,19 @@ import me.paladin.barsurasp.ui.viewmodels.BusesViewModel
 fun BusConfigScreen(
     viewModel: BusesViewModel,
     openPathCreate: () -> Unit,
+    backAction: () -> Unit,
     openBusList: () -> Unit
 ) {
     val buses by viewModel.paths.collectAsState()
 
     Scaffold(
-        topBar = { BusConfigToolbar() },
+        topBar = { BusConfigToolbar(backAction) },
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
             OutlinedButton(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, end = 12.dp),
                 onClick = openBusList
             ) {
                 Text(text = "Все автобусы")
@@ -62,7 +67,9 @@ fun BusConfigScreen(
             item {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(24.dp).fillMaxWidth()
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .fillMaxWidth()
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Bus,
@@ -159,10 +166,18 @@ private fun RecommendedPath(
 }
 
 @Composable
-private fun BusConfigToolbar() {
+private fun BusConfigToolbar(backAction: () -> Unit) {
     TopAppBar(
         title = {
             Text(text = "Маршруты")
+        },
+        navigationIcon = {
+            IconButton(onClick = backAction) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.description_back)
+                )
+            }
         }
     )
 }

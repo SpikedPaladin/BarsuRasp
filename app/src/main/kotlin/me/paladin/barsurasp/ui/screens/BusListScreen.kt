@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
@@ -37,9 +38,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import me.paladin.barsurasp.R
 import me.paladin.barsurasp.models.BusDirection
 import me.paladin.barsurasp.ui.components.RoundedBox
 import me.paladin.barsurasp.ui.viewmodels.BusState
@@ -51,11 +54,12 @@ import me.paladin.barsurasp.ui.viewmodels.BusesViewModel
 fun BusListScreen(
     viewModel: BusesViewModel,
     viewModelStoreOwner: ViewModelStoreOwner,
+    backAction: () -> Unit,
     busClicked: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     Scaffold(
-        topBar = { BusListToolbar() }
+        topBar = { BusListToolbar(backAction) }
     ) { paddingValues ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -192,10 +196,18 @@ private fun BusItem(
 }
 
 @Composable
-private fun BusListToolbar() {
+private fun BusListToolbar(backAction: () -> Unit) {
     TopAppBar(
         title = {
             Text(text = "Автобусы")
+        },
+        navigationIcon = {
+            IconButton(onClick = backAction) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.description_back)
+                )
+            }
         }
     )
 }

@@ -1,4 +1,4 @@
-package me.paladin.barsurasp.ui.components
+package me.paladin.barsurasp.ui.components.bus
 
 import android.widget.Toast
 import androidx.compose.animation.Crossfade
@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.paladin.barsurasp.models.BusPath
+import me.paladin.barsurasp.ui.components.RoundedBox
 import me.paladin.barsurasp.ui.viewmodels.BusState
 import me.paladin.barsurasp.ui.viewmodels.BusViewModel
 import me.paladin.barsurasp.ui.viewmodels.BusesViewModel

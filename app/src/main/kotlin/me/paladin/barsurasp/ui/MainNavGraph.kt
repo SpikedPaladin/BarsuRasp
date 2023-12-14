@@ -51,9 +51,7 @@ fun MainNavGraph(
             )
         }
         composable("faculties") {
-            FacultiesScreen(mainViewModel, updateMainGroup = true) {
-                navController.navigateUp()
-            }
+            FacultiesScreen(mainViewModel, updateMainGroup = true) { navController.navigateUp() }
         }
         composable("settings") {
             SettingsScreen(settingsViewModel) { navController.navigateUp() }
@@ -65,13 +63,15 @@ fun MainNavGraph(
                     busPathViewModel.clear()
                     navController.navigate("busPath")
                 },
+                backAction = { navController.navigateUp() },
                 openBusList = { navController.navigate("busList?choosePath=false") }
             )
         }
         composable("busPath") {
             BusPathScreen(
                 busPathViewModel,
-                openBusChoose = { navController.navigate("busList?choosePath=true") }
+                openBusChoose = { navController.navigate("busList?choosePath=true") },
+                backAction = { navController.navigateUp() }
             ) {
                 busesViewModel.addPath(it)
                 navController.navigateUp()
@@ -84,7 +84,11 @@ fun MainNavGraph(
         ) { backStackEntry ->
             val choosePath = backStackEntry.arguments?.getBoolean("flag")
 
-            BusListScreen(busesViewModel, viewModelStoreOwner) {
+            BusListScreen(
+                busesViewModel,
+                viewModelStoreOwner,
+                backAction = { navController.navigateUp() }
+            ) {
                 navController.navigate("busInfo?number=$it&choosePath=${choosePath ?: false}")
             }
         }
@@ -99,7 +103,11 @@ fun MainNavGraph(
             val choosePath = backStackEntry.arguments?.getBoolean("flag")
 
             number?.let {
-                BusInfoScreen(it, viewModelStoreOwner) { stop, backward ->
+                BusInfoScreen(
+                    it,
+                    viewModelStoreOwner,
+                    backAction = { navController.navigateUp() }
+                ) { stop, backward ->
                     if (choosePath == true) {
                         busPathViewModel.addPath(Triple(number, stop, backward))
                         navController.popBackStack("busPath", false)
@@ -126,7 +134,7 @@ fun MainNavGraph(
                     stopName = stop,
                     backward = backward,
                     viewModelStoreOwner = viewModelStoreOwner
-                )
+                ) { navController.navigateUp() }
             }}}
         }
     }

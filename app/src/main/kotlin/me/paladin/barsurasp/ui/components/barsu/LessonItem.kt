@@ -1,4 +1,4 @@
-package me.paladin.barsurasp.ui.components
+package me.paladin.barsurasp.ui.components.barsu
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

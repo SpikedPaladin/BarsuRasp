@@ -1,41 +1,43 @@
 package me.paladin.barsurasp.ui.screens
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import me.paladin.barsurasp.R
+import me.paladin.barsurasp.models.BusInfo
 import me.paladin.barsurasp.models.BusStop
-import me.paladin.barsurasp.ui.components.RoundedBox
-import me.paladin.barsurasp.ui.icons.Bus
-import me.paladin.barsurasp.ui.icons.Weekends
-import me.paladin.barsurasp.ui.icons.Workdays
+import me.paladin.barsurasp.ui.components.CustomToolbar
+import me.paladin.barsurasp.ui.components.CustomToolbarScrollBehavior
+import me.paladin.barsurasp.ui.components.bus.BusStopToolbarRow
+import me.paladin.barsurasp.ui.components.bus.BusToolbarRow
+import me.paladin.barsurasp.ui.components.bus.WeekDaysSelector
+import me.paladin.barsurasp.ui.components.rememberToolbarScrollBehavior
 import me.paladin.barsurasp.ui.viewmodels.BusState
 import me.paladin.barsurasp.ui.viewmodels.BusViewModel
 import me.paladin.barsurasp.utils.isWeekends
@@ -45,116 +47,53 @@ fun BusStopScreen(
     number: Int,
     stopName: String,
     backward: Boolean,
-    viewModelStoreOwner: ViewModelStoreOwner
+    viewModelStoreOwner: ViewModelStoreOwner,
+    backAction: (Unit) -> Unit
 ) {
     val viewModel: BusViewModel = viewModel(
         viewModelStoreOwner = viewModelStoreOwner,
         factory = BusViewModel.Factory(number),
         key = number.toString()
     )
+
+    val scrollBehavior = rememberToolbarScrollBehavior()
     val busState by viewModel.busState.collectAsState()
+    val info = (busState as BusState.Loaded).info
+    val stop = info.getStop(stopName, backward)
+    var checked by remember {
+        mutableIntStateOf(
+            if (stop.hasWorkdays) if (isWeekends() && stop.hasWeekends) 1 else 0 else 1
+        )
+    }
 
     Scaffold(
-        topBar = { BusStopToolbar() }
+        topBar = {
+            BusStopToolbar(
+                info = info,
+                stop = stop,
+                checked = checked,
+                backward = backward,
+                scrollBehavior,
+                backAction = backAction
+            ) {
+                checked = it
+            }
+        },
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
-        Column(
-            Modifier
+        val list = if (checked == 0) stop.workdays!! else stop.weekends!!
+
+        LazyColumn(
+            modifier = Modifier
                 .padding(paddingValues)
                 .padding(8.dp)
         ) {
-            if (busState !is BusState.Loaded)
-                return@Column
+            itemsIndexed(list) { index, item ->
+                TimeItem(item = item)
 
-            val info = (busState as BusState.Loaded).info
-            val stop = info.getStop(stopName, backward)
-
-            var checked by remember {
-                mutableIntStateOf(
-                    if (stop.workdays != null) if (isWeekends() && stop.weekends != null) 1 else 0 else 1
-                )
+                if (index != list.lastIndex)
+                    HorizontalDivider()
             }
-            val options = listOf("Будни", "Выходные")
-            val icons = listOf(
-                Icons.Outlined.Workdays,
-                Icons.Outlined.Weekends
-            )
-
-            Column(
-                Modifier.padding(horizontal = 24.dp, vertical = 4.dp)
-            ) {
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    options.forEachIndexed { index, label ->
-                        SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index = index,
-                                count = options.size
-                            ),
-                            icon = {
-                                SegmentedButtonDefaults.Icon(active = index == checked) {
-                                    Icon(
-                                        imageVector = icons[index],
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SegmentedButtonDefaults.IconSize)
-                                    )
-                                }
-                            },
-                            onClick = {
-                                checked = index
-                            },
-                            enabled = (index == 0 && stop.workdays != null) || (index == 1 && stop.weekends != null),
-                            selected = checked == index
-                        ) {
-                            Text(label)
-                        }
-                    }
-                }
-                Spacer(Modifier.size(8.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RoundedBox(Modifier.size(48.dp)) {
-                        Icon(
-                            imageVector = Icons.Outlined.Bus,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    Spacer(Modifier.size(8.dp))
-                    Text(text = info.name)
-                }
-                Spacer(Modifier.size(8.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RoundedBox(Modifier.size(48.dp)) {
-                        Icon(
-                            imageVector = Icons.Outlined.LocationOn,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    Spacer(Modifier.size(8.dp))
-                    Text(text = stopName)
-                }
-            }
-
-            Text(text = "")
-            StopSchedule(list = if (checked == 0) stop.workdays!! else stop.weekends!!)
-        }
-    }
-}
-
-@Composable
-private fun StopSchedule(list: List<BusStop.Time>) {
-    LazyColumn {
-        itemsIndexed(list) {index, item ->
-            TimeItem(item = item)
-
-            if (index != list.lastIndex)
-                HorizontalDivider()
         }
     }
 }
@@ -165,10 +104,51 @@ private fun TimeItem(item: BusStop.Time) {
 }
 
 @Composable
-private fun BusStopToolbar() {
-    TopAppBar(
-        title = {
-            Text(text = "Расписание")
-        }
+private fun BusStopToolbar(
+    info: BusInfo,
+    stop: BusStop,
+    checked: Int,
+    backward: Boolean,
+    scrollBehavior: CustomToolbarScrollBehavior,
+    backAction: (Unit) -> Unit,
+    onChecked: (Int) -> Unit
+) {
+    val localDensity = LocalDensity.current
+    var selectorHeightDp by remember { mutableStateOf(0.dp) }
+
+    CustomToolbar(
+        centralContent = { Text("Расписание") },
+        expandedContent = {
+            Column {
+                WeekDaysSelector(
+                    modifier = Modifier.onGloballyPositioned { coordinates ->
+                        selectorHeightDp = with(localDensity) { coordinates.size.height.toDp() }
+                    },
+                    hasWorkdays = stop.hasWorkdays,
+                    hasWeekends = stop.hasWeekends,
+                    checked = checked,
+                    onChecked = onChecked
+                )
+                Spacer(Modifier.size(8.dp))
+                BusToolbarRow(name = if (backward) info.backwardName!! else info.name, number = info.number.toString())
+                Spacer(Modifier.size(8.dp))
+                BusStopToolbarRow(stopName = stop.name)
+            }
+        },
+        collapsedContent = {
+             Column {
+                 Spacer(Modifier.size((selectorHeightDp + 8.dp) * (1 - scrollBehavior.state.collapsedFraction)))
+                 BusToolbarRow(name = stop.name, number = info.number.toString())
+             }
+        },
+        navigationIcon = {
+            IconButton(onClick = {}) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.description_back)
+                )
+            }
+        },
+        scrollBehavior = scrollBehavior
     )
 }

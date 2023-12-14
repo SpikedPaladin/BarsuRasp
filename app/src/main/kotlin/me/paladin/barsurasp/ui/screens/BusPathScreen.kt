@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -24,7 +26,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import me.paladin.barsurasp.R
 import me.paladin.barsurasp.models.BusPath
 import me.paladin.barsurasp.ui.icons.Bus
 import me.paladin.barsurasp.ui.viewmodels.BusPathViewModel
@@ -33,12 +37,13 @@ import me.paladin.barsurasp.ui.viewmodels.BusPathViewModel
 fun BusPathScreen(
     busPathViewModel: BusPathViewModel,
     openBusChoose: () -> Unit,
+    backAction: () -> Unit,
     successCallback: (BusPath) -> Unit
 ) {
     val title by busPathViewModel.title.collectAsState()
     val buses by busPathViewModel.buses.collectAsState()
     Scaffold(
-        topBar = { BusPathToolbar() }
+        topBar = { BusPathToolbar(backAction) }
     ) { paddingValues ->
         Column(
             Modifier
@@ -121,10 +126,18 @@ fun BusPathScreen(
 }
 
 @Composable
-private fun BusPathToolbar() {
+private fun BusPathToolbar(backAction: () -> Unit) {
     TopAppBar(
         title = {
             Text(text = "Новый маршрут")
+        },
+        navigationIcon = {
+            IconButton(onClick = backAction) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.description_back)
+                )
+            }
         }
     )
 }

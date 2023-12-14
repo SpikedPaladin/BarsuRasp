@@ -20,7 +20,7 @@ class BusViewModel(private val number: Int) : ViewModel() {
     val progress = _progress.asStateFlow()
     private val _busState = MutableStateFlow<BusState>(BusState.None)
     val busState = _busState.asStateFlow()
-    private lateinit var direction: BusDirection
+    lateinit var direction: BusDirection
 
     init {
         viewModelScope.launch {

@@ -38,9 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.models.Timetable
-import me.paladin.barsurasp.ui.components.BusesCard
-import me.paladin.barsurasp.ui.components.TimetableList
-import me.paladin.barsurasp.ui.components.WeekSelector
+import me.paladin.barsurasp.ui.components.bus.BusesCard
+import me.paladin.barsurasp.ui.components.barsu.TimetableList
+import me.paladin.barsurasp.ui.components.barsu.WeekSelector
 import me.paladin.barsurasp.ui.icons.Group
 import me.paladin.barsurasp.ui.viewmodels.BusesViewModel
 import me.paladin.barsurasp.ui.viewmodels.MainViewModel

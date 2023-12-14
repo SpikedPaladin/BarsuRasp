@@ -1,4 +1,4 @@
-package me.paladin.barsurasp.ui.components
+package me.paladin.barsurasp.ui.components.barsu
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
