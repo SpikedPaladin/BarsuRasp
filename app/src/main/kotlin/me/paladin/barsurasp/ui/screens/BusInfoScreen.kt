@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -44,9 +42,8 @@ import me.paladin.barsurasp.R
 import me.paladin.barsurasp.models.BusDirection
 import me.paladin.barsurasp.ui.components.CustomToolbar
 import me.paladin.barsurasp.ui.components.CustomToolbarScrollBehavior
-import me.paladin.barsurasp.ui.components.RoundedBox
+import me.paladin.barsurasp.ui.components.bus.BusToolbarRow
 import me.paladin.barsurasp.ui.components.rememberToolbarScrollBehavior
-import me.paladin.barsurasp.ui.icons.Bus
 import me.paladin.barsurasp.ui.viewmodels.BusState
 import me.paladin.barsurasp.ui.viewmodels.BusViewModel
 
@@ -168,44 +165,19 @@ private fun BusInfoToolbar(
     CustomToolbar(
         centralContent = { Text("Остановки") },
         expandedContent = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RoundedBox(Modifier.size(48.dp)) {
-                    Icon(
-                        imageVector = Icons.Outlined.Bus,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-                Spacer(Modifier.size(8.dp))
-                Text(
-                    text = if (showBackward) direction.backwardName!! else direction.name,
-                    modifier = Modifier.weight(1F)
-                )
-
-                if (direction.hasBackward) {
-                    IconButton(
-                        onClick = changeDirection
-                    ) {
-                        Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
-                    }
-                }
-            }
+            BusToolbarRow(
+                name = if (showBackward) direction.backwardName!! else direction.name,
+                number = direction.busNumber.toString(),
+                changeDirection = if (direction.hasBackward)
+                    changeDirection
+                else null
+            )
         },
         collapsedContent = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RoundedBox(Modifier.size(48.dp)) {
-                    Icon(
-                        imageVector = Icons.Outlined.Bus,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-                Spacer(Modifier.size(8.dp))
-                Text(
-                    text = if (showBackward) direction.backwardName!! else direction.name,
-                    modifier = Modifier.weight(1F)
-                )
-            }
+            BusToolbarRow(
+                name = if (showBackward) direction.backwardName!! else direction.name,
+                number = direction.busNumber.toString()
+            )
         },
         navigationIcon = {
             IconButton(onClick = backAction) {
