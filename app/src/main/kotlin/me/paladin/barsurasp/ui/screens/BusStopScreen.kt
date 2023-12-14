@@ -142,7 +142,7 @@ private fun BusStopToolbar(
              }
         },
         navigationIcon = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = backAction) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
                     contentDescription = stringResource(R.string.description_back)
