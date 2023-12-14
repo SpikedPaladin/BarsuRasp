@@ -48,7 +48,7 @@ fun BusStopScreen(
     stopName: String,
     backward: Boolean,
     viewModelStoreOwner: ViewModelStoreOwner,
-    backAction: (Unit) -> Unit
+    backAction: () -> Unit
 ) {
     val viewModel: BusViewModel = viewModel(
         viewModelStoreOwner = viewModelStoreOwner,
@@ -110,7 +110,7 @@ private fun BusStopToolbar(
     checked: Int,
     backward: Boolean,
     scrollBehavior: CustomToolbarScrollBehavior,
-    backAction: (Unit) -> Unit,
+    backAction: () -> Unit,
     onChecked: (Int) -> Unit
 ) {
     val localDensity = LocalDensity.current
