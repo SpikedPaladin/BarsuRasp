@@ -6,21 +6,13 @@ import me.paladin.barsurasp.App
 import me.paladin.barsurasp.data.loaders.BusLoader
 import me.paladin.barsurasp.models.BusDirection
 import me.paladin.barsurasp.models.BusInfo
-import me.paladin.barsurasp.models.BusPath
 import me.paladin.barsurasp.models.SavedDirections
 import java.io.File
 import java.util.Calendar
 
 object BusRepository {
-
-    suspend fun getBusInfoForPath(path: BusPath): List<BusInfo> {
-        val list = mutableListOf<BusInfo>()
-
-        for (bus in path.buses)
-            list += getBusInfo(bus.first)
-
-        return list
-    }
+    // TODO Remove after 1.1
+    private val json = Json { ignoreUnknownKeys = true }
 
     fun deleteBusInfo(number: Int) {
         val file = getBusFile(number)
@@ -35,7 +27,7 @@ object BusRepository {
         val info: BusInfo
         val file = getBusFile(number)
         if (file.exists()) {
-            info = Json.decodeFromString<BusInfo>(file.readText())
+            info = json.decodeFromString<BusInfo>(file.readText())
         } else {
             info = BusLoader.loadBusInfo(direction, progressCallback)
 
