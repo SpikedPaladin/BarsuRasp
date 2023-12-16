@@ -4,10 +4,11 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
@@ -23,6 +24,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.ui.components.ExpandableCard
+import me.paladin.barsurasp.ui.components.ExpandableItem
 import me.paladin.barsurasp.ui.components.barsu.GroupItem
 import me.paladin.barsurasp.ui.viewmodels.FacultiesUiState
 import me.paladin.barsurasp.ui.viewmodels.FacultiesViewModel
@@ -72,18 +77,37 @@ fun FacultiesScreen(
                 }
 
                 is FacultiesUiState.Success -> {
+                    var expandedFaculty by remember { mutableStateOf(-1) }
+
                     LazyColumn(Modifier.fillMaxSize()) {
-                        items(state.data) {
-                            ExpandableCard(title = it.name, outlined = true) {
-                                for (speciality in it.specialities) {
+                        itemsIndexed(state.data) { index, item ->
+                            ExpandableItem(
+                                expanded = expandedFaculty == index,
+                                onClick = {
+                                    expandedFaculty = if (expandedFaculty == index)
+                                        -1
+                                    else index
+                                },
+                                title = {
+                                    Text(
+                                        text = item.name,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                }
+                            ) {
+                                for (speciality in item.specialities) {
                                     ExpandableCard(title = speciality.name) {
                                         for (group in speciality.groups) {
                                             GroupItem(
                                                 group = group,
                                                 onSaveClick = if (groupSaved != null) {
-                                                    { groupSaved("$group:${it.name}") }
+                                                    { groupSaved("$group:${item.name}") }
                                                 } else null,
-                                                onClick = { groupSelected(group, "$group:${it.name}") }
+                                                onClick = { groupSelected(group, "$group:${item.name}") }
                                             )
                                         }
                                     }
