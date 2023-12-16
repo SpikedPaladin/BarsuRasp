@@ -34,10 +34,10 @@ import com.yandex.mobile.ads.rewarded.RewardedAdLoadListener
 import com.yandex.mobile.ads.rewarded.RewardedAdLoader
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.models.AppTheme
-import me.paladin.barsurasp.ui.components.AdminBottomSheet
 import me.paladin.barsurasp.ui.components.settings.ChooseRow
 import me.paladin.barsurasp.ui.components.settings.ClickableRow
 import me.paladin.barsurasp.ui.components.settings.SwitchRow
+import me.paladin.barsurasp.ui.components.sheets.AdminSheet
 import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
 
 @Composable
@@ -174,12 +174,11 @@ fun SettingsScreen(
             )
         }
 
-        if (showAdmin)
-            AdminBottomSheet(doneCallback = {
-                for (i in 0..5) viewModel.adWatched()
-            }) {
-                showAdmin = false
-            }
+        AdminSheet(
+            visible = showAdmin,
+            onAccess = { repeat(5) { viewModel.adWatched() } },
+            onDismiss = { showAdmin = false }
+        )
     }
 }
 
