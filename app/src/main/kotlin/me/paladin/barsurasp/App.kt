@@ -7,7 +7,7 @@ import android.util.Log
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.yandex.mobile.ads.common.MobileAds
+import com.google.android.gms.ads.MobileAds
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import me.paladin.barsurasp.data.UserPreferencesRepository
@@ -27,7 +27,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         MobileAds.initialize(this) {
-            Log.d("YandexMobileAds", "SDK initialized")
+            Log.d("AdMob", "SDK initialized")
         }
     }
 

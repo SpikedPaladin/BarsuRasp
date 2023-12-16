@@ -55,9 +55,9 @@ android {
 dependencies {
     implementation(libs.ktor.android)
     implementation(libs.ktor.core)
+    implementation(libs.admob)
     implementation(libs.jsoup)
     implementation(libs.json)
-    implementation(libs.ads)
 
     // Glance
     implementation(libs.glance.material)
@@ -86,4 +86,7 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
 
+    constraints {
+        implementation("androidx.fragment:fragment:1.6.2")
+    }
 }

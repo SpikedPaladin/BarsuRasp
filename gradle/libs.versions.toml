@@ -16,7 +16,7 @@ material = "1.2.0-beta01"
 datastore = "1.1.0-alpha07"
 jsoup = "1.16.2"
 ktor = "2.3.5"
-ads = "6.1.0"
+admob = "22.5.0"
 
 [libraries]
 glance-material = { group = "androidx.glance", name = "glance-material3", version.ref = "glance-material" }
@@ -25,7 +25,7 @@ jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "json" }
 ktor-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor" }
 ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
-ads = { group = "com.yandex.android", name = "mobileads", version.ref = "ads" }
+admob = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "admob" }
 
 # Compose
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }

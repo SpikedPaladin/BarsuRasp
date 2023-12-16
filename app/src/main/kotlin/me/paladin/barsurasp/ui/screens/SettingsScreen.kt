@@ -1,8 +1,10 @@
 package me.paladin.barsurasp.ui.screens
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -23,15 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat.startActivity
-import com.yandex.mobile.ads.common.AdError
-import com.yandex.mobile.ads.common.AdRequestConfiguration
-import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.common.ImpressionData
-import com.yandex.mobile.ads.rewarded.Reward
-import com.yandex.mobile.ads.rewarded.RewardedAd
-import com.yandex.mobile.ads.rewarded.RewardedAdEventListener
-import com.yandex.mobile.ads.rewarded.RewardedAdLoadListener
-import com.yandex.mobile.ads.rewarded.RewardedAdLoader
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.models.AppTheme
 import me.paladin.barsurasp.ui.components.settings.ChooseRow
@@ -51,32 +48,6 @@ fun SettingsScreen(
     val adCounter by viewModel.adCounter.collectAsState()
     val showBuses by viewModel.showBuses.collectAsState()
     var showAdmin by remember { mutableStateOf(false) }
-    val adLoader = RewardedAdLoader(context)
-
-    adLoader.setAdLoadListener(
-        object : RewardedAdLoadListener {
-            override fun onAdLoaded(ad: RewardedAd) {
-                ad.apply {
-                    setAdEventListener(
-                        object : RewardedAdEventListener {
-                            override fun onRewarded(reward: Reward) {
-                                viewModel.adWatched()
-                            }
-
-                            override fun onAdShown() {}
-                            override fun onAdFailedToShow(error: AdError) {}
-                            override fun onAdDismissed() {}
-                            override fun onAdClicked() {}
-                            override fun onAdImpression(data: ImpressionData?) {}
-                        }
-                    )
-                    show(context as Activity)
-                }
-            }
-
-            override fun onAdFailedToLoad(error: AdRequestError) {}
-        }
-    )
 
     Scaffold(
         topBar = { SettingsToolbar(backAction) }
@@ -136,7 +107,7 @@ fun SettingsScreen(
                 },
                 onClick = {
                     Toast.makeText(context, "Загрузка ролика...", Toast.LENGTH_SHORT).show()
-                    adLoader.loadAd(AdRequestConfiguration.Builder("R-M-3361745-2").build())
+                    showAd(context) { viewModel.adWatched() }
                 }
             )
 
@@ -180,6 +151,19 @@ fun SettingsScreen(
             onDismiss = { showAdmin = false }
         )
     }
+}
+
+private fun showAd(context: Context, onReward: () -> Unit) {
+    val adRequest = AdRequest.Builder().build()
+    RewardedAd.load(context, "ca-app-pub-3940256099942544/5224354917", adRequest, object : RewardedAdLoadCallback() {
+        override fun onAdFailedToLoad(adError: LoadAdError) {
+            Log.d("AdMob", adError.toString())
+        }
+
+        override fun onAdLoaded(ad: RewardedAd) {
+            ad.show(context as Activity) { onReward() }
+        }
+    })
 }
 
 @Composable
