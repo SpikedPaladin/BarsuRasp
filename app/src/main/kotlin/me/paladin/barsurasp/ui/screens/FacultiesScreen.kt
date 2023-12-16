@@ -34,23 +34,22 @@ import me.paladin.barsurasp.ui.components.ExpandableCard
 import me.paladin.barsurasp.ui.components.barsu.GroupItem
 import me.paladin.barsurasp.ui.viewmodels.FacultiesUiState
 import me.paladin.barsurasp.ui.viewmodels.FacultiesViewModel
-import me.paladin.barsurasp.ui.viewmodels.MainViewModel
 
 @Composable
 fun FacultiesScreen(
-    mainViewModel: MainViewModel = viewModel(),
-    updateMainGroup: Boolean = false,
-    groupSelected: (group: String?) -> Unit
+    backAction: (() -> Unit)? = null,
+    groupSaved: ((group: String) -> Unit)? = null,
+    groupSelected: (group: String, item: String) -> Unit
 ) {
     val viewModel: FacultiesViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
-            FacultiesToolbar(refreshAction = { viewModel.refresh() }) {
-                if (updateMainGroup)
-                    groupSelected(null)
-            }
+            FacultiesToolbar(
+                refreshAction = { viewModel.refresh() },
+                backAction = backAction
+            )
         }
     ) { paddingValues ->
         Crossfade(
@@ -79,12 +78,13 @@ fun FacultiesScreen(
                                 for (speciality in it.specialities) {
                                     ExpandableCard(title = speciality.name) {
                                         for (group in speciality.groups) {
-                                            GroupItem(group = group) { selectedGroup ->
-                                                groupSelected(selectedGroup)
-
-                                                if (updateMainGroup)
-                                                    mainViewModel.setMainGroup(selectedGroup)
-                                            }
+                                            GroupItem(
+                                                group = group,
+                                                onSaveClick = if (groupSaved != null) {
+                                                    { groupSaved("$group:${it.name}") }
+                                                } else null,
+                                                onClick = { groupSelected(group, "$group:${it.name}") }
+                                            )
                                         }
                                     }
                                 }
@@ -107,7 +107,10 @@ fun FacultiesScreen(
                             modifier = Modifier.size(96.dp),
                             tint = MaterialTheme.colorScheme.primary
                         )
-                        Text(text = "Проблемы с подключением к сети. Проверьте подключение и попробуйте заново.", textAlign = TextAlign.Center)
+                        Text(
+                            text = "Проблемы с подключением к сети. Проверьте подключение и попробуйте заново.",
+                            textAlign = TextAlign.Center
+                        )
                         Button(onClick = { viewModel.refresh() }) {
                             Text("Обновить")
                         }

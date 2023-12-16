@@ -31,6 +31,9 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,9 +41,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.models.Timetable
-import me.paladin.barsurasp.ui.components.bus.BusesCard
 import me.paladin.barsurasp.ui.components.barsu.TimetableList
 import me.paladin.barsurasp.ui.components.barsu.WeekSelector
+import me.paladin.barsurasp.ui.components.bus.BusesCard
+import me.paladin.barsurasp.ui.components.sheets.SavedSheet
 import me.paladin.barsurasp.ui.icons.Group
 import me.paladin.barsurasp.ui.viewmodels.BusesViewModel
 import me.paladin.barsurasp.ui.viewmodels.MainViewModel
@@ -61,6 +65,7 @@ fun MainScreen(
     val selectedWeek by viewModel.week.collectAsState()
     val showBuses by viewModel.showBuses.collectAsState()
     val mainGroup by viewModel.mainGroup.collectAsState()
+    val savedItems by viewModel.savedItems.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
@@ -75,11 +80,29 @@ fun MainScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = openFaculties) {
+            var visible by remember { mutableStateOf(false) }
+
+            FloatingActionButton(onClick = {
+                if (savedItems.isEmpty())
+                    openFaculties()
+                else
+                    visible = true
+            }) {
                 Icon(
                     imageVector = Icons.Outlined.Group,
                     contentDescription = stringResource(R.string.timetable_change_group)
                 )
+            }
+
+            SavedSheet(
+                visible = visible,
+                mainGroup = mainGroup,
+                savedItems = savedItems,
+                groupSelected = { viewModel.setMainGroup(it) },
+                groupRemoved = { viewModel.saveItem(it) },
+                openFaculties = openFaculties
+            ) {
+                visible = false
             }
         }
     ) { paddingValues ->

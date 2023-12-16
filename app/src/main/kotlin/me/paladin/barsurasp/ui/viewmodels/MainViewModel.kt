@@ -41,6 +41,11 @@ class MainViewModel : ViewModel() {
         SharingStarted.Eagerly,
         true
     )
+    val savedItems = App.prefs.savedItems.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        setOf()
+    )
 
     private val _week = MutableStateFlow(getCurrentWeek())
     val week = _week.asStateFlow()
@@ -100,6 +105,10 @@ class MainViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    fun saveItem(item: String) {
+        viewModelScope.launch { App.prefs.saveItem(item) }
     }
 
     fun setMainGroup(group: String) {

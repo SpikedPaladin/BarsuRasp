@@ -20,7 +20,6 @@ class UserPreferencesRepository(
     private val dataStore: DataStore<Preferences>
 ) {
     private object Keys {
-        val week = stringPreferencesKey("week")
         val monet = booleanPreferencesKey("monet")
         val theme = stringPreferencesKey("theme")
         val buses = stringPreferencesKey("buses")
@@ -28,7 +27,7 @@ class UserPreferencesRepository(
         val selectedPath = intPreferencesKey("selectedPath")
         val mainGroup = stringPreferencesKey("mainGroup")
         val adsWatched = intPreferencesKey("adsWatched")
-        val starredGroups = stringSetPreferencesKey("starredGroups")
+        val savedItems = stringSetPreferencesKey("savedItems")
     }
 
     private inline val Preferences.monet
@@ -43,8 +42,8 @@ class UserPreferencesRepository(
         get() = this[Keys.mainGroup] ?: ""
     private inline val Preferences.adsWatched
         get() = this[Keys.adsWatched] ?: 0
-    private inline val Preferences.starredGroups
-        get() = this[Keys.starredGroups]
+    private inline val Preferences.savedItems
+        get() = this[Keys.savedItems] ?: setOf()
 
     val monet: Flow<Boolean> = dataStore.data
         .map { preferences ->
@@ -149,18 +148,22 @@ class UserPreferencesRepository(
         dataStore.edit { it[Keys.showBuses] = enabled }
     }
 
-    val starredGroups: Flow<Set<String>?> = dataStore.data
+    val savedItems: Flow<Set<String>> = dataStore.data
         .map { preferences ->
-            preferences.starredGroups
+            preferences.savedItems
         }
         .distinctUntilChanged()
 
-    suspend fun starGroup(group: String) {
+    suspend fun saveItem(item: String) {
         dataStore.edit {
-            if (it[Keys.starredGroups] == null)
-                it[Keys.starredGroups] = setOf()
+            if (it[Keys.savedItems] == null)
+                it[Keys.savedItems] = setOf()
 
-            it[Keys.starredGroups] = it[Keys.starredGroups]!! + group
+            val itemName = item.split(":", limit = 2)[0]
+            if (it[Keys.savedItems]!!.firstOrNull { predicate -> predicate.startsWith(itemName) } != null)
+                it[Keys.savedItems] = it[Keys.savedItems]!!.toMutableSet() - item
+            else
+                it[Keys.savedItems] = it[Keys.savedItems]!! + item
         }
     }
 }

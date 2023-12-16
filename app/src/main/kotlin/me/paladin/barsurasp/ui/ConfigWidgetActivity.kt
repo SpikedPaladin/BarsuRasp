@@ -45,7 +45,7 @@ class ConfigWidgetActivity : ComponentActivity() {
             }
 
             BarsuRaspTheme(darkTheme, monet) {
-                FacultiesScreen(groupSelected = { handleSelectGroup(it!!) })
+                FacultiesScreen(groupSelected = { it, _ -> handleSelectGroup(it) })
             }
         }
     }

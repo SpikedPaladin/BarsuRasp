@@ -53,7 +53,18 @@ fun MainNavGraph(
             )
         }
         composable("faculties") {
-            FacultiesScreen(mainViewModel, updateMainGroup = true) { backAction() }
+            FacultiesScreen(
+                groupSaved = { mainViewModel.saveItem(it) },
+                groupSelected = { group, item ->
+                    mainViewModel.setMainGroup(group)
+
+                    if (mainViewModel.savedItems.value.isEmpty())
+                        mainViewModel.saveItem(item)
+
+                    backAction()
+                },
+                backAction = backAction
+            )
         }
         composable("settings") {
             SettingsScreen(settingsViewModel, backAction = backAction)
