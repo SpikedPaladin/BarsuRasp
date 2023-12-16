@@ -16,7 +16,7 @@ material = "1.2.0-beta01"
 datastore = "1.1.0-alpha07"
 jsoup = "1.16.2"
 ktor = "2.3.5"
-admob = "22.5.0"
+admob = "22.6.0"
 
 [libraries]
 glance-material = { group = "androidx.glance", name = "glance-material3", version.ref = "glance-material" }

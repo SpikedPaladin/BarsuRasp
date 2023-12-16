@@ -154,8 +154,7 @@ fun SettingsScreen(
 }
 
 private fun showAd(context: Context, onReward: () -> Unit) {
-    val adRequest = AdRequest.Builder().build()
-    RewardedAd.load(context, "ca-app-pub-3940256099942544/5224354917", adRequest, object : RewardedAdLoadCallback() {
+    RewardedAd.load(context, "ca-app-pub-3940256099942544/5224354917", AdRequest.Builder().build(), object : RewardedAdLoadCallback() {
         override fun onAdFailedToLoad(adError: LoadAdError) {
             Log.d("AdMob", adError.toString())
         }
