@@ -34,14 +34,14 @@ var ColorScheme.purple: Color
 
 fun ColorScheme.applyCustomColors(darkTheme: Boolean) {
     if (darkTheme) {
-        green = Color(0xFFB2FF59)
+        green = Color(0xFFAED581)
         yellow = Color(0xFFFFF176)
         cyan = Color(0xFF4DD0E1)
         purple = Color(0xFFB39DDB)
     } else {
         green = Color(0xFF689F38)
         yellow = Color(0xFFF9A825)
-        cyan = Color(0xFF00BCD4)
+        cyan = Color(0xFF00ACC1)
         purple = Color(0xFF673AB7)
     }
 }
