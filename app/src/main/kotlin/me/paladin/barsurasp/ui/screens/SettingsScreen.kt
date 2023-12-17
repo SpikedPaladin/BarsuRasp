@@ -177,7 +177,7 @@ fun SettingsScreen(
 }
 
 private fun showAd(context: Context, onReward: () -> Unit) {
-    RewardedAd.load(context, "ca-app-pub-3940256099942544/5224354917", AdRequest.Builder().build(), object : RewardedAdLoadCallback() {
+    RewardedAd.load(context, "ca-app-pub-7728699289076196/4211679925", AdRequest.Builder().build(), object : RewardedAdLoadCallback() {
         override fun onAdFailedToLoad(adError: LoadAdError) {
             Log.d("AdMob", adError.toString())
         }
