@@ -33,6 +33,7 @@ import me.paladin.barsurasp.R
 import me.paladin.barsurasp.models.AppTheme
 import me.paladin.barsurasp.ui.components.settings.ChooseRow
 import me.paladin.barsurasp.ui.components.settings.ClickableRow
+import me.paladin.barsurasp.ui.components.settings.GroupTitle
 import me.paladin.barsurasp.ui.components.settings.SwitchRow
 import me.paladin.barsurasp.ui.components.sheets.AdminSheet
 import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
@@ -53,6 +54,7 @@ fun SettingsScreen(
         topBar = { SettingsToolbar(backAction) }
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues)) {
+            GroupTitle("Интерфейс")
             ChooseRow(
                 strings = listOf("Дневная", "Ночная", "Автоматически"),
                 title = { Text(text = "Тема приложения") },
@@ -90,6 +92,7 @@ fun SettingsScreen(
                 onCheckedChange = { viewModel.setShowBuses(!showBuses) }
             )
 
+            GroupTitle("Разное")
             ClickableRow(
                 title = {
                     if (adCounter < 5)
@@ -117,6 +120,7 @@ fun SettingsScreen(
                 onClick = { viewModel.updateWidgets(context) }
             )
 
+            GroupTitle("О приложении")
             ClickableRow(
                 title = { Text(text = "Telegram-Бот") },
                 subtitle = { Text(text = "Бот с расписанием занятий") },
@@ -124,6 +128,25 @@ fun SettingsScreen(
                     startActivity(
                         context,
                         Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/BarsuRaspBot")),
+                        null
+                    )
+                }
+            )
+
+            ClickableRow(
+                title = { Text(text = "Поделиться") },
+                subtitle = { Text(text = "Рассказать другим о приложении") },
+                onClick = {
+                    startActivity(
+                        context,
+                        Intent.createChooser(Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(
+                                Intent.EXTRA_TEXT,
+                                "Android Приложение Расписание БарГУ\nhttps://play.google.com/store/apps/details?id=me.paladin.barsurasp\n\nTelegram-Бот Расписание БарГУ\nhttps://t.me/BarsuRaspBot"
+                            )
+                            type = "text/plain"
+                        }, null),
                         null
                     )
                 }
