@@ -3,6 +3,7 @@ package me.paladin.barsurasp.ui.components.bus
 import android.widget.Toast
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -71,15 +73,20 @@ fun BusesCard(
                 }
             }
 
-            HorizontalDivider()
-
             if (buses.isNotEmpty()) {
-                SecondaryScrollableTabRow(
-                    selectedTabIndex = selectedPath
+                Box(
+                    contentAlignment = Alignment.BottomCenter
                 ) {
-                    buses.forEachIndexed { index, item ->
-                        Tab(selected = true, onClick = { viewModel.selectPath(index) }) {
-                            Text(text = item.title, modifier = Modifier.padding(4.dp))
+                    HorizontalDivider()
+                    SecondaryScrollableTabRow(
+                        containerColor = Color.Transparent,
+                        selectedTabIndex = selectedPath,
+                        divider = {}
+                    ) {
+                        buses.forEachIndexed { index, item ->
+                            Tab(selected = true, onClick = { viewModel.selectPath(index) }) {
+                                Text(text = item.title, modifier = Modifier.padding(4.dp))
+                            }
                         }
                     }
                 }
