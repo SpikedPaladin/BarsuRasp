@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -142,7 +143,7 @@ private fun GroupsPage(
 
     Crossfade(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxWidth(),
         targetState = uiState,
         label = "facultiesState"
     ) { state ->
@@ -199,6 +200,9 @@ private fun GroupsPage(
                                     }
                                 }
                             }
+
+                            if (state.data.size != index + 1)
+                                HorizontalDivider(Modifier.padding(horizontal = 8.dp))
                         }
                     }
                 }
@@ -272,6 +276,8 @@ private fun TeachersPage(
                                     }
                                 )
                             }
+                            if (state.data.size != index + 1)
+                                HorizontalDivider(Modifier.padding(horizontal = 8.dp))
                         }
                     }
                 }

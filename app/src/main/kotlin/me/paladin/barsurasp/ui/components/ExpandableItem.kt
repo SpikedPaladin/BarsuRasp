@@ -57,7 +57,7 @@ fun ExpandableItem(
     Column {
         Surface(
             color = color,
-            shadowElevation = 4.dp,
+            shadowElevation = bottomPadding / 2,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = bottomPadding)
