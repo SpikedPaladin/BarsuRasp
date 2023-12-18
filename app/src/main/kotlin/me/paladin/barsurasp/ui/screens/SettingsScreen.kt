@@ -8,6 +8,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -53,7 +55,11 @@ fun SettingsScreen(
     Scaffold(
         topBar = { SettingsToolbar(backAction) }
     ) { paddingValues ->
-        Column(Modifier.padding(paddingValues)) {
+        Column(
+            Modifier
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+        ) {
             GroupTitle("Интерфейс")
             ChooseRow(
                 strings = listOf("Дневная", "Ночная", "Автоматически"),
@@ -84,7 +90,6 @@ fun SettingsScreen(
                 subtitle = { Text(text = "Только для Android 12+") },
                 onCheckedChange = { viewModel.changeMonet(!monet) }
             )
-
             SwitchRow(
                 checked = showBuses,
                 title = { Text("Расписание автобусов") },
@@ -113,7 +118,6 @@ fun SettingsScreen(
                     showAd(context) { viewModel.adWatched() }
                 }
             )
-
             ClickableRow(
                 title = { Text(text = "Обновить виджеты") },
                 subtitle = { Text(text = "Перезагрузить все установленные виджеты") },
@@ -132,7 +136,17 @@ fun SettingsScreen(
                     )
                 }
             )
-
+            ClickableRow(
+                title = { Text(text = "Оценить") },
+                subtitle = { Text(text = "Поставить приложению оценку") },
+                onClick = {
+                    startActivity(
+                        context,
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=me.paladin.barsurasp")),
+                        null
+                    )
+                }
+            )
             ClickableRow(
                 title = { Text(text = "Поделиться") },
                 subtitle = { Text(text = "Рассказать другим о приложении") },
@@ -151,7 +165,6 @@ fun SettingsScreen(
                     )
                 }
             )
-
             ClickableRow(
                 title = { Text(text = "Поддержка") },
                 subtitle = { Text(text = "Вопросы и предложения по улучшению приложения") },
@@ -167,13 +180,13 @@ fun SettingsScreen(
                 }
             )
         }
-
-        AdminSheet(
-            visible = showAdmin,
-            onAccess = { repeat(5) { viewModel.adWatched() } },
-            onDismiss = { showAdmin = false }
-        )
     }
+
+    AdminSheet(
+        visible = showAdmin,
+        onAccess = { repeat(5) { viewModel.adWatched() } },
+        onDismiss = { showAdmin = false }
+    )
 }
 
 private fun showAd(context: Context, onReward: () -> Unit) {
