@@ -7,22 +7,22 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.paladin.barsurasp.data.ItemsRepository
-import me.paladin.barsurasp.models.Faculty
+import me.paladin.barsurasp.models.Department
 
-sealed interface FacultiesUiState {
-    data object Loading : FacultiesUiState
+sealed interface TeachersUiState {
+    data object Loading : TeachersUiState
 
     data class Success(
-        val data: List<Faculty>
-    ) : FacultiesUiState
+        val data: List<Department>
+    ) : TeachersUiState
 
     data class Error(
         val networkError: Boolean = false
-    ) : FacultiesUiState
+    ) : TeachersUiState
 }
 
-class FacultiesViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow<FacultiesUiState>(FacultiesUiState.Loading)
+class TeachersViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow<TeachersUiState>(TeachersUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     init {
@@ -34,16 +34,15 @@ class FacultiesViewModel : ViewModel() {
     }
 
     private fun load(useCache: Boolean = true) {
-        if (!useCache)
-            _uiState.update { FacultiesUiState.Loading }
+        _uiState.update { TeachersUiState.Loading }
 
         viewModelScope.launch {
             try {
-                val groups = ItemsRepository.getFaculties(useCache)
+                val departments = ItemsRepository.getDepartments(useCache)
 
-                _uiState.update { FacultiesUiState.Success(groups) }
+                _uiState.update { TeachersUiState.Success(departments) }
             } catch (_: Exception) {
-                _uiState.update { FacultiesUiState.Error(networkError = true) }
+                _uiState.update { TeachersUiState.Error(networkError = true) }
             }
         }
     }

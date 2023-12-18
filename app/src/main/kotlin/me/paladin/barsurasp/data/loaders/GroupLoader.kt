@@ -2,13 +2,13 @@ package me.paladin.barsurasp.data.loaders
 
 import me.paladin.barsurasp.models.Faculty
 import me.paladin.barsurasp.models.Speciality
-import me.paladin.barsurasp.utils.getTimetablePage
+import me.paladin.barsurasp.utils.getStudentPage
 import org.jsoup.Jsoup
 
-object FacultyLoader {
+object GroupLoader {
 
     suspend fun getFaculties(): List<Faculty> {
-        val page = getTimetablePage()
+        val page = getStudentPage()
         val doc = Jsoup.parse(page)
 
         val faculties = mutableListOf<Faculty>()

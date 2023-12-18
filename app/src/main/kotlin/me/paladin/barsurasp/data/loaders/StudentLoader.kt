@@ -4,14 +4,14 @@ import me.paladin.barsurasp.models.DaySchedule
 import me.paladin.barsurasp.models.Lesson
 import me.paladin.barsurasp.models.Sublesson
 import me.paladin.barsurasp.models.Timetable
-import me.paladin.barsurasp.utils.getTimetablePage
+import me.paladin.barsurasp.utils.getStudentPage
 import me.paladin.barsurasp.utils.splitString
 import org.jsoup.Jsoup
 
 object StudentLoader {
 
     suspend fun getTimetable(group: String, week: String): Timetable? {
-        val page = getTimetablePage(group, week)
+        val page = getStudentPage(group, week)
         val doc = Jsoup.parse(page)
 
         val table = doc.getElementsByClass("min-p")[0]

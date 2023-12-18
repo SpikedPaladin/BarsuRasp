@@ -6,9 +6,10 @@ import io.ktor.client.request.get
 import io.ktor.http.Parameters
 import me.paladin.barsurasp.App
 
-private const val BASE_URL = "https://rasp.barsu.by/stud.php"
+private const val STUDENT_URL = "https://rasp.barsu.by/stud.php"
+private const val TEACHER_URL = "https://rasp.barsu.by/teach.php"
 
-suspend fun getTimetablePage(group: String? = null, date: String? = null): String {
+suspend fun getStudentPage(group: String? = null, date: String? = null): String {
     if (group != null && date != null) {
         val params = Parameters.build {
             append("faculty", "selectcard")
@@ -17,8 +18,22 @@ suspend fun getTimetablePage(group: String? = null, date: String? = null): Strin
             append("weekbegindate", date)
         }
 
-        return App.client.submitForm(BASE_URL, params).body()
+        return App.client.submitForm(STUDENT_URL, params).body()
     }
 
-    return App.client.get(BASE_URL).body()
+    return App.client.get(STUDENT_URL).body()
+}
+
+suspend fun getTeacherPage(name: String? = null, date: String? = null): String {
+    if (name != null && date != null) {
+        val params = Parameters.build {
+            append("kafedra", "selectcard")
+            append("teacher", name)
+            append("weekbegindate", date)
+        }
+
+        return App.client.submitForm(TEACHER_URL, params).body()
+    }
+
+    return App.client.get(TEACHER_URL).body()
 }
