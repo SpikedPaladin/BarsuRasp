@@ -14,7 +14,7 @@ import me.paladin.barsurasp.utils.getCurrentApiDate
 @Composable
 fun TimetableList(timetable: Timetable) {
     val pagerState = rememberPagerState(
-        pageCount = { timetable.days.size },
+        pageCount = { timetable.pageCount },
         initialPage = timetable.getDayNumberFromDate(getCurrentApiDate())
     )
 
@@ -30,6 +30,9 @@ fun TimetableList(timetable: Timetable) {
         pageSpacing = 8.dp,
         state = pagerState
     ) { page ->
-        TimetablePage(day = timetable.days[page])
+        if (timetable is Timetable.Group)
+            TimetablePage(day = timetable.days[page])
+        if (timetable is Timetable.Teacher)
+            TimetablePage(day = timetable.days[page])
     }
 }

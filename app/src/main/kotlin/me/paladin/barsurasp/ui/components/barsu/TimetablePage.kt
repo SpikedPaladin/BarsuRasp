@@ -25,12 +25,10 @@ fun TimetablePage(day: DaySchedule) {
             HorizontalDivider()
 
             day.actualLessons?.forEachIndexed { index, it ->
-                if (!it.isEmpty) {
-                    LessonItem(lesson = it)
+                LessonItem(lesson = it)
 
-                    if (index < day.actualLessons!!.size - 1)
-                        HorizontalDivider()
-                }
+                if (index < day.actualLessons!!.size - 1)
+                    HorizontalDivider()
             }
         }
     }
@@ -41,12 +39,12 @@ fun TimetablePage(day: DaySchedule) {
 private fun TimetablePagePreview() {
     BarsuRaspTheme {
         TimetablePage(
-            day = DaySchedule(
+            day = DaySchedule.Group(
                 date = "01.10",
                 dayOfWeek = "ПН",
                 week = "01.10.2023",
                 lessons = listOf(
-                    Lesson(
+                    Lesson.Group(
                         time = "8.00-9.00",
                         sublessons = listOf(
                             Sublesson(
@@ -56,7 +54,7 @@ private fun TimetablePagePreview() {
                             )
                         )
                     ),
-                    Lesson(
+                    Lesson.Group(
                         time = "9.35-11.00",
                         sublessons = listOf(
                             Sublesson(

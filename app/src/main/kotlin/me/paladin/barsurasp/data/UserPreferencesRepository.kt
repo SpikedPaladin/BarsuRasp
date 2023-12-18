@@ -14,7 +14,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.paladin.barsurasp.models.AppTheme
 import me.paladin.barsurasp.models.BusPath
-import me.paladin.barsurasp.models.SavedPaths
 
 class UserPreferencesRepository(
     private val dataStore: DataStore<Preferences>
@@ -99,7 +98,7 @@ class UserPreferencesRepository(
         .map {
             val serialized = it.buses
             if (serialized != "") {
-                Json.decodeFromString<SavedPaths>(serialized).paths
+                Json.decodeFromString<BusPath.Wrapper>(serialized).paths
             } else
                 listOf()
         }.distinctUntilChanged()
@@ -113,7 +112,7 @@ class UserPreferencesRepository(
 
     suspend fun addPath(path: BusPath) {
         dataStore.edit {
-            val buses = if (it.buses != "") Json.decodeFromString<SavedPaths>(it.buses) else SavedPaths()
+            val buses = if (it.buses != "") Json.decodeFromString<BusPath.Wrapper>(it.buses) else BusPath.Wrapper()
             buses.paths += path
 
             if (buses.paths.size == 1)
@@ -125,7 +124,7 @@ class UserPreferencesRepository(
 
     suspend fun deletePath(index: Int) {
         dataStore.edit {
-            val buses = Json.decodeFromString<SavedPaths>(it.buses)
+            val buses = Json.decodeFromString<BusPath.Wrapper>(it.buses)
             val newList = buses.paths.toMutableList()
             newList.removeAt(index)
             buses.paths = newList

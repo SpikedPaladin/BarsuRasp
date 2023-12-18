@@ -2,28 +2,62 @@ package me.paladin.barsurasp.models
 
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class Timetable(
-    val days: List<DaySchedule>,
-    val lastUpdate: String,
-    val group: String,
-    val date: String
-) {
-    fun getDayFromDate(apiDate: String): DaySchedule? {
-        for (day in days) {
-            if (day.date == apiDate)
-                return day
-        }
-
-        return null
+sealed interface Timetable {
+    val pageCount get() = when (this) {
+        is Group -> days.size
+        is Teacher -> days.size
     }
 
     fun getDayNumberFromDate(apiDate: String): Int {
-        for (i in days.indices) {
-            if (days[i].date == apiDate)
-                return i
+        when (this) {
+            is Group -> {
+                for (i in days.indices)
+                    if (days[i].date == apiDate)
+                        return i
+            }
+            is Teacher -> {
+                for (i in days.indices)
+                    if (days[i].date == apiDate)
+                        return i
+            }
         }
 
         return 0
+    }
+
+    @Serializable
+    data class Group(
+        val days: List<DaySchedule.Group>,
+        val lastUpdate: String,
+        val group: String,
+        val date: String
+    ) : Timetable {
+        fun getDayFromDate(apiDate: String): DaySchedule.Group? {
+            for (day in days) {
+                if (day.date == apiDate)
+                    return day
+            }
+
+            return null
+        }
+
+        @Serializable
+        data class Wrapper(
+            var timetables: List<Group>
+        )
+    }
+
+    @Serializable
+    data class Teacher(
+        val days: List<DaySchedule.Teacher>,
+        val lastUpdate: String,
+        val name: String,
+        val date: String
+    ) : Timetable {
+
+        @Serializable
+        data class Wrapper(
+            var timetables: List<Teacher>
+        )
     }
 }

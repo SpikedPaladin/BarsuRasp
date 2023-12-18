@@ -61,7 +61,7 @@ class TimetableWidget : GlanceAppWidget() {
                 Text(text = LocalContext.current.getString(R.string.widget_error_no_timetable), modifier = GlanceModifier.padding(12.dp), style = TextStyle(color = GlanceTheme.colors.onBackground))
                 return@Column
             }
-            val timetable: Timetable = Json.decodeFromString(prefs[WidgetKeys.Prefs.timetable]!!)
+            val timetable: Timetable.Group = Json.decodeFromString(prefs[WidgetKeys.Prefs.timetable]!!)
 
             val day = timetable.getDayFromDate(prefs[WidgetKeys.Prefs.date] ?: getCurrentApiDate())
             if (day != null)

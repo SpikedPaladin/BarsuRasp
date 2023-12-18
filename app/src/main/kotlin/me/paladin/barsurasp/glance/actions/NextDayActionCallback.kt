@@ -26,7 +26,7 @@ class NextDayActionCallback : ActionCallback {
             val nextDay = getNextApiDate(prefs[WidgetKeys.Prefs.date]!!)
 
             if (prefs[WidgetKeys.Prefs.timetable] != null && prefs[WidgetKeys.Prefs.group] == null)
-                prefs[WidgetKeys.Prefs.group] = (Json.decodeFromString(prefs[WidgetKeys.Prefs.timetable]!!) as Timetable).group
+                prefs[WidgetKeys.Prefs.group] = (Json.decodeFromString(prefs[WidgetKeys.Prefs.timetable]!!) as Timetable.Group).group
 
             try {
                 val timetable = TimetableRepository.getTimetable(

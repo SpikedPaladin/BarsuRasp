@@ -2,34 +2,60 @@ package me.paladin.barsurasp.models
 
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class DaySchedule(
-    val date: String,
-    val dayOfWeek: String,
-    val week: String? = null,
-    var lessons: List<Lesson>? = null
-) {
+sealed interface DaySchedule {
+    val day: String get() =
+        when (this) {
+            is Group -> dayOfWeek
+            is Teacher -> dayOfWeek
+        }
+
+    val fullDate: String get() =
+        when (this) {
+            is Group -> date
+            is Teacher -> date
+        }
+
     val actualLessons: List<Lesson>?
         get() {
-            if (lessons.isNullOrEmpty())
-                return null
+            when (this) {
+                is Group -> {
+                    if (lessons.isNullOrEmpty())
+                        return null
 
-            val actualList = mutableListOf<Lesson>()
+                    val actualList = mutableListOf<Lesson.Group>()
 
-            for (lesson in lessons!!) if (!lesson.isEmpty)
-                actualList += lesson
+                    for (lesson in lessons!!) if (!lesson.isEmpty)
+                        actualList += lesson
 
-            return actualList
-        }
-    val lastIndex: Int
-        get() {
-            lessons?.let {
-                it.reversed().forEachIndexed { index, item ->
-                    if (!item.isEmpty)
-                        return index
+                    return actualList
+                }
+
+                is Teacher -> {
+                    if (lessons.isNullOrEmpty())
+                        return null
+
+                    val actualList = mutableListOf<Lesson.Teacher>()
+
+                    for (lesson in lessons!!) if (!lesson.isEmpty)
+                        actualList += lesson
+
+                    return actualList
                 }
             }
-
-            return 0
         }
+
+    @Serializable
+    data class Group(
+        val date: String,
+        val dayOfWeek: String,
+        val week: String? = null,
+        var lessons: List<Lesson.Group>? = null
+    ) : DaySchedule
+
+    @Serializable
+    data class Teacher(
+        val date: String,
+        val dayOfWeek: String,
+        var lessons: List<Lesson.Teacher>? = null
+    ) : DaySchedule
 }

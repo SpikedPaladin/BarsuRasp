@@ -3,12 +3,6 @@ package me.paladin.barsurasp.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SavedDirections(
-    val lastFetch: String,
-    val directions: List<BusDirection>
-)
-
-@Serializable
 data class BusDirection(
     val busNumber: Int,
     val name: String,
@@ -17,4 +11,10 @@ data class BusDirection(
     var backward: Int? = null
 ) {
     val hasBackward = backwardName != null
+
+    @Serializable
+    data class Wrapper(
+        val lastFetch: String,
+        val directions: List<BusDirection>
+    )
 }

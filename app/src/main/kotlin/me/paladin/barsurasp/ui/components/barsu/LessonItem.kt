@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,15 +37,48 @@ fun LessonItem(lesson: Lesson) {
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = lesson.time,
+                text = lesson.fullTime,
                 style = MaterialTheme.typography.titleSmall
             )
         }
 
-        Column {
-            when {
-                lesson.sublessons != null -> for (sublesson in lesson.sublessons) {
-                    SublessonItem(sublesson = sublesson)
+        when (lesson) {
+            is Lesson.Group -> {
+                Column {
+                    if (lesson.sublessons != null) for (sublesson in lesson.sublessons) {
+                        SublessonItem(sublesson = sublesson)
+                    }
+                }
+            }
+            is Lesson.Teacher -> {
+                if (lesson.isEmpty)
+                    return@Column
+
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = lesson.name!!,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(modifier = Modifier.weight(1F))
+                        LessonType(lesson.type!!)
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            modifier = Modifier.size(18.dp),
+                            imageVector = Icons.Outlined.Person,
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = lesson.groups!!,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        lesson.place?.let {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(text = it, style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
                 }
             }
         }

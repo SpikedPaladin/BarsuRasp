@@ -6,7 +6,6 @@ import me.paladin.barsurasp.App
 import me.paladin.barsurasp.data.loaders.BusLoader
 import me.paladin.barsurasp.models.BusDirection
 import me.paladin.barsurasp.models.BusInfo
-import me.paladin.barsurasp.models.SavedDirections
 import java.io.File
 import java.util.Calendar
 
@@ -41,12 +40,12 @@ object BusRepository {
         val directions: List<BusDirection>
         val file = getDirectionsFile()
         if (file.exists()) {
-            directions = Json.decodeFromString<SavedDirections>(file.readText()).directions
+            directions = Json.decodeFromString<BusDirection.Wrapper>(file.readText()).directions
         } else {
             directions = BusLoader.loadBuses()
 
             file.parentFile?.mkdirs()
-            file.writeText(Json.encodeToString(SavedDirections(Calendar.getInstance().time.toString(), directions)))
+            file.writeText(Json.encodeToString(BusDirection.Wrapper(Calendar.getInstance().time.toString(), directions)))
         }
 
         return directions

@@ -20,11 +20,11 @@ fun PageTitle(day: DaySchedule) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = stringResource(readableDay(day.dayOfWeek)),
+            text = stringResource(readableDay(day.day)),
             style = MaterialTheme.typography.headlineSmall
         )
         Text(
-            text = day.date,
+            text = day.fullDate,
             style = MaterialTheme.typography.bodyMedium
         )
     }

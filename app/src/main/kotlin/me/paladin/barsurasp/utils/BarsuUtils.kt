@@ -37,3 +37,5 @@ suspend fun getTeacherPage(name: String? = null, date: String? = null): String {
 
     return App.client.get(TEACHER_URL).body()
 }
+
+fun isGroup(item: String) = item.contains("[0-9]".toRegex())

@@ -22,6 +22,8 @@ import me.paladin.barsurasp.models.Sublesson
 
 @Composable
 fun GlanceLessonItem(lesson: Lesson, showDivider: Boolean) {
+    if (lesson !is Lesson.Group)
+        return
     Column(GlanceModifier.fillMaxWidth().padding(4.dp)) {
         Column {
             if (lesson.sublessons != null) {

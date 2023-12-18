@@ -33,10 +33,10 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -224,12 +224,10 @@ fun CustomToolbar(
                 val fullyExpandedHeightPx = MinCollapsedHeight.toPx() + heightOffsetLimitPx
 
                 // Coordinates of fully expanded title
-                val fullyExpandedTitleX = horizontalPaddingPx
                 val fullyExpandedTitleY =
                     fullyExpandedHeightPx - expandedTitlePlaceable.height - expandedTitleBottomPaddingPx
 
                 // Coordinates of fully collapsed title
-                val fullyCollapsedTitleX = navigationIconOffset
                 val fullyCollapsedTitleY =
                     collapsedHeightPx / 2 - (collapsedTitlePlaceable.height / 2)
                 //    collapsedHeightPx / 2 - CollapsedTitleLineHeight.toPx().roundToInt() / 2
@@ -239,7 +237,7 @@ fun CustomToolbar(
 
                 // Current coordinates of collapsing title
                 collapsingTitleX =
-                    lerp(fullyExpandedTitleX, fullyCollapsedTitleX, collapsedFraction).roundToInt()
+                    lerp(horizontalPaddingPx, navigationIconOffset, collapsedFraction).roundToInt()
                 collapsingTitleY =
                     lerp(fullyExpandedTitleY, fullyCollapsedTitleY, collapsedFraction).roundToInt()
             } else {
@@ -290,28 +288,6 @@ fun CustomToolbar(
         }
 
     }
-}
-
-
-private fun lerp(a: Float, b: Float, fraction: Float): Float {
-    return a + fraction * (b - a)
-}
-
-data class CollapsingTitle(
-    val titleText: String,
-    val expandedTextStyle: TextStyle,
-) {
-
-    companion object {
-        @Composable
-        fun large(titleText: String) =
-            CollapsingTitle(titleText, MaterialTheme.typography.headlineLarge)
-
-        @Composable
-        fun medium(titleText: String) =
-            CollapsingTitle(titleText, MaterialTheme.typography.headlineMedium)
-    }
-
 }
 
 private val MinCollapsedHeight = 64.dp
@@ -431,7 +407,7 @@ class CustomToolbarScrollBehavior(
             if (available.y > 0f) return Offset.Zero
 
             val prevHeightOffset = state.heightOffset
-            state.heightOffset = state.heightOffset + available.y
+            state.heightOffset += available.y
             return if (prevHeightOffset != state.heightOffset) {
                 // We're in the middle of top app bar collapse or expand.
                 // Consume only the scroll on the Y axis.
@@ -451,7 +427,7 @@ class CustomToolbarScrollBehavior(
             if (available.y < 0f || consumed.y < 0f) {
                 // When scrolling up, just update the state's height offset.
                 val oldHeightOffset = state.heightOffset
-                state.heightOffset = state.heightOffset + consumed.y
+                state.heightOffset += consumed.y
                 return Offset(0f, state.heightOffset - oldHeightOffset)
             }
 
@@ -465,7 +441,7 @@ class CustomToolbarScrollBehavior(
                 // Adjust the height offset in case the consumed delta Y is less than what was
                 // recorded as available delta Y in the pre-scroll.
                 val oldHeightOffset = state.heightOffset
-                state.heightOffset = state.heightOffset + available.y
+                state.heightOffset += available.y
                 return Offset(0f, state.heightOffset - oldHeightOffset)
             }
             return Offset.Zero

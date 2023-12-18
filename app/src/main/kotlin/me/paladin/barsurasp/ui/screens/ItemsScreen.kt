@@ -122,7 +122,11 @@ fun FacultiesScreen(
                     groupSelected = groupSelected
                 )
 
-                else -> TeachersPage(teachersViewModel)
+                else -> TeachersPage(
+                    teachersViewModel,
+                    teacherSaved = groupSaved,
+                    teacherSelected = groupSelected
+                )
             }
         }
     }
@@ -200,35 +204,17 @@ private fun GroupsPage(
                 }
             }
 
-            is FacultiesUiState.Error -> {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .padding(24.dp)
-                        .fillMaxSize()
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Warning,
-                        contentDescription = null,
-                        modifier = Modifier.size(96.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "Проблемы с подключением к сети. Проверьте подключение и попробуйте заново.",
-                        textAlign = TextAlign.Center
-                    )
-                    Button(onClick = { viewModel.refresh() }) {
-                        Text("Обновить")
-                    }
-                }
-            }
+            is FacultiesUiState.Error -> ErrorState(refreshAction = { viewModel.refresh() })
         }
     }
 }
 
 @Composable
-private fun TeachersPage(viewModel: TeachersViewModel) {
+private fun TeachersPage(
+    viewModel: TeachersViewModel,
+    teacherSaved: ((teacher: String) -> Unit)? = null,
+    teacherSelected: (teacher: String, item: String) -> Unit
+) {
     val uiState by viewModel.uiState.collectAsState()
 
     Crossfade(
@@ -275,8 +261,15 @@ private fun TeachersPage(viewModel: TeachersViewModel) {
                             for (teacher in item.teachers) {
                                 GroupItem(
                                     group = teacher,
-                                    onSaveClick = {},
-                                    onClick = {}
+                                    onSaveClick = if (teacherSaved != null) {
+                                        { teacherSaved("$teacher:${item.name}") }
+                                    } else null,
+                                    onClick = {
+                                        teacherSelected(
+                                            teacher,
+                                            "$teacher:${item.name}"
+                                        )
+                                    }
                                 )
                             }
                         }

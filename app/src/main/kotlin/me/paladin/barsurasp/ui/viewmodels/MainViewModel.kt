@@ -87,7 +87,6 @@ class MainViewModel : ViewModel() {
 
         currentJob?.cancel()
 
-
         currentJob = viewModelScope.launch {
             try {
                 val timetable = TimetableRepository.getTimetable(mainGroup.value!!, _week.value)

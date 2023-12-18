@@ -73,7 +73,10 @@ fun MainScreen(
             MainToolbar(
                 title = if (mainGroup != "") mainGroup else null,
                 lastUpdate = if (uiState is UiState.Success) {
-                    (uiState as UiState.Success).data.lastUpdate
+                    when (val timetable = (uiState as UiState.Success).data) {
+                        is Timetable.Group -> timetable.lastUpdate
+                        is Timetable.Teacher -> timetable.lastUpdate
+                    }
                 } else null,
                 refreshAction = { viewModel.refreshTimetable() },
                 settingsAction = navigateToSettings
