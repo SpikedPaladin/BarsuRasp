@@ -64,13 +64,6 @@ fun CustomToolbar(
     }
 
     val centralContentAlpha = lerp(1F, 0F, collapsedFraction)
-
-    val showElevation = when {
-        scrollBehavior == null -> false
-        scrollBehavior.state.contentOffset <= 0 && collapsedFraction == 1f -> true
-        else -> false
-    }
-
     val elevationState = animateDpAsState(lerp(0.dp, collapsedElevation, collapsedFraction))
 
     Surface(
