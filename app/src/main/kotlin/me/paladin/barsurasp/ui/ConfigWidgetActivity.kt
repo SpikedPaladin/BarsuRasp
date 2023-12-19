@@ -20,7 +20,7 @@ import me.paladin.barsurasp.data.TimetableRepository
 import me.paladin.barsurasp.glance.TimetableWidget
 import me.paladin.barsurasp.glance.WidgetKeys
 import me.paladin.barsurasp.models.AppTheme
-import me.paladin.barsurasp.ui.screens.FacultiesScreen
+import me.paladin.barsurasp.ui.screens.ItemsScreen
 import me.paladin.barsurasp.ui.theme.BarsuRaspTheme
 import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
 import me.paladin.barsurasp.utils.getCurrentApiDate
@@ -45,7 +45,7 @@ class ConfigWidgetActivity : ComponentActivity() {
             }
 
             BarsuRaspTheme(darkTheme, monet) {
-                FacultiesScreen(groupSelected = { it, _ -> handleSelectGroup(it) })
+                ItemsScreen(itemSelected = { it, _ -> handleSelectGroup(it) })
             }
         }
     }

@@ -57,10 +57,11 @@ import me.paladin.barsurasp.ui.viewmodels.TeachersUiState
 import me.paladin.barsurasp.ui.viewmodels.TeachersViewModel
 
 @Composable
-fun FacultiesScreen(
+fun ItemsScreen(
+    savedItems: Set<String> = setOf(),
     backAction: (() -> Unit)? = null,
-    groupSaved: ((group: String) -> Unit)? = null,
-    groupSelected: (group: String, item: String) -> Unit
+    itemSaved: ((item: String) -> Unit)? = null,
+    itemSelected: (item: String, saveName: String) -> Unit
 ) {
     val facultiesViewModel: FacultiesViewModel = viewModel()
     val teachersViewModel: TeachersViewModel = viewModel()
@@ -119,14 +120,16 @@ fun FacultiesScreen(
             when (it) {
                 0 -> GroupsPage(
                     facultiesViewModel,
-                    groupSaved = groupSaved,
-                    groupSelected = groupSelected
+                    savedItems = savedItems,
+                    groupSaved = itemSaved,
+                    groupSelected = itemSelected
                 )
 
                 else -> TeachersPage(
                     teachersViewModel,
-                    teacherSaved = groupSaved,
-                    teacherSelected = groupSelected
+                    savedItems = savedItems,
+                    teacherSaved = itemSaved,
+                    teacherSelected = itemSelected
                 )
             }
         }
@@ -136,6 +139,7 @@ fun FacultiesScreen(
 @Composable
 private fun GroupsPage(
     viewModel: FacultiesViewModel,
+    savedItems: Set<String>,
     groupSaved: ((group: String) -> Unit)? = null,
     groupSelected: (group: String, item: String) -> Unit
 ) {
@@ -187,6 +191,7 @@ private fun GroupsPage(
                                     for (group in speciality.groups) {
                                         GroupItem(
                                             group = group,
+                                            saved = savedItems.find { it.startsWith(group) } != null,
                                             onSaveClick = if (groupSaved != null) {
                                                 { groupSaved("$group:${item.name}") }
                                             } else null,
@@ -216,6 +221,7 @@ private fun GroupsPage(
 @Composable
 private fun TeachersPage(
     viewModel: TeachersViewModel,
+    savedItems: Set<String>,
     teacherSaved: ((teacher: String) -> Unit)? = null,
     teacherSelected: (teacher: String, item: String) -> Unit
 ) {
@@ -265,6 +271,7 @@ private fun TeachersPage(
                             for (teacher in item.teachers) {
                                 GroupItem(
                                     group = teacher,
+                                    saved = savedItems.find { it.startsWith(teacher) } != null,
                                     onSaveClick = if (teacherSaved != null) {
                                         { teacherSaved("$teacher:${item.name}") }
                                     } else null,

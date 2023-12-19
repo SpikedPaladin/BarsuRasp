@@ -1,6 +1,8 @@
 package me.paladin.barsurasp.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavHostController
@@ -14,7 +16,7 @@ import me.paladin.barsurasp.ui.screens.BusInfoScreen
 import me.paladin.barsurasp.ui.screens.BusListScreen
 import me.paladin.barsurasp.ui.screens.BusPathScreen
 import me.paladin.barsurasp.ui.screens.BusStopScreen
-import me.paladin.barsurasp.ui.screens.FacultiesScreen
+import me.paladin.barsurasp.ui.screens.ItemsScreen
 import me.paladin.barsurasp.ui.screens.MainScreen
 import me.paladin.barsurasp.ui.screens.SettingsScreen
 import me.paladin.barsurasp.ui.viewmodels.BusPathViewModel
@@ -53,13 +55,15 @@ fun MainNavGraph(
             )
         }
         composable("faculties") {
-            FacultiesScreen(
-                groupSaved = { mainViewModel.saveItem(it) },
-                groupSelected = { group, item ->
-                    mainViewModel.setMainGroup(group)
+            val savedItems by mainViewModel.savedItems.collectAsState()
+            ItemsScreen(
+                savedItems = savedItems,
+                itemSaved = { mainViewModel.saveItem(it) },
+                itemSelected = { item, saveName ->
+                    mainViewModel.setMainGroup(item)
 
                     if (mainViewModel.savedItems.value.isEmpty())
-                        mainViewModel.saveItem(item)
+                        mainViewModel.saveItem(saveName)
 
                     backAction()
                 },

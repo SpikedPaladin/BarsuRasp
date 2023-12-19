@@ -22,6 +22,7 @@ import me.paladin.barsurasp.ui.theme.BarsuRaspTheme
 @Composable
 fun GroupItem(
     group: String,
+    saved: Boolean = false,
     onSaveClick: (() -> Unit)? = null,
     onClick: () -> Unit
 ) {
@@ -41,7 +42,14 @@ fun GroupItem(
         )
         if (onSaveClick != null) {
             IconButton(onClick = onSaveClick) {
-                Icon(imageVector = Icons.Outlined.Star, contentDescription = null)
+                Icon(
+                    imageVector = Icons.Outlined.Star,
+                    contentDescription = null,
+                    tint = if (saved)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onBackground
+                )
             }
         }
     }
