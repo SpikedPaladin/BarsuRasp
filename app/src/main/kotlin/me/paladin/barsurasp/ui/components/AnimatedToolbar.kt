@@ -11,8 +11,13 @@ import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +41,7 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.util.lerp
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -65,10 +71,11 @@ fun CustomToolbar(
         else -> false
     }
 
-    val elevationState = animateDpAsState(if (showElevation) collapsedElevation else 0.dp)
+    val elevationState = animateDpAsState(lerp(0.dp, collapsedElevation, collapsedFraction))
 
     Surface(
         modifier = modifier,
+        tonalElevation = elevationState.value,
         shadowElevation = elevationState.value,
     ) {
         Layout(
@@ -116,7 +123,8 @@ fun CustomToolbar(
                             .layoutId(CentralContentId)
                             .alpha(centralContentAlpha)
                     ) {
-                        val mergedStyle = LocalTextStyle.current.merge(MaterialTheme.typography.titleLarge)
+                        val mergedStyle =
+                            LocalTextStyle.current.merge(MaterialTheme.typography.titleLarge)
                         CompositionLocalProvider(
                             LocalTextStyle provides mergedStyle,
                             content = centralContent
@@ -134,7 +142,11 @@ fun CustomToolbar(
                     }
                 }
             },
-            modifier = modifier.then(Modifier.heightIn(min = MinCollapsedHeight))
+            modifier = modifier.windowInsetsPadding(
+                WindowInsets
+                    .systemBars
+                    .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+            ).then(Modifier.heightIn(min = MinCollapsedHeight))
         ) { measurables, constraints ->
             val horizontalPaddingPx = HorizontalPadding.toPx()
             val expandedTitleBottomPaddingPx = ExpandedTitleBottomPadding.toPx()

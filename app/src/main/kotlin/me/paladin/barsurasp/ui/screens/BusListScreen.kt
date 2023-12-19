@@ -29,6 +29,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -58,8 +61,11 @@ fun BusListScreen(
     busClicked: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
     Scaffold(
-        topBar = { BusListToolbar(backAction) }
+        topBar = { BusListToolbar(backAction, scrollBehavior) },
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -196,8 +202,9 @@ private fun BusItem(
 }
 
 @Composable
-private fun BusListToolbar(backAction: () -> Unit) {
+private fun BusListToolbar(backAction: () -> Unit, scrollBehavior: TopAppBarScrollBehavior) {
     TopAppBar(
+        scrollBehavior = scrollBehavior,
         title = {
             Text(text = "Автобусы")
         },

@@ -76,46 +76,28 @@ fun BusInfoScreen(
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
-        Column(
-            Modifier
-                .padding(paddingValues)
-                .padding(8.dp)
-        ) {
-            Crossfade(targetState = busState, label = "busInfoScreen") { state ->
-                when (state) {
-                    is BusState.Loaded -> {
-                        val info = state.info
+        Crossfade(
+            modifier = Modifier.padding(paddingValues),
+            targetState = busState,
+            label = "busInfoScreen"
+        ) { state ->
+            when (state) {
+                is BusState.Loaded -> {
+                    val info = state.info
 
-                        LazyColumn {
-                            items(if (showBackward) info.backwardStops!! else info.stops) {
-                                BusStopItem(name = it.name) {
-                                    stopClicked(it.name, showBackward)
-                                }
+                    LazyColumn {
+                        items(if (showBackward) info.backwardStops!! else info.stops) {
+                            BusStopItem(name = it.name) {
+                                stopClicked(it.name, showBackward)
                             }
                         }
                     }
+                }
 
-                    is BusState.Loading -> {
-                        val progress by viewModel.progress.collectAsState()
+                is BusState.Loading -> {
+                    val progress by viewModel.progress.collectAsState()
 
-                        Column {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
-                                modifier = Modifier
-                                    .padding(24.dp)
-                                    .fillMaxSize()
-                            ) {
-                                CircularProgressIndicator(
-                                    progress = { progress },
-                                    modifier = Modifier.size(96.dp)
-                                )
-                                Text(text = "Загрузка расписания...")
-                            }
-                        }
-                    }
-
-                    BusState.None -> {
+                    Column {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center,
@@ -123,29 +105,45 @@ fun BusInfoScreen(
                                 .padding(24.dp)
                                 .fillMaxSize()
                         ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Warning,
-                                contentDescription = null,
-                                modifier = Modifier.size(96.dp),
-                                tint = MaterialTheme.colorScheme.primary
+                            CircularProgressIndicator(
+                                progress = { progress },
+                                modifier = Modifier.size(96.dp)
                             )
-                            Text(
-                                text = "Расписание для этого автобуса не загружено. Нажми кнопку ниже чтобы загрузить.",
-                                textAlign = TextAlign.Center
-                            )
-                            Button(
-                                onClick = {
-                                    viewModel.load {
-                                        Toast.makeText(
-                                            context,
-                                            "Ошибка подключения к сети!",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
+                            Text(text = "Загрузка расписания...")
+                        }
+                    }
+                }
+
+                BusState.None -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .padding(24.dp)
+                            .fillMaxSize()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Warning,
+                            contentDescription = null,
+                            modifier = Modifier.size(96.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "Расписание для этого автобуса не загружено. Нажми кнопку ниже чтобы загрузить.",
+                            textAlign = TextAlign.Center
+                        )
+                        Button(
+                            onClick = {
+                                viewModel.load {
+                                    Toast.makeText(
+                                        context,
+                                        "Ошибка подключения к сети!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
-                            ) {
-                                Text("Загрузить")
                             }
+                        ) {
+                            Text("Загрузить")
                         }
                     }
                 }
