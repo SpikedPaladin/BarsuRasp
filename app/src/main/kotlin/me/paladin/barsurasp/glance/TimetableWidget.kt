@@ -21,12 +21,12 @@ import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
-import kotlinx.serialization.json.Json
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.glance.components.GlanceTimetableHeader
 import me.paladin.barsurasp.glance.components.GlanceTimetableList
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.getCurrentApiDate
+import me.paladin.barsurasp.utils.isGroup
 
 class TimetableWidget : GlanceAppWidget() {
     override var stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
@@ -49,25 +49,38 @@ class TimetableWidget : GlanceAppWidget() {
                 .appWidgetBackground()
                 .background(GlanceTheme.colors.background)
         ) {
-            GlanceTimetableHeader(prefs[WidgetKeys.Prefs.group] ?: LocalContext.current.getString(R.string.widget_error), prefs[WidgetKeys.Prefs.date] ?: getCurrentApiDate())
+            val item = prefs[WidgetKeys.group] ?: LocalContext.current.getString(R.string.widget_error)
+            GlanceTimetableHeader(item, prefs[WidgetKeys.date] ?: getCurrentApiDate())
 
-            if (prefs[WidgetKeys.Prefs.networkError] == true) {
-                Text(text = "Ошибка подключения к сети", modifier = GlanceModifier.padding(12.dp), style = TextStyle(color = GlanceTheme.colors.onBackground))
+            if (prefs[WidgetKeys.networkError] == true) {
+                Text(
+                    text = "Ошибка подключения к сети",
+                    modifier = GlanceModifier.padding(12.dp),
+                    style = TextStyle(color = GlanceTheme.colors.onBackground)
+                )
                 return@Column
             }
 
-            val jsonTimetable = prefs[WidgetKeys.Prefs.timetable]
+            val jsonTimetable = prefs[WidgetKeys.timetable]
             if (jsonTimetable == null || jsonTimetable == "") {
-                Text(text = LocalContext.current.getString(R.string.widget_error_no_timetable), modifier = GlanceModifier.padding(12.dp), style = TextStyle(color = GlanceTheme.colors.onBackground))
+                Text(
+                    text = LocalContext.current.getString(R.string.widget_error_no_timetable),
+                    modifier = GlanceModifier.padding(12.dp),
+                    style = TextStyle(color = GlanceTheme.colors.onBackground)
+                )
                 return@Column
             }
-            val timetable: Timetable.Group = Json.decodeFromString(prefs[WidgetKeys.Prefs.timetable]!!)
+            val timetable: Timetable = Timetable.decode(prefs[WidgetKeys.timetable]!!, isGroup(item))
 
-            val day = timetable.getDayFromDate(prefs[WidgetKeys.Prefs.date] ?: getCurrentApiDate())
+            val day = timetable.getDayFromDate(prefs[WidgetKeys.date] ?: getCurrentApiDate())
             if (day != null)
                 GlanceTimetableList(day)
             else {
-                Text(text = LocalContext.current.getString(R.string.widget_no_lessons), modifier = GlanceModifier.padding(12.dp), style = TextStyle(color = GlanceTheme.colors.onBackground))
+                Text(
+                    text = LocalContext.current.getString(R.string.widget_no_lessons),
+                    modifier = GlanceModifier.padding(12.dp),
+                    style = TextStyle(color = GlanceTheme.colors.onBackground)
+                )
             }
         }
     }

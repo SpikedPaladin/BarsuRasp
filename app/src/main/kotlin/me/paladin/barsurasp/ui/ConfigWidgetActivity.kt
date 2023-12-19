@@ -3,6 +3,7 @@ package me.paladin.barsurasp.ui
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -14,8 +15,6 @@ import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import me.paladin.barsurasp.data.TimetableRepository
 import me.paladin.barsurasp.glance.TimetableWidget
 import me.paladin.barsurasp.glance.WidgetKeys
@@ -60,10 +59,11 @@ class ConfigWidgetActivity : ComponentActivity() {
         val timetable = TimetableRepository.getTimetable(group, getCurrentWeek())
 
         updateAppWidgetState(applicationContext, glanceId) { prefs ->
-            prefs[WidgetKeys.Prefs.date] = getCurrentApiDate()
-            prefs[WidgetKeys.Prefs.group] = group
+            prefs[WidgetKeys.date] = getCurrentApiDate()
+            prefs[WidgetKeys.group] = group
+            Log.i("Widget", "saveWidgetState: $group")
             timetable?.let {
-                prefs[WidgetKeys.Prefs.timetable] = Json.encodeToString(it)
+                prefs[WidgetKeys.timetable] = it.encode()
             }
         }
         TimetableWidget().update(applicationContext, glanceId)

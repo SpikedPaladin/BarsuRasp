@@ -1,17 +1,13 @@
 package me.paladin.barsurasp.glance.actions
 
 import android.content.Context
-import android.util.Log
 import androidx.glance.GlanceId
 import androidx.glance.action.ActionParameters
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.state.updateAppWidgetState
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import me.paladin.barsurasp.data.TimetableRepository
 import me.paladin.barsurasp.glance.TimetableWidget
 import me.paladin.barsurasp.glance.WidgetKeys
-import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.getNextApiDate
 import me.paladin.barsurasp.utils.getWeekForDate
 
@@ -23,30 +19,26 @@ class NextDayActionCallback : ActionCallback {
         parameters: ActionParameters
     ) {
         updateAppWidgetState(context, glanceId) { prefs ->
-            val nextDay = getNextApiDate(prefs[WidgetKeys.Prefs.date]!!)
-
-            if (prefs[WidgetKeys.Prefs.timetable] != null && prefs[WidgetKeys.Prefs.group] == null)
-                prefs[WidgetKeys.Prefs.group] = (Json.decodeFromString(prefs[WidgetKeys.Prefs.timetable]!!) as Timetable.Group).group
+            val nextDay = getNextApiDate(prefs[WidgetKeys.date]!!)
 
             try {
                 val timetable = TimetableRepository.getTimetable(
-                    prefs[WidgetKeys.Prefs.group]!!,
+                    prefs[WidgetKeys.group]!!,
                     getWeekForDate(nextDay)
                 )
 
                 if (timetable != null)
-                    prefs[WidgetKeys.Prefs.timetable] = Json.encodeToString(timetable)
+                    prefs[WidgetKeys.timetable] = timetable.encode()
                 else
-                    prefs[WidgetKeys.Prefs.timetable] = ""
+                    prefs[WidgetKeys.timetable] = ""
 
-                prefs[WidgetKeys.Prefs.networkError] = false
+                prefs[WidgetKeys.networkError] = false
             } catch (_: Exception) {
-                prefs[WidgetKeys.Prefs.networkError] = true
-                prefs[WidgetKeys.Prefs.timetable] = ""
+                prefs[WidgetKeys.networkError] = true
+                prefs[WidgetKeys.timetable] = ""
             }
 
-            Log.i("", "onAction: $nextDay, ${getWeekForDate(nextDay)}")
-            prefs[WidgetKeys.Prefs.date] = nextDay
+            prefs[WidgetKeys.date] = nextDay
         }
         TimetableWidget().update(context, glanceId)
     }

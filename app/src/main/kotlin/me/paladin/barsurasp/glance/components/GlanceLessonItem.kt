@@ -22,21 +22,42 @@ import me.paladin.barsurasp.models.Sublesson
 
 @Composable
 fun GlanceLessonItem(lesson: Lesson, showDivider: Boolean) {
-    if (lesson !is Lesson.Group)
-        return
     Column(GlanceModifier.fillMaxWidth().padding(4.dp)) {
         Column {
-            if (lesson.sublessons != null) {
-                Text(
-                    text = lesson.time,
-                    style = TextStyle(
-                        color = GlanceTheme.colors.onBackground,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp
+            when (lesson) {
+                is Lesson.Group -> if (lesson.sublessons != null) {
+                    Text(
+                        text = lesson.time,
+                        style = TextStyle(
+                            color = GlanceTheme.colors.onBackground,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp
+                        )
                     )
-                )
-                for (sublesson in lesson.sublessons) {
-                    GlanceSublessonItem(sublesson = sublesson)
+                    for (sublesson in lesson.sublessons) {
+                        GlanceSublessonItem(sublesson = sublesson)
+                    }
+                }
+                is Lesson.Teacher -> {
+                    Row {
+                        Text(
+                            text = lesson.name!!,
+                            style = TextStyle(
+                                color = GlanceTheme.colors.onBackground,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Spacer(GlanceModifier.width(6.dp))
+                        Text(text = lesson.type!!, style = TextStyle(color = GlanceTheme.colors.onBackground))
+                    }
+                    Row {
+                        Text(text = lesson.groups!!, style = TextStyle(color = GlanceTheme.colors.onBackground))
+                        lesson.place?.let {
+                            Spacer(GlanceModifier.width(6.dp))
+                            Text(text = it, style = TextStyle(color = GlanceTheme.colors.onBackground))
+                        }
+                    }
                 }
             }
         }
