@@ -8,6 +8,11 @@ sealed interface Timetable {
         is Teacher -> days.size
     }
 
+    val lastSiteUpdate get() = when (this) {
+        is Group -> lastUpdate.emptyAsNull()
+        is Teacher -> lastUpdate.emptyAsNull()
+    }
+
     fun getDayNumberFromDate(apiDate: String): Int {
         when (this) {
             is Group -> {
@@ -24,6 +29,8 @@ sealed interface Timetable {
 
         return 0
     }
+
+    private fun String.emptyAsNull() = if (this == "") null else this
 
     @Serializable
     data class Group(

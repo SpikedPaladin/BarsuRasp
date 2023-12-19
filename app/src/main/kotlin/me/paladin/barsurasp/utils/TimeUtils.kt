@@ -42,6 +42,20 @@ fun isWeekends(): Boolean {
         return this == SATURDAY || this == SUNDAY
     }
 }
+
+fun pretyLastUpdate(dateParts: List<String>, timeParts: List<String>): String {
+    Calendar.getInstance().apply {
+        set(YEAR, dateParts[0].toInt())
+        set(MONTH, dateParts[1].toInt())
+        set(DAY_OF_MONTH, dateParts[2].toInt())
+        set(HOUR_OF_DAY, timeParts[0].toInt())
+        set(MINUTE, timeParts[1].toInt())
+        set(SECOND, timeParts[2].toInt())
+
+        return SimpleDateFormat("hh:mm - dd MMMM yyyy", Locale.US).format(time)
+    }
+}
+
 fun readableDay(apiDay: String) = when (apiDay) {
     "ПН" -> R.string.monday
     "ВТ" -> R.string.tuesday

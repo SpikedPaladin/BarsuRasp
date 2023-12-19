@@ -7,6 +7,7 @@ import me.paladin.barsurasp.models.Speciality
 import me.paladin.barsurasp.models.Sublesson
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.getStudentPage
+import me.paladin.barsurasp.utils.parseLastUpdate
 import me.paladin.barsurasp.utils.splitString
 import org.jsoup.Jsoup
 
@@ -24,7 +25,7 @@ object GroupLoader {
 
         val lastUpdate = doc.getElementsByClass("container")[3]
             .getElementsByTag("p")[0]
-            .text()
+            .parseLastUpdate()
 
         val days = mutableListOf<DaySchedule.Group>()
         var lessons = mutableListOf<Lesson.Group>()

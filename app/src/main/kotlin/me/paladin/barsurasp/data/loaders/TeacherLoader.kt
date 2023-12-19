@@ -5,6 +5,7 @@ import me.paladin.barsurasp.models.Department
 import me.paladin.barsurasp.models.Lesson
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.getTeacherPage
+import me.paladin.barsurasp.utils.parseLastUpdate
 import org.jsoup.Jsoup
 
 object TeacherLoader {
@@ -25,7 +26,7 @@ object TeacherLoader {
 
         val lastUpdate = doc.getElementsByClass("container")[2]
             .getElementsByTag("p")[0]
-            .text()
+            .parseLastUpdate()
 
         val days = mutableListOf<DaySchedule.Teacher>()
         var lessons = mutableListOf<Lesson.Teacher>()
