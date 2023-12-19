@@ -22,48 +22,70 @@ import me.paladin.barsurasp.models.Sublesson
 
 @Composable
 fun GlanceLessonItem(lesson: Lesson, showDivider: Boolean) {
-    Column(GlanceModifier.fillMaxWidth().padding(4.dp)) {
-        Column {
-            when (lesson) {
-                is Lesson.Group -> if (lesson.sublessons != null) {
+    Column(
+        GlanceModifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp)
+            .padding(bottom = 2.dp)
+    ) {
+        when (lesson) {
+            is Lesson.Group -> if (lesson.sublessons != null) {
+                Text(
+                    text = lesson.time,
+                    style = TextStyle(
+                        color = GlanceTheme.colors.onBackground,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp
+                    )
+                )
+                for (sublesson in lesson.sublessons) {
+                    GlanceSublessonItem(sublesson = sublesson)
+                }
+            }
+
+            is Lesson.Teacher -> {
+                Text(
+                    text = lesson.time,
+                    style = TextStyle(
+                        color = GlanceTheme.colors.onBackground,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp
+                    )
+                )
+                Row {
                     Text(
-                        text = lesson.time,
+                        text = lesson.name!!,
                         style = TextStyle(
                             color = GlanceTheme.colors.onBackground,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 12.sp
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     )
-                    for (sublesson in lesson.sublessons) {
-                        GlanceSublessonItem(sublesson = sublesson)
-                    }
+                    Spacer(GlanceModifier.width(6.dp))
+                    Text(
+                        text = lesson.type!!,
+                        style = TextStyle(color = GlanceTheme.colors.onBackground)
+                    )
                 }
-                is Lesson.Teacher -> {
-                    Row {
-                        Text(
-                            text = lesson.name!!,
-                            style = TextStyle(
-                                color = GlanceTheme.colors.onBackground,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
+                Row {
+                    Text(
+                        text = lesson.groups!!,
+                        style = TextStyle(color = GlanceTheme.colors.onBackground)
+                    )
+                    lesson.place?.let {
                         Spacer(GlanceModifier.width(6.dp))
-                        Text(text = lesson.type!!, style = TextStyle(color = GlanceTheme.colors.onBackground))
-                    }
-                    Row {
-                        Text(text = lesson.groups!!, style = TextStyle(color = GlanceTheme.colors.onBackground))
-                        lesson.place?.let {
-                            Spacer(GlanceModifier.width(6.dp))
-                            Text(text = it, style = TextStyle(color = GlanceTheme.colors.onBackground))
-                        }
+                        Text(text = it, style = TextStyle(color = GlanceTheme.colors.onBackground))
                     }
                 }
             }
         }
 
-        if (showDivider)
-            Spacer(GlanceModifier.fillMaxWidth().height(1.dp).background(GlanceTheme.colors.outline))
+        if (showDivider) Spacer(
+            GlanceModifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(GlanceTheme.colors.outline)
+        )
     }
 }
 
