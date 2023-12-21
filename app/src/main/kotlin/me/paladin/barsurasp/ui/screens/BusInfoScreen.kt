@@ -12,12 +12,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -84,12 +85,15 @@ fun BusInfoScreen(
             when (state) {
                 is BusState.Loaded -> {
                     val info = state.info
+                    val list = if (showBackward) info.backwardStops!! else info.stops
 
                     LazyColumn {
-                        items(if (showBackward) info.backwardStops!! else info.stops) {
+                        itemsIndexed(list) { index, it ->
                             BusStopItem(name = it.name) {
                                 stopClicked(it.name, showBackward)
                             }
+                            if (index != list.lastIndex)
+                                HorizontalDivider()
                         }
                     }
                 }
@@ -190,12 +194,13 @@ private fun BusInfoToolbar(
 }
 
 @Composable
-private fun BusStopItem(name: String, onClick: () -> Unit) {
+private fun BusStopItem(modifier: Modifier = Modifier, name: String, onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .height(54.dp)
+            .padding(8.dp)
             .clickable(onClick = onClick)
     ) {
         Text(text = name)

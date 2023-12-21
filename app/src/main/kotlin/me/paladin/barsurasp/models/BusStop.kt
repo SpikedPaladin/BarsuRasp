@@ -84,5 +84,31 @@ data class BusStop(
     data class Time(
         val hour: Int,
         val minute: Int
-    )
+    ) {
+        override fun toString(): String {
+            return "${if (hour < 10) "0${hour}" else hour}:" +
+                   "${if (minute < 10) "0${minute}" else minute}"
+        }
+    }
+
+    companion object {
+
+        fun List<Time>.hourSorted(): List<List<Time>> {
+            var lastHour = -1
+            val result = mutableListOf<List<Time>>()
+            var list = mutableListOf<Time>()
+
+            for (time in this) {
+                if (time.hour > lastHour) {
+                    lastHour = time.hour
+                    list = mutableListOf()
+                    result += list
+                }
+
+                list += time
+            }
+
+            return result
+        }
+    }
 }

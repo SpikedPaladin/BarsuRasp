@@ -1,7 +1,11 @@
 package me.paladin.barsurasp.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -12,6 +16,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,17 +26,22 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.models.BusInfo
 import me.paladin.barsurasp.models.BusStop
+import me.paladin.barsurasp.models.BusStop.Companion.hourSorted
 import me.paladin.barsurasp.ui.components.CustomToolbar
 import me.paladin.barsurasp.ui.components.CustomToolbarScrollBehavior
 import me.paladin.barsurasp.ui.components.bus.BusStopToolbarRow
@@ -60,6 +70,7 @@ fun BusStopScreen(
     val busState by viewModel.busState.collectAsState()
     val info = (busState as BusState.Loaded).info
     val stop = info.getStop(stopName, backward)
+    val nearestTime by viewModel.getStopSchedule(stopName, backward, 1).collectAsState(null)
     var checked by remember {
         mutableIntStateOf(
             if (stop.hasWorkdays) if (isWeekends() && stop.hasWeekends) 1 else 0 else 1
@@ -81,15 +92,14 @@ fun BusStopScreen(
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
-        val list = if (checked == 0) stop.workdays!! else stop.weekends!!
+        val list = if (checked == 0) stop.workdays!!.hourSorted() else stop.weekends!!.hourSorted()
 
         LazyColumn(
             modifier = Modifier
                 .padding(paddingValues)
-                .padding(8.dp)
         ) {
             itemsIndexed(list) { index, item ->
-                TimeItem(item = item)
+                TimeItem(item = item, nearestTime = if (nearestTime != null) nearestTime!![0] else null)
 
                 if (index != list.lastIndex)
                     HorizontalDivider()
@@ -99,8 +109,39 @@ fun BusStopScreen(
 }
 
 @Composable
-private fun TimeItem(item: BusStop.Time) {
-    Text(text = "${item.hour}:${item.minute}", modifier = Modifier.height(24.dp))
+private fun TimeItem(item: List<BusStop.Time>, nearestTime: BusStop.Time?) {
+    Row(
+        modifier = Modifier.height(42.dp).padding(start = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        for (time in item) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(vertical = 6.dp)
+                    .let {
+                        if (time == nearestTime)
+                            return@let it
+                                .clip(MaterialTheme.shapes.medium)
+                                .background(MaterialTheme.colorScheme.primary.copy(0.2F))
+
+                        it
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = time.toString(),
+                    modifier = Modifier.padding(horizontal = 6.dp),
+                    color = if (time == nearestTime)
+                        MaterialTheme.colorScheme.primary
+                    else Color.Unspecified,
+                    fontWeight = if (time == nearestTime)
+                        FontWeight.Bold
+                    else null
+                )
+            }
+        }
+    }
 }
 
 @Composable

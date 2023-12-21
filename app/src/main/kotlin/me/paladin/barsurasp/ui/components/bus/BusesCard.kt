@@ -162,8 +162,7 @@ private fun BusInfoItem(
                         Row {
                             for ((index, time) in schedule!!.withIndex()) {
                                 Text(
-                                    text = "${if (time.hour < 10) "0${time.hour}" else time.hour}:" +
-                                            "${if (time.minute < 10) "0${time.minute}" else time.minute}",
+                                    text = time.toString(),
                                     fontWeight = if (index == 0) FontWeight.Bold else null
                                 )
 
