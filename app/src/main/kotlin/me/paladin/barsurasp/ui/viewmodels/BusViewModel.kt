@@ -7,12 +7,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.paladin.barsurasp.data.BusRepository
 import me.paladin.barsurasp.data.BusRepository.isLoaded
 import me.paladin.barsurasp.models.BusDirection
 import me.paladin.barsurasp.models.BusInfo
+import me.paladin.barsurasp.utils.calcTimeToStop
 import me.paladin.barsurasp.utils.getDurationToNextMinute
 
 class BusViewModel(private val number: Int) : ViewModel() {
@@ -28,6 +30,13 @@ class BusViewModel(private val number: Int) : ViewModel() {
             if (direction.isLoaded())
                 _busState.update { BusState.Loaded(BusRepository.getBusInfo(number)) }
         }
+    }
+
+    fun getNearestInfo(name: String, backward: Boolean) = getStopSchedule(name, backward, 1).map {
+        val nearestTime = it?.firstOrNull()
+        if (nearestTime != null) {
+            nearestTime.toString() to calcTimeToStop(nearestTime)
+        } else null
     }
 
     fun getStopSchedule(name: String, backward: Boolean, limit: Int) = flow {

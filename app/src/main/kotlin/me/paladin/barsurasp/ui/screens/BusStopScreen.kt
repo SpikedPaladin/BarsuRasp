@@ -99,7 +99,7 @@ fun BusStopScreen(
                 .padding(paddingValues)
         ) {
             itemsIndexed(list) { index, item ->
-                TimeItem(item = item, nearestTime = if (nearestTime != null) nearestTime!![0] else null)
+                TimeItem(item = item, nearestTime = if (nearestTime != null) nearestTime!!.firstOrNull() else null)
 
                 if (index != list.lastIndex)
                     HorizontalDivider()
@@ -111,7 +111,9 @@ fun BusStopScreen(
 @Composable
 private fun TimeItem(item: List<BusStop.Time>, nearestTime: BusStop.Time?) {
     Row(
-        modifier = Modifier.height(42.dp).padding(start = 8.dp),
+        modifier = Modifier
+            .height(42.dp)
+            .padding(start = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         for (time in item) {

@@ -19,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -64,7 +65,7 @@ fun BusListScreen(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Scaffold(
-        topBar = { BusListToolbar(backAction, scrollBehavior) },
+        topBar = { BusListToolbar({ viewModel.refresh() }, backAction, scrollBehavior) },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
         Column(
@@ -202,7 +203,11 @@ private fun BusItem(
 }
 
 @Composable
-private fun BusListToolbar(backAction: () -> Unit, scrollBehavior: TopAppBarScrollBehavior) {
+private fun BusListToolbar(
+    refreshAction: () -> Unit,
+    backAction: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior
+) {
     TopAppBar(
         scrollBehavior = scrollBehavior,
         title = {
@@ -213,6 +218,14 @@ private fun BusListToolbar(backAction: () -> Unit, scrollBehavior: TopAppBarScro
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
                     contentDescription = stringResource(R.string.description_back)
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = refreshAction) {
+                Icon(
+                    imageVector = Icons.Outlined.Refresh,
+                    contentDescription = null
                 )
             }
         }

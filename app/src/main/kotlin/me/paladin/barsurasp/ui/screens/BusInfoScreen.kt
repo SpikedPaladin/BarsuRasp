@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
@@ -89,7 +91,8 @@ fun BusInfoScreen(
 
                     LazyColumn {
                         itemsIndexed(list) { index, it ->
-                            BusStopItem(name = it.name) {
+                            val nearestInfo by viewModel.getNearestInfo(it.name, showBackward).collectAsState(null)
+                            BusStopItem(name = it.name, nearestInfo) {
                                 stopClicked(it.name, showBackward)
                             }
                             if (index != list.lastIndex)
@@ -194,15 +197,41 @@ private fun BusInfoToolbar(
 }
 
 @Composable
-private fun BusStopItem(modifier: Modifier = Modifier, name: String, onClick: () -> Unit) {
+private fun BusStopItem(
+    name: String,
+    nearestInfo: Pair<String, String?>?,
+    onClick: () -> Unit
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .height(54.dp)
             .padding(8.dp)
             .clickable(onClick = onClick)
     ) {
-        Text(text = name)
+        Text(
+            modifier = Modifier.weight(1F),
+            text = name
+        )
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier.fillMaxHeight()
+        ) {
+            if (nearestInfo != null) {
+                Text(
+                    text = nearestInfo.first,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Text(
+                    text = nearestInfo.second ?: "Прибывает",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = if (nearestInfo.second == null) FontWeight.Bold else null
+                )
+            } else {
+                Text(text = "--:--")
+            }
+        }
     }
 }

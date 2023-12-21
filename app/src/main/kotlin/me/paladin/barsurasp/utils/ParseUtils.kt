@@ -27,5 +27,5 @@ fun Element.parseLastUpdate(): String {
     val dateParts = parts[2].split("-")
     val timeParts = parts[3].split(":")
 
-    return pretyLastUpdate(dateParts, timeParts)
+    return prettyLastUpdate(dateParts, timeParts)
 }

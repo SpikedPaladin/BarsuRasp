@@ -58,11 +58,15 @@ class BusesViewModel : ViewModel() {
         loadBuses()
     }
 
+    fun refresh() {
+        loadBuses(false)
+    }
+
     fun loadBuses(useCache: Boolean = true) {
         viewModelScope.launch {
             _uiState.update { BusesUiState.Loading }
             try {
-                val data = BusRepository.getBusDirections()
+                val data = BusRepository.getBusDirections(useCache)
                 _uiState.update { BusesUiState.Success(data) }
             } catch (_: Exception) {
                 _uiState.update { BusesUiState.Error(networkError = true) }

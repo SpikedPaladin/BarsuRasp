@@ -1,6 +1,7 @@
 package me.paladin.barsurasp.utils
 
 import me.paladin.barsurasp.R
+import me.paladin.barsurasp.models.BusStop
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Calendar.DAY_OF_MONTH
@@ -21,6 +22,7 @@ import java.util.Calendar.WEDNESDAY
 import java.util.Calendar.WEEK_OF_YEAR
 import java.util.Calendar.YEAR
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 fun getDurationToNextMinute(): Long {
     Calendar.getInstance().apply {
@@ -43,7 +45,30 @@ fun isWeekends(): Boolean {
     }
 }
 
-fun pretyLastUpdate(dateParts: List<String>, timeParts: List<String>): String {
+fun calcTimeToStop(stop: BusStop.Time): String? {
+    Calendar.getInstance().apply {
+        set(HOUR_OF_DAY, stop.hour)
+        set(MINUTE, stop.minute)
+        set(MILLISECOND, 0)
+        set(SECOND, 0)
+
+        val curr = Calendar.getInstance().apply {
+            set(MILLISECOND, 0)
+            set(SECOND, 0)
+        }
+        val diff = time.time - curr.time.time
+        val minutes = TimeUnit.MILLISECONDS.toMinutes(diff)
+        val hours = TimeUnit.MILLISECONDS.toHours(diff)
+
+        return if (hours == 0L && minutes == 0L) null else if (hours > 0) {
+            "$hours ч, ${minutes - hours * 60} мин"
+        } else {
+            "$minutes мин"
+        }
+    }
+}
+
+fun prettyLastUpdate(dateParts: List<String>, timeParts: List<String>): String {
     Calendar.getInstance().apply {
         set(YEAR, dateParts[0].toInt())
         set(MONTH, dateParts[1].toInt())

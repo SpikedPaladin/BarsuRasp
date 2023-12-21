@@ -36,10 +36,10 @@ object BusRepository {
         return info
     }
 
-    suspend fun getBusDirections(): List<BusDirection> {
+    suspend fun getBusDirections(useCache: Boolean = true): List<BusDirection> {
         val directions: List<BusDirection>
         val file = getDirectionsFile()
-        if (file.exists()) {
+        if (file.exists() && useCache) {
             directions = Json.decodeFromString<BusDirection.Wrapper>(file.readText()).directions
         } else {
             directions = BusLoader.loadBuses()
