@@ -3,13 +3,17 @@ package me.paladin.barsurasp.ui.components.bus
 import android.widget.Toast
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
@@ -22,12 +26,14 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +42,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.paladin.barsurasp.models.BusPath
 import me.paladin.barsurasp.ui.components.RoundedBox
+import me.paladin.barsurasp.ui.icons.Bus
 import me.paladin.barsurasp.ui.viewmodels.BusState
 import me.paladin.barsurasp.ui.viewmodels.BusViewModel
 import me.paladin.barsurasp.ui.viewmodels.BusesViewModel
@@ -59,15 +66,33 @@ fun BusesCard(
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column {
-            Row(
-                modifier = Modifier.padding(start = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Автобусы",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.weight(1F)
-                )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1F)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(end = 4.dp)
+                            .clip(RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp))
+                            .background(MaterialTheme.colorScheme.primary.copy(0.2F))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Bus,
+                            tint = MaterialTheme.colorScheme.primary,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                    Text(
+                        text = "Автобусы",
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }
                 IconButton(onClick = configClicked) {
                     Icon(imageVector = Icons.Outlined.Settings, contentDescription = null)
                 }
@@ -81,11 +106,27 @@ fun BusesCard(
                     SecondaryScrollableTabRow(
                         containerColor = Color.Transparent,
                         selectedTabIndex = selectedPath,
+                        indicator = { tabPositions ->
+                            Box(
+                                Modifier
+                                    .tabIndicatorOffset(tabPositions[selectedPath])
+                                    .fillMaxWidth()
+                                    .height(3.dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.primary,
+                                        shape = RoundedCornerShape(3.dp)
+                                    )
+                            )
+                        },
                         divider = {}
                     ) {
                         buses.forEachIndexed { index, item ->
                             Tab(selected = true, onClick = { viewModel.selectPath(index) }) {
-                                Text(text = item.title, modifier = Modifier.padding(4.dp))
+                                Text(
+                                    text = item.title,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier = Modifier.padding(6.dp)
+                                )
                             }
                         }
                     }
@@ -151,7 +192,8 @@ private fun BusInfoItem(
         Crossfade(targetState = busState, label = "mainBusInfo") { state ->
             when (state) {
                 is BusState.Loaded -> {
-                    val schedule by viewModel.getStopSchedule(stop, backward, 3).collectAsState(null)
+                    val schedule by viewModel.getStopSchedule(stop, backward, 3)
+                        .collectAsState(null)
 
                     if (schedule != null) {
                         if (schedule!!.isEmpty()) {
@@ -174,6 +216,7 @@ private fun BusInfoItem(
                         Text(text = if (isWeekends()) "Рейсов по выходным нет." else "Рейсов по будням нет.")
                     }
                 }
+
                 BusState.Loading -> {
                     val progress by viewModel.progress.collectAsState()
                     Column {
@@ -181,13 +224,18 @@ private fun BusInfoItem(
                         LinearProgressIndicator(progress = { progress })
                     }
                 }
+
                 BusState.None -> {
                     Column {
                         Text("Расписание не загружено")
                         Button(
                             onClick = {
                                 viewModel.load {
-                                    Toast.makeText(context, "Ошибка подключения к сети!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Ошибка подключения к сети!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         ) {
