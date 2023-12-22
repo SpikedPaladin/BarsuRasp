@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.models.BusPath
+import me.paladin.barsurasp.ui.components.RoundedBox
 import me.paladin.barsurasp.ui.icons.Bus
 import me.paladin.barsurasp.ui.viewmodels.BusPathViewModel
 
@@ -50,7 +52,8 @@ fun BusPathScreen(
             Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(12.dp)) {
+                .padding(12.dp)
+        ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -84,7 +87,7 @@ fun BusPathScreen(
 
             LazyColumn {
                 items(buses) {
-                    Text("$it")
+                    PathItem(number = it.first, stopName = it.second)
                 }
 
                 item {
@@ -112,17 +115,33 @@ fun BusPathScreen(
 
             Button(
                 onClick = {
-                    successCallback(
-                        BusPath(
-                            title = title, buses = buses
-                        )
-                    )
+                    successCallback(BusPath(title = title, buses = buses))
                 },
                 enabled = title != "" && buses.isNotEmpty()
             ) {
                 Text(text = "Сохранить")
             }
         }
+    }
+}
+
+@Composable
+private fun PathItem(number: Int, stopName: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.height(36.dp)
+    ) {
+        RoundedBox(Modifier.size(32.dp)) {
+            Text(
+                text = number.toString(),
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+        Text(
+            text = stopName,
+            modifier = Modifier.padding(start = 4.dp).weight(1F)
+        )
     }
 }
 

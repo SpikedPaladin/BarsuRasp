@@ -20,9 +20,4 @@ class BusPathViewModel : ViewModel() {
     fun setTitle(title: String) {
         _title.update { title }
     }
-
-    fun clear() {
-        _title.update { "" }
-        _buses.update { listOf() }
-    }
 }
