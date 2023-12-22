@@ -42,6 +42,7 @@ fun BusPathScreen(
 ) {
     val title by busPathViewModel.title.collectAsState()
     val buses by busPathViewModel.buses.collectAsState()
+
     Scaffold(
         topBar = { BusPathToolbar(backAction) }
     ) { paddingValues ->

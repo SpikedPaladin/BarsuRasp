@@ -1,10 +1,12 @@
 package me.paladin.barsurasp.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -28,7 +30,6 @@ import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
 fun MainNavGraph(
     mainViewModel: MainViewModel,
     busesViewModel: BusesViewModel,
-    busPathViewModel: BusPathViewModel,
     settingsViewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
@@ -76,15 +77,21 @@ fun MainNavGraph(
         composable("busConfig") {
             BusConfigScreen(
                 busesViewModel,
-                openPathCreate = {
-                    busPathViewModel.clear()
-                    navController.navigate("busPath")
-                },
+                openPathCreate = { navController.navigate("busPath") },
                 backAction = backAction,
                 openBusList = { navController.navigate("busList?choosePath=false") }
             )
         }
-        composable("busPath") {
+        composable("busPath") { backStackEntry ->
+            val busPathViewModel: BusPathViewModel = viewModel()
+            val path by backStackEntry.savedStateHandle.getStateFlow<Triple<Int, String, Boolean>?>("path", null).collectAsState()
+            LaunchedEffect(path) {
+                path?.let {
+                    busPathViewModel.addPath(it)
+                    backStackEntry.savedStateHandle.remove<String>("path")
+                }
+            }
+
             BusPathScreen(
                 busPathViewModel,
                 openBusChoose = { navController.navigate("busList?choosePath=true") },
@@ -92,7 +99,6 @@ fun MainNavGraph(
             ) {
                 busesViewModel.addPath(it)
                 navController.navigateUp()
-                busPathViewModel.clear()
             }
         }
         composable(
@@ -126,7 +132,8 @@ fun MainNavGraph(
                     backAction = backAction
                 ) { stop, backward ->
                     if (choosePath == true) {
-                        busPathViewModel.addPath(Triple(number, stop, backward))
+                        navController.getBackStackEntry("busPath")
+                            .savedStateHandle["path"] = Triple(number, stop, backward)
                         navController.popBackStack("busPath", false)
                     } else
                         navController.navigate("busStop?number=$number&stop=$stop&backward=$backward")

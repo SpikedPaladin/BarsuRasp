@@ -17,14 +17,12 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import me.paladin.barsurasp.models.AppTheme
 import me.paladin.barsurasp.ui.theme.BarsuRaspTheme
-import me.paladin.barsurasp.ui.viewmodels.BusPathViewModel
 import me.paladin.barsurasp.ui.viewmodels.BusesViewModel
 import me.paladin.barsurasp.ui.viewmodels.MainViewModel
 import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
 
 class MainActivity : ComponentActivity() {
     private val settingsViewModel by viewModels<SettingsViewModel>()
-    private val busPathViewModel by viewModels<BusPathViewModel>()
     private val busesViewModel by viewModels<BusesViewModel>()
     private val mainViewModel by viewModels<MainViewModel>()
 
@@ -47,7 +45,6 @@ class MainActivity : ComponentActivity() {
                     MainNavGraph(
                         mainViewModel,
                         busesViewModel,
-                        busPathViewModel,
                         settingsViewModel,
                         modifier = Modifier.weight(1F)
                     )
