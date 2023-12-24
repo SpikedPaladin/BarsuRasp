@@ -10,7 +10,6 @@ import java.io.File
 import java.util.Calendar
 
 object BusRepository {
-    // TODO Remove after 1.1
     private val json = Json { ignoreUnknownKeys = true }
 
     fun deleteBusInfo(number: Int) {
@@ -40,7 +39,7 @@ object BusRepository {
         val directions: List<BusDirection>
         val file = getDirectionsFile()
         if (file.exists() && useCache) {
-            directions = Json.decodeFromString<BusDirection.Wrapper>(file.readText()).directions
+            directions = json.decodeFromString<BusDirection.Wrapper>(file.readText()).directions
         } else {
             directions = BusLoader.loadBuses()
 

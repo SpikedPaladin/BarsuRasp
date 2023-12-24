@@ -10,7 +10,7 @@ data class BusDirection(
     val forward: Int,
     var backward: Int? = null
 ) {
-    val hasBackward = backwardName != null
+    val hasBackward get() = backwardName != null
 
     @Serializable
     data class Wrapper(
