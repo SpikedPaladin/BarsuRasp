@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.models.Lesson
+import me.paladin.barsurasp.ui.icons.Group
 
 @Composable
 fun LessonItem(lesson: Lesson) {
@@ -66,7 +66,7 @@ fun LessonItem(lesson: Lesson) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             modifier = Modifier.size(18.dp),
-                            imageVector = Icons.Outlined.Person,
+                            imageVector = Icons.Outlined.Group,
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.width(4.dp))
