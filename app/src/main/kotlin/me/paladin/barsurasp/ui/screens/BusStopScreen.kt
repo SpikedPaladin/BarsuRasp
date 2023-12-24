@@ -1,6 +1,7 @@
 package me.paladin.barsurasp.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -58,7 +59,8 @@ fun BusStopScreen(
     stopName: String,
     backward: Boolean,
     viewModelStoreOwner: ViewModelStoreOwner,
-    backAction: () -> Unit
+    backAction: () -> Unit,
+    timeSelected: (workdays: Boolean, time: BusStop.Time) -> Unit,
 ) {
     val viewModel: BusViewModel = viewModel(
         viewModelStoreOwner = viewModelStoreOwner,
@@ -99,7 +101,11 @@ fun BusStopScreen(
                 .padding(paddingValues)
         ) {
             itemsIndexed(list) { index, item ->
-                TimeItem(item = item, nearestTime = if (nearestTime != null) nearestTime!!.firstOrNull() else null)
+                TimeItem(
+                    item = item,
+                    nearestTime = if (nearestTime != null) nearestTime!!.firstOrNull() else null,
+                    onClick = { timeSelected(checked == 0, it) }
+                )
 
                 if (index != list.lastIndex)
                     HorizontalDivider()
@@ -109,7 +115,11 @@ fun BusStopScreen(
 }
 
 @Composable
-private fun TimeItem(item: List<BusStop.Time>, nearestTime: BusStop.Time?) {
+private fun TimeItem(
+    item: List<BusStop.Time>,
+    nearestTime: BusStop.Time?,
+    onClick: (BusStop.Time) -> Unit
+) {
     Row(
         modifier = Modifier
             .height(42.dp)
@@ -120,6 +130,7 @@ private fun TimeItem(item: List<BusStop.Time>, nearestTime: BusStop.Time?) {
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
+                    .clickable(onClick = { onClick(time) })
                     .padding(vertical = 6.dp)
                     .let {
                         if (time == nearestTime)

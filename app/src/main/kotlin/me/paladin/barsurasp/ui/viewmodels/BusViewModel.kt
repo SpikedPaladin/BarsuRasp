@@ -14,6 +14,7 @@ import me.paladin.barsurasp.data.BusRepository
 import me.paladin.barsurasp.data.BusRepository.isLoaded
 import me.paladin.barsurasp.models.BusDirection
 import me.paladin.barsurasp.models.BusInfo
+import me.paladin.barsurasp.models.BusStop
 import me.paladin.barsurasp.utils.calcTimeToStop
 import me.paladin.barsurasp.utils.getDurationToNextMinute
 
@@ -47,6 +48,13 @@ class BusViewModel(private val number: Int) : ViewModel() {
             emit(stop.getNearestTime(limit))
             delay(getDurationToNextMinute())
         }
+    }
+
+    fun getTimeline(name: String, backward: Boolean, workdays: Boolean, time: BusStop.Time) = flow {
+        val info = (_busState.value as BusState.Loaded).info
+
+        emit(info.getTimeline(time, name, backward, workdays))
+        delay(getDurationToNextMinute())
     }
 
     fun load(errorCallback: () -> Unit) {

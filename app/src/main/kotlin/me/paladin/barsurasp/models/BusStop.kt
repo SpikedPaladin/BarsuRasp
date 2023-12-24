@@ -42,11 +42,10 @@ data class BusStop(
         val list = mutableListOf<Time>()
 
         for (time in this) {
-            if (time.hour == hour && time.minute >= minute) {
+            if (time.hour == hour && time.minute >= minute)
                 list += time
-            } else if (time.hour > hour) {
+            else if (time.hour > hour)
                 list += time
-            }
 
             if (list.size == limit)
                 break
@@ -92,6 +91,21 @@ data class BusStop(
     }
 
     companion object {
+
+        fun List<Time>.getNearestStop(closestTime: Time, passed: Boolean): Time? {
+            if (passed) for (time in this.reversed()) {
+                if (time.hour == closestTime.hour && time.minute <= closestTime.minute)
+                    return time
+                else if (time.hour < closestTime.hour)
+                    return time
+            } else for (time in this) {
+                if (time.hour == closestTime.hour && time.minute >= closestTime.minute)
+                    return time
+                else if (time.hour > closestTime.hour)
+                    return time
+            }
+            return null
+        }
 
         fun List<Time>.hourSorted(): List<List<Time>> {
             var lastHour = -1

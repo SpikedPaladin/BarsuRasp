@@ -13,11 +13,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import me.paladin.barsurasp.models.BusStop
 import me.paladin.barsurasp.ui.screens.BusConfigScreen
 import me.paladin.barsurasp.ui.screens.BusInfoScreen
 import me.paladin.barsurasp.ui.screens.BusListScreen
 import me.paladin.barsurasp.ui.screens.BusPathScreen
 import me.paladin.barsurasp.ui.screens.BusStopScreen
+import me.paladin.barsurasp.ui.screens.BusTimelineScreen
 import me.paladin.barsurasp.ui.screens.ItemsScreen
 import me.paladin.barsurasp.ui.screens.MainScreen
 import me.paladin.barsurasp.ui.screens.SettingsScreen
@@ -159,7 +161,44 @@ fun MainNavGraph(
                     backward = backward,
                     viewModelStoreOwner = viewModelStoreOwner,
                     backAction = backAction
-                )
+                ) { workdays, time ->
+                    navController.navigate(
+                        "busDirection?number=$number&stop=$stop&backward=$backward&workdays=$workdays&hour=${time.hour}&minute=${time.minute}"
+                    )
+                }
+            }}}
+        }
+        composable(
+            "busDirection?number={number}&stop={stop}&backward={backward}&workdays={workdays}&hour={hour}&minute={minute}",
+            arguments = listOf(
+                navArgument("number") { type = NavType.IntType },
+                navArgument("stop") { type = NavType.StringType },
+                navArgument("backward") { type = NavType.BoolType },
+                navArgument("workdays") { type = NavType.BoolType },
+                navArgument("hour") { type = NavType.IntType },
+                navArgument("minute") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val number = backStackEntry.arguments?.getInt("number")
+            val stop = backStackEntry.arguments?.getString("stop")
+            val backward = backStackEntry.arguments?.getBoolean("backward")
+            val workdays = backStackEntry.arguments?.getBoolean("workdays")
+            val hour = backStackEntry.arguments?.getInt("hour")
+            val minute = backStackEntry.arguments?.getInt("minute")
+
+            number?.let { backward?.let { stop?.let {
+                hour?.let { minute?.let {
+                    BusTimelineScreen(
+                        number = number,
+                        stopName = stop,
+                        workdays = workdays ?: true,
+                        backward = backward,
+                        time = BusStop.Time(hour, minute),
+                        viewModelStoreOwner = viewModelStoreOwner,
+                        backAction = backAction
+                    )
+                }}
+
             }}}
         }
     }
