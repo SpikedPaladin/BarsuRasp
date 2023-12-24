@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BarsuRasp"
+        android:theme="@style/android:Theme.Material.NoActionBar"
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="33">
 
@@ -25,8 +25,7 @@
 
         <activity
             android:name=".ui.MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.BarsuRasp">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,8 +35,7 @@
 
         <activity
             android:name=".ui.ConfigWidgetActivity"
-            android:exported="true"
-            android:theme="@style/Theme.BarsuRasp"/>
+            android:exported="true"/>
 
         <receiver
             android:name=".glance.TimetableWidgetReceiver"
@@ -45,7 +43,6 @@
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
             </intent-filter>
 
             <meta-data

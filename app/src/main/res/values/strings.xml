@@ -20,7 +20,7 @@
     <string name="general_error_network">Ошибка подключения к сети\nПроверьте подключение к интернету</string>
     <string name="general_refresh">Обновить</string>
     <string name="description_settings">Открыть настройки</string>
-    <string name="faculty_loading">Загрузка факультетов...</string>
+    <string name="faculty_loading">Загрузка факультетов…</string>
     <string name="faculty_title">Выбери группу</string>
     <string name="description_back">Назад</string>
     <string name="settings_title">Настройки</string>
