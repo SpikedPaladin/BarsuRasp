@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.glance.appwidget.GlanceAppWidgetManager
@@ -18,7 +17,6 @@ import kotlinx.coroutines.launch
 import me.paladin.barsurasp.data.TimetableRepository
 import me.paladin.barsurasp.glance.TimetableWidget
 import me.paladin.barsurasp.glance.WidgetKeys
-import me.paladin.barsurasp.models.AppTheme
 import me.paladin.barsurasp.ui.screens.ItemsScreen
 import me.paladin.barsurasp.ui.theme.BarsuRaspTheme
 import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
@@ -37,13 +35,7 @@ class ConfigWidgetActivity : ComponentActivity() {
             val theme by viewModel.theme.collectAsState()
             val monet by viewModel.monet.collectAsState()
 
-            val darkTheme = when (theme) {
-                AppTheme.DAY -> false
-                AppTheme.NIGHT -> true
-                else -> isSystemInDarkTheme()
-            }
-
-            BarsuRaspTheme(darkTheme, monet) {
+            BarsuRaspTheme(theme.isDark(), monet) {
                 ItemsScreen(itemSelected = { it, _ -> handleSelectGroup(it) })
             }
         }

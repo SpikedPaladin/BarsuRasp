@@ -56,21 +56,13 @@ class UserPreferencesRepository(
 
     val theme: Flow<AppTheme> = dataStore.data
         .map {
-            when (it[Keys.theme]) {
-                "day" -> AppTheme.DAY
-                "night" -> AppTheme.NIGHT
-                else -> AppTheme.AUTO
-            }
+            AppTheme.fromPref(it[Keys.theme])
         }
         .distinctUntilChanged()
 
     suspend fun changeTheme(theme: AppTheme) {
         dataStore.edit {
-            it[Keys.theme] = when (theme) {
-                AppTheme.DAY -> "day"
-                AppTheme.NIGHT -> "night"
-                AppTheme.AUTO -> "auto"
-            }
+            it[Keys.theme] = theme.toPref()
         }
     }
 

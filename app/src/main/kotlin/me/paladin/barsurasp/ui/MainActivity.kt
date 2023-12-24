@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -15,7 +14,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
-import me.paladin.barsurasp.models.AppTheme
 import me.paladin.barsurasp.ui.theme.BarsuRaspTheme
 import me.paladin.barsurasp.ui.viewmodels.BusesViewModel
 import me.paladin.barsurasp.ui.viewmodels.MainViewModel
@@ -34,13 +32,7 @@ class MainActivity : ComponentActivity() {
             val monet by settingsViewModel.monet.collectAsState()
             val adCounter by settingsViewModel.adCounter.collectAsState()
 
-            val darkTheme = when (theme) {
-                AppTheme.DAY -> false
-                AppTheme.NIGHT -> true
-                else -> isSystemInDarkTheme()
-            }
-
-            BarsuRaspTheme(darkTheme, monet) {
+            BarsuRaspTheme(theme.isDark(), monet) {
                 Column {
                     MainNavGraph(
                         mainViewModel,

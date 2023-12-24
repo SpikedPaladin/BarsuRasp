@@ -65,23 +65,11 @@ fun SettingsScreen(
                 strings = listOf("Дневная", "Ночная", "Автоматически"),
                 title = { Text(text = "Тема приложения") },
                 subtitle = {
-                    Text(
-                        text = "Текущая тема приложения"
-                    )
+                    Text(theme.toString())
                 },
-                chosenIndex = when (theme) {
-                    AppTheme.DAY -> 0
-                    AppTheme.NIGHT -> 1
-                    AppTheme.AUTO -> 2
-                },
+                chosenIndex = theme.toIndex(),
                 onChoose = {
-                    viewModel.changeTheme(
-                        when (it) {
-                            0 -> AppTheme.DAY
-                            1 -> AppTheme.NIGHT
-                            else -> AppTheme.AUTO
-                        }
-                    )
+                    viewModel.changeTheme(AppTheme.fromIndex(it))
                 }
             )
             SwitchRow(
