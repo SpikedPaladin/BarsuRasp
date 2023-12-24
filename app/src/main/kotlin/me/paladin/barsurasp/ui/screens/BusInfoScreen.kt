@@ -1,5 +1,6 @@
 package me.paladin.barsurasp.ui.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
@@ -160,6 +161,49 @@ fun BusInfoScreen(
 }
 
 @Composable
+private fun BusStopItem(
+    name: String,
+    nearestInfo: Pair<String, String?>?,
+    onClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(54.dp)
+            .clickable(onClick = onClick)
+    ) {
+        Text(
+            modifier = Modifier
+                .weight(1F)
+                .padding(start = 8.dp),
+            text = name
+        )
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(end = 8.dp)
+        ) {
+            if (nearestInfo != null) {
+                Text(
+                    text = nearestInfo.first,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Text(
+                    text = nearestInfo.second ?: "Прибывает",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = if (nearestInfo.second == null) FontWeight.Bold else null
+                )
+            } else {
+                Text(text = "--:--")
+            }
+        }
+    }
+}
+
+@Composable
 private fun BusInfoToolbar(
     direction: BusDirection,
     showBackward: Boolean,
@@ -170,6 +214,7 @@ private fun BusInfoToolbar(
     CustomToolbar(
         centralContent = { Text("Остановки") },
         expandedContent = {
+            Log.i("Test", "BusInfoToolbar: ${direction.hasBackward}")
             BusToolbarRow(
                 name = if (showBackward) direction.backwardName!! else direction.name,
                 number = direction.busNumber.toString(),
@@ -194,44 +239,4 @@ private fun BusInfoToolbar(
         },
         scrollBehavior = scrollBehavior
     )
-}
-
-@Composable
-private fun BusStopItem(
-    name: String,
-    nearestInfo: Pair<String, String?>?,
-    onClick: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(54.dp)
-            .padding(8.dp)
-            .clickable(onClick = onClick)
-    ) {
-        Text(
-            modifier = Modifier.weight(1F),
-            text = name
-        )
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.End,
-            modifier = Modifier.fillMaxHeight()
-        ) {
-            if (nearestInfo != null) {
-                Text(
-                    text = nearestInfo.first,
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Text(
-                    text = nearestInfo.second ?: "Прибывает",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = if (nearestInfo.second == null) FontWeight.Bold else null
-                )
-            } else {
-                Text(text = "--:--")
-            }
-        }
-    }
 }

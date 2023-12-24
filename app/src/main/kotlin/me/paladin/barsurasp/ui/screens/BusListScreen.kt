@@ -118,12 +118,11 @@ private fun BusItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .height(60.dp)
-            .padding(start = 6.dp)
             .clickable { busClicked(direction.busNumber) }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1F)
+            modifier = Modifier.weight(1F).padding(start = 6.dp)
         ) {
             RoundedBox(Modifier.size(48.dp)) {
                 Text(

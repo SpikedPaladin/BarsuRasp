@@ -8,9 +8,6 @@ data class TimelineElement(
     val time: BusStop.Time,
     val state: State
 ) {
-
-
-
     enum class State {
         PASSED,
         ARRIVING,
