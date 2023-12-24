@@ -41,10 +41,10 @@ class BusViewModel(private val number: Int) : ViewModel() {
     }
 
     fun getStopSchedule(name: String, backward: Boolean, limit: Int) = flow {
-        while (true) {
-            val info = (_busState.value as BusState.Loaded).info
-            val stop = info.getStop(name, backward)
+        val info = (_busState.value as BusState.Loaded).info
+        val stop = info.getStop(name, backward)
 
+        while (true) {
             emit(stop.getNearestTime(limit))
             delay(getDurationToNextMinute())
         }
@@ -53,8 +53,10 @@ class BusViewModel(private val number: Int) : ViewModel() {
     fun getTimeline(name: String, backward: Boolean, workdays: Boolean, time: BusStop.Time) = flow {
         val info = (_busState.value as BusState.Loaded).info
 
-        emit(info.getTimeline(time, name, backward, workdays))
-        delay(getDurationToNextMinute())
+        while (true) {
+            emit(info.getTimeline(time, name, backward, workdays))
+            delay(getDurationToNextMinute())
+        }
     }
 
     fun load(errorCallback: () -> Unit) {
