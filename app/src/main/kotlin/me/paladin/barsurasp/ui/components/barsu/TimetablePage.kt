@@ -14,7 +14,10 @@ import me.paladin.barsurasp.models.Sublesson
 import me.paladin.barsurasp.ui.theme.BarsuRaspTheme
 
 @Composable
-fun TimetablePage(day: DaySchedule) {
+fun TimetablePage(
+    day: DaySchedule,
+    openTeacher: (String) -> Unit
+) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(16.dp)
@@ -25,7 +28,7 @@ fun TimetablePage(day: DaySchedule) {
             HorizontalDivider()
 
             day.actualLessons?.forEachIndexed { index, it ->
-                LessonItem(lesson = it)
+                LessonItem(lesson = it, openTeacher = openTeacher)
 
                 if (index < day.actualLessons!!.size - 1)
                     HorizontalDivider()
@@ -66,7 +69,8 @@ private fun TimetablePagePreview() {
                         )
                     )
                 )
-            )
+            ),
+            openTeacher = {}
         )
     }
 }

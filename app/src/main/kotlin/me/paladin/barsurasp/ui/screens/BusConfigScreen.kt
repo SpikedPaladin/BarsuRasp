@@ -23,8 +23,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -42,7 +42,7 @@ fun BusConfigScreen(
     backAction: () -> Unit,
     openBusList: () -> Unit
 ) {
-    val buses by viewModel.paths.collectAsState()
+    val buses = viewModel.paths.collectAsState()
 
     Scaffold(
         topBar = { BusConfigToolbar(backAction) },
@@ -58,78 +58,94 @@ fun BusConfigScreen(
             }
         }
     ) { paddingValues ->
-        LazyColumn(
-            contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 72.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues)
-        ) {
-            item {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .padding(24.dp)
-                        .fillMaxWidth()
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Bus,
-                        contentDescription = null,
-                        modifier = Modifier.size(96.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = "Создай машруты чтобы отображать их на главном экране",
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center
-                    )
-                }
+        ScreenContent(
+            buses = buses,
+            addPath = { viewModel.addPath(it) },
+            deletePath = { viewModel.deletePath(it) },
+            openPathCreate = openPathCreate,
+            modifier = Modifier.padding(paddingValues)
+        )
+    }
+}
 
-                Text(
-                    text = "Рекомендуемые машруты",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
+@Composable
+fun ScreenContent(
+    modifier: Modifier = Modifier,
+    buses: State<List<BusPath>>,
+    addPath: (BusPath) -> Unit,
+    deletePath: (Int) -> Unit,
+    openPathCreate: () -> Unit
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 72.dp),
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        item {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Bus,
+                    contentDescription = null,
+                    modifier = Modifier.size(96.dp),
+                    tint = MaterialTheme.colorScheme.primary
                 )
-                RecommendedPath(title = "На Университет", subtitle = "Автобусы 14, 29, 31") {
-                    viewModel.addPath(
-                        BusPath(
-                            title = "На Университет", buses = listOf(
-                                Triple(14, "Стадион", true),
-                                Triple(29, "Стадион", false),
-                                Triple(31, "Сквер Героя Карвата", true)
-                            )
-                        )
-                    )
-                }
-                RecommendedPath(title = "На Уборевича", subtitle = "Автобусы 14, 29, 31") {
-                    viewModel.addPath(
-                        BusPath(
-                            title = "На Уборевича", buses = listOf(
-                                Triple(14, "Университет", false),
-                                Triple(29, "Университет", true),
-                                Triple(31, "Университет", false)
-                            )
-                        )
-                    )
-                }
-                Spacer(Modifier.size(12.dp))
-
                 Text(
-                    text = "Машруты",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
+                    text = "Создай машруты чтобы отображать их на главном экране",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
                 )
             }
 
-            itemsIndexed(buses) { index, item ->
-                SavedPath(path = item) {
-                    viewModel.deletePath(index)
-                }
+            Text(
+                text = "Рекомендуемые машруты",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            RecommendedPath(title = "На Университет", subtitle = "Автобусы 14, 29, 31") {
+                addPath(
+                    BusPath(
+                        title = "На Университет", buses = listOf(
+                            Triple(14, "Стадион", true),
+                            Triple(29, "Стадион", false),
+                            Triple(31, "Сквер Героя Карвата", true)
+                        )
+                    )
+                )
             }
+            RecommendedPath(title = "На Уборевича", subtitle = "Автобусы 14, 29, 31") {
+                addPath(
+                    BusPath(
+                        title = "На Уборевича", buses = listOf(
+                            Triple(14, "Университет", false),
+                            Triple(29, "Университет", true),
+                            Triple(31, "Университет", false)
+                        )
+                    )
+                )
+            }
+            Spacer(Modifier.size(12.dp))
 
-            item {
-                ElevatedButton(onClick = openPathCreate) {
-                    Text(text = "Добавить маршрут")
-                }
+            Text(
+                text = "Машруты",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        itemsIndexed(buses.value) { index, item ->
+            SavedPath(path = item) {
+                deletePath(index)
+            }
+        }
+
+        item {
+            ElevatedButton(onClick = openPathCreate) {
+                Text(text = "Добавить маршрут")
             }
         }
     }

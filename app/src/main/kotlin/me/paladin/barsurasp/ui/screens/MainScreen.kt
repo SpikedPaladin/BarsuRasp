@@ -124,7 +124,8 @@ fun MainScreen(
                     busesViewModel = busesViewModel,
                     viewModelStoreOwner = viewModelStoreOwner,
                     selectedWeek = selectedWeek,
-                    openBusConfig = openBusConfig
+                    openBusConfig = openBusConfig,
+                    openTeacher = { viewModel.setMainGroup(it) }
                 )
 
                 is UiState.Error -> ErrorState(
@@ -151,7 +152,8 @@ private fun SuccessState(
     busesViewModel: BusesViewModel,
     viewModelStoreOwner: ViewModelStoreOwner,
     selectedWeek: String,
-    openBusConfig: () -> Unit
+    openBusConfig: () -> Unit,
+    openTeacher: (String) -> Unit
 ) {
     BaseState(
         viewModel = viewModel,
@@ -161,7 +163,7 @@ private fun SuccessState(
         viewModelStoreOwner = viewModelStoreOwner,
         openBusConfig = openBusConfig
     ) {
-        TimetableList(timetable)
+        TimetableList(timetable, openTeacher = openTeacher)
     }
 }
 

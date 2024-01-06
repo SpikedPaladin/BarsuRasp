@@ -21,7 +21,10 @@ import me.paladin.barsurasp.models.Lesson
 import me.paladin.barsurasp.ui.icons.Group
 
 @Composable
-fun LessonItem(lesson: Lesson) {
+fun LessonItem(
+    lesson: Lesson,
+    openTeacher: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -46,7 +49,7 @@ fun LessonItem(lesson: Lesson) {
             is Lesson.Group -> {
                 Column {
                     if (lesson.sublessons != null) for (sublesson in lesson.sublessons) {
-                        SublessonItem(sublesson = sublesson)
+                        SublessonItem(sublesson = sublesson, openTeacher = openTeacher)
                     }
                 }
             }
