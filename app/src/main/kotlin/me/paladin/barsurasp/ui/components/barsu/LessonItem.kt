@@ -71,7 +71,7 @@ fun LessonItem(lesson: Lesson) {
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = lesson.groups!!,
+                            text = lesson.splitGroups!!,
                             style = MaterialTheme.typography.bodyMedium
                         )
                         lesson.place?.let {

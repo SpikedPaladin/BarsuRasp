@@ -34,5 +34,23 @@ sealed interface Lesson {
             get() {
                 return name == null
             }
+
+        val splitGroups: String?
+            get() {
+                if (groups == null)
+                    return null
+
+                var result = groups!!
+                val pattern = "[а-я] [А-Я]".toRegex()
+                while (true) {
+                    val found = pattern.find(result)
+                    if (found != null) {
+                        val spaceIndex = found.range.first + 1
+
+                        result = listOf(result.substring(0, spaceIndex), result.substring(spaceIndex + 1)).joinToString(separator = "\n")
+                    } else break
+                }
+                return result
+            }
     }
 }
