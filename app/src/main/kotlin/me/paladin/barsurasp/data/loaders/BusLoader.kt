@@ -2,6 +2,8 @@ package me.paladin.barsurasp.data.loaders
 
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import me.paladin.barsurasp.App
 import me.paladin.barsurasp.models.BusDirection
 import me.paladin.barsurasp.models.BusInfo
@@ -12,7 +14,7 @@ import java.util.Calendar
 
 object BusLoader {
 
-    suspend fun loadBuses(): List<BusDirection> {
+    suspend fun loadBuses(): List<BusDirection> = withContext(Dispatchers.IO) {
         val mainPage: String = App.client.get("https://barautopark.by/services/freight/5/").body()
         val doc = Jsoup.parse(mainPage)
 
@@ -38,7 +40,7 @@ object BusLoader {
             prevBus = number
         }
 
-        return busDirections
+        return@withContext busDirections
     }
 
     suspend fun loadBusInfo(busDirection: BusDirection, progressCallback: (Float) -> Unit): BusInfo {
@@ -63,9 +65,9 @@ object BusLoader {
         )
     }
 
-    private suspend fun loadBusStopsIds(directionId: Int?): List<Int>? {
+    private suspend fun loadBusStopsIds(directionId: Int?): List<Int>? = withContext(Dispatchers.IO) {
         if (directionId == null)
-            return null
+            return@withContext null
 
         val busDirPage: String = App.client.get("https://barautopark.by/services/freight/$directionId/?print=y").body()
         val doc = Jsoup.parse(busDirPage)
@@ -81,7 +83,7 @@ object BusLoader {
 
             ids += element.attr("id").toInt()
         }
-        return ids
+        return@withContext ids
     }
 
     private suspend fun loadBusStops(ids: List<Int>?, loadedCallback: () -> Unit): List<BusStop>? {
@@ -97,11 +99,11 @@ object BusLoader {
         return stops
     }
 
-    private suspend fun loadBusStop(stopId: Int): BusStop {
+    private suspend fun loadBusStop(stopId: Int): BusStop = withContext(Dispatchers.IO) {
         val stopPage: String = App.client.get("https://barautopark.by/bitrix/templates/barautopark/ajax.php?action=getBusPath&element_id=$stopId").body()
         val doc = Jsoup.parse(stopPage)
 
-        return BusStop(
+        BusStop(
             doc.getElementsByTag("h3")[0].text(),
             doc.getElementsByTag("tbody")
         )

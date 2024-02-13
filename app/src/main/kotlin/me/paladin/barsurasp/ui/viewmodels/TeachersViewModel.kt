@@ -37,12 +37,12 @@ class TeachersViewModel : ViewModel() {
         _uiState.update { TeachersUiState.Loading }
 
         viewModelScope.launch {
-            try {
-                val departments = ItemsRepository.getDepartments(useCache)
-
-                _uiState.update { TeachersUiState.Success(departments) }
-            } catch (_: Exception) {
-                _uiState.update { TeachersUiState.Error(networkError = true) }
+            _uiState.update {
+                try {
+                    TeachersUiState.Success(ItemsRepository.getDepartments(useCache))
+                } catch (_: Exception) {
+                    TeachersUiState.Error(networkError = true)
+                }
             }
         }
     }

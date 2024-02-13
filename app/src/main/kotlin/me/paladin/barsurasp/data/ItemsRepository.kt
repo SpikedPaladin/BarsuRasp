@@ -1,12 +1,12 @@
 package me.paladin.barsurasp.data
 
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import me.paladin.barsurasp.App
 import me.paladin.barsurasp.data.loaders.GroupLoader
 import me.paladin.barsurasp.data.loaders.TeacherLoader
 import me.paladin.barsurasp.models.Department
 import me.paladin.barsurasp.models.Faculty
+import me.paladin.barsurasp.utils.loadFromFile
+import me.paladin.barsurasp.utils.saveToFile
 import java.io.File
 import java.util.Calendar
 
@@ -18,12 +18,11 @@ object ItemsRepository {
         val faculties: List<Faculty>
         val file = getFacultiesFile()
         if (file.exists() && useCache) {
-            faculties = Json.decodeFromString<Faculty.Wrapper>(file.readText()).faculties
+            faculties = loadFromFile<Faculty.Wrapper>(file).faculties
         } else {
             faculties = GroupLoader.getFaculties()
 
-            file.parentFile?.mkdirs()
-            file.writeText(Json.encodeToString(Faculty.Wrapper(Calendar.getInstance().time.toString(), faculties)))
+            saveToFile(file, Faculty.Wrapper(Calendar.getInstance().time.toString(), faculties))
         }
         return faculties
     }
@@ -32,12 +31,11 @@ object ItemsRepository {
         val departments: List<Department>
         val file = getDepartmentsFile()
         if (file.exists() && useCache) {
-            departments = Json.decodeFromString<Department.Wrapper>(file.readText()).departments
+            departments = loadFromFile<Department.Wrapper>(file).departments
         } else {
             departments = TeacherLoader.getDepartments()
 
-            file.parentFile?.mkdirs()
-            file.writeText(Json.encodeToString(Department.Wrapper(Calendar.getInstance().time.toString(), departments)))
+            saveToFile(file, Department.Wrapper(Calendar.getInstance().time.toString(), departments))
         }
 
         return departments

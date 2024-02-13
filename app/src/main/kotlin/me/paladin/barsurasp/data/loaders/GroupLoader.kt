@@ -1,5 +1,7 @@
 package me.paladin.barsurasp.data.loaders
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import me.paladin.barsurasp.models.DaySchedule
 import me.paladin.barsurasp.models.Faculty
 import me.paladin.barsurasp.models.Lesson
@@ -13,7 +15,10 @@ import org.jsoup.Jsoup
 
 object GroupLoader {
 
-    suspend fun getTimetable(group: String, week: String): Timetable.Group? {
+    suspend fun getTimetable(
+        group: String,
+        week: String
+    ): Timetable.Group? = withContext(Dispatchers.Default) {
         val page = getStudentPage(group, week)
         val doc = Jsoup.parse(page)
 
@@ -21,7 +26,7 @@ object GroupLoader {
             .getElementsByTag("td")
 
         if (table.size == 0)
-            return null
+            return@withContext null
 
         val lastUpdate = doc.getElementsByClass("container")[3]
             .getElementsByTag("p")[0]
@@ -85,7 +90,7 @@ object GroupLoader {
                 days.last().lessons = lessons
         }
 
-        return Timetable.Group(
+        return@withContext Timetable.Group(
             lastUpdate = lastUpdate,
             days = days,
             group = group,
@@ -93,7 +98,7 @@ object GroupLoader {
         )
     }
 
-    suspend fun getFaculties(): List<Faculty> {
+    suspend fun getFaculties(): List<Faculty> = withContext(Dispatchers.Default) {
         val page = getStudentPage()
         val doc = Jsoup.parse(page)
 
@@ -128,6 +133,6 @@ object GroupLoader {
             }
         }
 
-        return faculties
+        faculties
     }
 }

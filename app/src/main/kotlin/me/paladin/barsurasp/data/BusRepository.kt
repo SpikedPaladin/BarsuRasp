@@ -1,16 +1,15 @@
 package me.paladin.barsurasp.data
 
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import me.paladin.barsurasp.App
 import me.paladin.barsurasp.data.loaders.BusLoader
 import me.paladin.barsurasp.models.BusDirection
 import me.paladin.barsurasp.models.BusInfo
+import me.paladin.barsurasp.utils.loadFromFile
+import me.paladin.barsurasp.utils.saveToFile
 import java.io.File
 import java.util.Calendar
 
 object BusRepository {
-    private val json = Json { ignoreUnknownKeys = true }
 
     fun deleteBusInfo(number: Int) {
         val file = getBusFile(number)
@@ -25,12 +24,11 @@ object BusRepository {
         val info: BusInfo
         val file = getBusFile(number)
         if (file.exists()) {
-            info = json.decodeFromString<BusInfo>(file.readText())
+            info = loadFromFile<BusInfo>(file)
         } else {
             info = BusLoader.loadBusInfo(direction, progressCallback)
 
-            file.parentFile?.mkdirs()
-            file.writeText(Json.encodeToString(info))
+            saveToFile(file, info)
         }
         return info
     }
@@ -39,12 +37,11 @@ object BusRepository {
         val directions: List<BusDirection>
         val file = getDirectionsFile()
         if (file.exists() && useCache) {
-            directions = json.decodeFromString<BusDirection.Wrapper>(file.readText()).directions
+            directions = loadFromFile<BusDirection.Wrapper>(file).directions
         } else {
             directions = BusLoader.loadBuses()
 
-            file.parentFile?.mkdirs()
-            file.writeText(Json.encodeToString(BusDirection.Wrapper(Calendar.getInstance().time.toString(), directions)))
+            saveToFile(file, BusDirection.Wrapper(Calendar.getInstance().time.toString(), directions))
         }
 
         return directions

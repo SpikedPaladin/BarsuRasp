@@ -38,12 +38,12 @@ class FacultiesViewModel : ViewModel() {
             _uiState.update { FacultiesUiState.Loading }
 
         viewModelScope.launch {
-            try {
-                val groups = ItemsRepository.getFaculties(useCache)
-
-                _uiState.update { FacultiesUiState.Success(groups) }
-            } catch (_: Exception) {
-                _uiState.update { FacultiesUiState.Error(networkError = true) }
+            _uiState.update {
+                try {
+                    FacultiesUiState.Success(ItemsRepository.getFaculties(useCache))
+                } catch (_: Exception) {
+                    FacultiesUiState.Error(networkError = true)
+                }
             }
         }
     }

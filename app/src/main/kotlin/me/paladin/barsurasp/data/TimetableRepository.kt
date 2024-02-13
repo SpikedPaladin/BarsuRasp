@@ -1,12 +1,12 @@
 package me.paladin.barsurasp.data
 
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import me.paladin.barsurasp.App
 import me.paladin.barsurasp.data.loaders.GroupLoader
 import me.paladin.barsurasp.data.loaders.TeacherLoader
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.isGroup
+import me.paladin.barsurasp.utils.loadFromFile
+import me.paladin.barsurasp.utils.saveToFile
 import java.io.File
 
 object TimetableRepository {
@@ -35,7 +35,7 @@ object TimetableRepository {
         val groupFile = File(cacheFolder.path, "$group.json")
 
         if (groupFile.exists()) {
-            val cache = Json.decodeFromString<Timetable.Group.Wrapper>(groupFile.readText())
+            val cache = loadFromFile<Timetable.Group.Wrapper>(groupFile)
 
             timetable = cache.timetables.find { it.date == date }
 
@@ -44,14 +44,14 @@ object TimetableRepository {
 
                 if (timetable != null) {
                     cache.timetables += timetable
-                    groupFile.writeText(Json.encodeToString(cache))
+                    saveToFile(groupFile, cache)
                 }
             }
         } else {
             timetable = GroupLoader.getTimetable(group, date)
 
             if (timetable != null)
-                groupFile.writeText(Json.encodeToString(Timetable.Group.Wrapper(listOf(timetable))))
+                saveToFile(groupFile, Timetable.Group.Wrapper(listOf(timetable)))
         }
         return timetable
     }
@@ -63,10 +63,10 @@ object TimetableRepository {
         if (!cacheFolder.exists())
             cacheFolder.mkdirs()
 
-        val groupFile = File(cacheFolder.path, "$name.json")
+        val teacherFile = File(cacheFolder.path, "$name.json")
 
-        if (groupFile.exists()) {
-            val cache = Json.decodeFromString<Timetable.Teacher.Wrapper>(groupFile.readText())
+        if (teacherFile.exists()) {
+            val cache = loadFromFile<Timetable.Teacher.Wrapper>(teacherFile)
 
             timetable = cache.timetables.find { it.date == date }
 
@@ -75,14 +75,14 @@ object TimetableRepository {
 
                 if (timetable != null) {
                     cache.timetables += timetable
-                    groupFile.writeText(Json.encodeToString(cache))
+                    saveToFile(teacherFile, cache)
                 }
             }
         } else {
             timetable = TeacherLoader.getTimetable(name, date)
 
             if (timetable != null)
-                groupFile.writeText(Json.encodeToString(Timetable.Teacher.Wrapper(listOf(timetable))))
+                saveToFile(teacherFile, Timetable.Teacher.Wrapper(listOf(timetable)))
         }
         return timetable
     }

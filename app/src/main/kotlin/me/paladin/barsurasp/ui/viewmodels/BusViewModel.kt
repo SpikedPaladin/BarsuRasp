@@ -62,15 +62,15 @@ class BusViewModel(private val number: Int) : ViewModel() {
     fun load(errorCallback: () -> Unit) {
         _busState.update { BusState.Loading }
         viewModelScope.launch {
-            try {
-                _busState.update {
+            _busState.update {
+                try {
                     BusState.Loaded(
                         BusRepository.getBusInfo(number) { progress -> _progress.update { progress } }
                     )
+                } catch (_: Exception) {
+                    errorCallback()
+                    BusState.None
                 }
-            } catch (_: Exception) {
-                errorCallback()
-                _busState.update { BusState.None }
             }
         }
     }

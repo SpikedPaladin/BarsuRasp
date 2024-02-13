@@ -88,18 +88,16 @@ class MainViewModel : ViewModel() {
         currentJob?.cancel()
 
         currentJob = viewModelScope.launch {
-            try {
-                val timetable = TimetableRepository.getTimetable(mainGroup.value!!, _week.value)
+            _uiState.update {
+                try {
+                    val timetable = TimetableRepository.getTimetable(mainGroup.value!!, _week.value)
 
-                _uiState.update {
                     if (timetable != null)
                         UiState.Success(timetable)
                     else
                         UiState.Error(noTimetable = true)
-                }
-            } catch (e: Exception) {
-                Log.i("NetworkError", "updateTimetable: ${e.message}")
-                _uiState.update {
+                } catch (e: Exception) {
+                    Log.i("NetworkError", "updateTimetable: ${e.message}")
                     UiState.Error(noInternet = true)
                 }
             }
