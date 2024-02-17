@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.ClipOp
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -88,8 +89,10 @@ private fun TimelineItem(element: TimelineElement, isFirst: Boolean, isLast: Boo
         TimelineIcon(element.state, isFirst, isLast)
         Text(
             text = element.name,
-            modifier = Modifier
-                .weight(1F),
+            modifier = Modifier.weight(1F),
+            color = if (element.state == State.PASSED)
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6F)
+            else Color.Unspecified,
             fontWeight = if (element.state == State.ARRIVING)
                 FontWeight.Bold
             else null
@@ -97,6 +100,9 @@ private fun TimelineItem(element: TimelineElement, isFirst: Boolean, isLast: Boo
         Text(
             text = element.time.toString(),
             modifier = Modifier.padding(end = 8.dp),
+            color = if (element.state == State.PASSED)
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6F)
+            else Color.Unspecified,
             fontWeight = if (element.state == State.ARRIVING)
                 FontWeight.Bold
             else null

@@ -159,7 +159,8 @@ private fun SavedItem(
             subtitle?.let {
                 Text(
                     text = it,
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
