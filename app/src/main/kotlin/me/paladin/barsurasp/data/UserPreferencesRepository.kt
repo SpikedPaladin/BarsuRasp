@@ -65,7 +65,11 @@ class UserPreferencesRepository(
 
     val mainGroup = dataStore.data
         .map { preferences ->
-            preferences.mainGroup
+            val group = preferences.mainGroup
+            if (group.contains(":"))
+                group
+            else
+                "$group:?"
         }.distinctUntilChanged()
 
     suspend fun changeMainGroup(group: String) {

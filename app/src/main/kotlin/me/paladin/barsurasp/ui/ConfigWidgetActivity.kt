@@ -38,7 +38,7 @@ class ConfigWidgetActivity : ComponentActivity() {
             val monet by viewModel.monet.collectAsState()
 
             BarsuRaspTheme(theme.isDark(), monet) {
-                ItemsScreen(itemSelected = { it, _ -> handleSelectGroup(it) })
+                ItemsScreen(itemSelected = { handleSelectGroup(it) })
             }
         }
     }

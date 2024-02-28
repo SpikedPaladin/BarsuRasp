@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -74,11 +75,29 @@ private fun SavedSheetContent(
     savedItems: Set<String>,
     groupSelected: (String) -> Unit,
     groupRemoved: (String) -> Unit,
-    openFaculties: () -> Unit,
+    openFaculties: () -> Unit
 ) {
     LazyColumn(
         Modifier.padding(bottom = 16.dp, start = 8.dp, end = 8.dp)
     ) {
+        if (mainGroup != null && !savedItems.hasItem(mainGroup))
+            item {
+                val (title, subtitle) = mainGroup.splitItem()
+
+                Text(
+                    text = "Выбрано",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .padding(4.dp)
+                )
+                SavedItem(
+                    title = title,
+                    subtitle = subtitle,
+                    selected = true
+                )
+                Spacer(Modifier.height(12.dp))
+            }
         item {
             Text(
                 text = "Сохраненные",
@@ -129,10 +148,10 @@ private fun SavedSheetContent(
 @Composable
 private fun SavedItem(
     title: String,
-    subtitle: String?,
+    subtitle: String? = null,
     selected: Boolean,
-    onRemove: () -> Unit,
-    onClick: () -> Unit
+    onRemove: (() -> Unit)? = null,
+    onClick: (() -> Unit)? = null
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -145,7 +164,11 @@ private fun SavedItem(
                 else
                     Color.Transparent
             )
-            .clickable(onClick = onClick)
+            .let {
+                if (onClick != null)
+                    return@let it.clickable(onClick = onClick)
+                else return@let it
+            }
     ) {
         Column(
             modifier = Modifier
@@ -164,14 +187,23 @@ private fun SavedItem(
                 )
             }
         }
-        IconButton(onClick = onRemove) {
-            Icon(
-                imageVector = Icons.Filled.Star,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
+        if (onRemove != null)
+            IconButton(onClick = onRemove) {
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
     }
+}
+
+private fun Set<String>.hasItem(item: String): Boolean {
+    for (element in this) {
+        if (element.splitItem().first == item.splitItem().first)
+            return true
+    }
+    return false
 }
 
 private fun String.splitItem(): Pair<String, String?> {

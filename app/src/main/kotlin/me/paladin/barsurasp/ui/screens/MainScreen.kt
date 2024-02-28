@@ -71,7 +71,7 @@ fun MainScreen(
     Scaffold(
         topBar = {
             MainToolbar(
-                title = if (mainGroup != "") mainGroup else null,
+                title = if (mainGroup != "") mainGroup!!.split(":", limit = 2)[0] else null,
                 lastUpdate = if (uiState is UiState.Success) {
                     (uiState as UiState.Success).data.lastSiteUpdate
                 } else null,

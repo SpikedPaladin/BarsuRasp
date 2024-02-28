@@ -28,7 +28,7 @@ import me.paladin.barsurasp.utils.getApiDay
 
 @Composable
 fun GlanceTimetableHeader(
-    group: String,
+    item: String,
     date: String
 ) {
     Row(
@@ -38,7 +38,7 @@ fun GlanceTimetableHeader(
         Text(
             style = TextStyle(color = GlanceTheme.colors.onBackground, fontSize = 20.sp),
             modifier = GlanceModifier.defaultWeight().clickable(actionStartActivity<MainActivity>()),
-            text = group
+            text = item
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {

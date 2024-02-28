@@ -62,12 +62,8 @@ fun MainNavGraph(
             ItemsScreen(
                 savedItems = savedItems,
                 itemSaved = { mainViewModel.saveItem(it) },
-                itemSelected = { item, saveName ->
+                itemSelected = { item ->
                     mainViewModel.setMainGroup(item)
-
-                    if (mainViewModel.savedItems.value.isEmpty())
-                        mainViewModel.saveItem(saveName)
-
                     backAction()
                 },
                 backAction = backAction

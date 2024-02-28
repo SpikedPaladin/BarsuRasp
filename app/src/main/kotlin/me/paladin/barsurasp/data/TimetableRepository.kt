@@ -20,9 +20,13 @@ object TimetableRepository {
     }
 
     suspend fun getTimetable(item: String, date: String): Timetable? {
-        return if (isGroup(item))
-            getGroupTimetable(item, date)
-        else getTeacherTimetable(item, date)
+        var finalItem = item
+        if (finalItem.contains(":"))
+            finalItem = item.split(":", limit = 2)[0]
+
+        return if (isGroup(finalItem))
+            getGroupTimetable(finalItem, date)
+        else getTeacherTimetable(finalItem, date)
     }
 
     private suspend fun getGroupTimetable(group: String, date: String): Timetable.Group? {

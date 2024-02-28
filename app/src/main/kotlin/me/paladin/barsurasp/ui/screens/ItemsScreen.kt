@@ -61,7 +61,7 @@ fun ItemsScreen(
     savedItems: Set<String> = setOf(),
     backAction: (() -> Unit)? = null,
     itemSaved: ((item: String) -> Unit)? = null,
-    itemSelected: (item: String, saveName: String) -> Unit
+    itemSelected: (item: String) -> Unit
 ) {
     val facultiesViewModel: FacultiesViewModel = viewModel()
     val teachersViewModel: TeachersViewModel = viewModel()
@@ -141,7 +141,7 @@ private fun GroupsPage(
     viewModel: FacultiesViewModel,
     savedItems: Set<String>,
     groupSaved: ((group: String) -> Unit)? = null,
-    groupSelected: (group: String, item: String) -> Unit
+    groupSelected: (item: String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -196,10 +196,7 @@ private fun GroupsPage(
                                                 { groupSaved("$group:${item.name}") }
                                             } else null,
                                             onClick = {
-                                                groupSelected(
-                                                    group,
-                                                    "$group:${item.name}"
-                                                )
+                                                groupSelected("$group:${item.name}")
                                             }
                                         )
                                     }
@@ -223,7 +220,7 @@ private fun TeachersPage(
     viewModel: TeachersViewModel,
     savedItems: Set<String>,
     teacherSaved: ((teacher: String) -> Unit)? = null,
-    teacherSelected: (teacher: String, item: String) -> Unit
+    teacherSelected: (item: String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -276,10 +273,7 @@ private fun TeachersPage(
                                         { teacherSaved("$teacher:${item.name}") }
                                     } else null,
                                     onClick = {
-                                        teacherSelected(
-                                            teacher,
-                                            "$teacher:${item.name}"
-                                        )
+                                        teacherSelected("$teacher:${item.name}")
                                     }
                                 )
                             }
