@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
@@ -44,21 +43,19 @@ class UserPreferencesRepository(
     private inline val Preferences.savedItems
         get() = this[Keys.savedItems] ?: setOf()
 
-    val monet: Flow<Boolean> = dataStore.data
+    val monet = dataStore.data
         .map { preferences ->
             preferences.monet
-        }
-        .distinctUntilChanged()
+        }.distinctUntilChanged()
 
     suspend fun changeMonet(monet: Boolean) {
         dataStore.edit { it[Keys.monet] = monet }
     }
 
-    val theme: Flow<AppTheme> = dataStore.data
+    val theme = dataStore.data
         .map {
             AppTheme.fromPref(it[Keys.theme])
-        }
-        .distinctUntilChanged()
+        }.distinctUntilChanged()
 
     suspend fun changeTheme(theme: AppTheme) {
         dataStore.edit {
@@ -66,27 +63,25 @@ class UserPreferencesRepository(
         }
     }
 
-    val mainGroup: Flow<String> = dataStore.data
+    val mainGroup = dataStore.data
         .map { preferences ->
             preferences.mainGroup
-        }
-        .distinctUntilChanged()
+        }.distinctUntilChanged()
 
     suspend fun changeMainGroup(group: String) {
         dataStore.edit { it[Keys.mainGroup] = group }
     }
 
-    val adsWatched: Flow<Int> = dataStore.data
+    val adsWatched = dataStore.data
         .map { preferences ->
             preferences.adsWatched
-        }
-        .distinctUntilChanged()
+        }.distinctUntilChanged()
 
     suspend fun incrementAdCounter() {
         dataStore.edit { it[Keys.adsWatched] = it.adsWatched + 1 }
     }
 
-    val buses: Flow<List<BusPath>> = dataStore.data
+    val buses = dataStore.data
         .map {
             val serialized = it.buses
             if (serialized != "") {
@@ -95,7 +90,7 @@ class UserPreferencesRepository(
                 listOf()
         }.distinctUntilChanged()
 
-    val selectedPath: Flow<Int> = dataStore.data
+    val selectedPath = dataStore.data
         .map { it.selectedPath }.distinctUntilChanged()
 
     suspend fun selectPath(index: Int) {
@@ -130,7 +125,7 @@ class UserPreferencesRepository(
         }
     }
 
-    val showBuses: Flow<Boolean> = dataStore.data
+    val showBuses = dataStore.data
         .map {
             it.showBuses
         }.distinctUntilChanged()
@@ -139,11 +134,10 @@ class UserPreferencesRepository(
         dataStore.edit { it[Keys.showBuses] = enabled }
     }
 
-    val savedItems: Flow<Set<String>> = dataStore.data
+    val savedItems = dataStore.data
         .map { preferences ->
             preferences.savedItems
-        }
-        .distinctUntilChanged()
+        }.distinctUntilChanged()
 
     suspend fun saveItem(item: String) {
         dataStore.edit {
