@@ -47,6 +47,7 @@ class MainViewModel : ViewModel() {
         setOf()
     )
 
+
     private val _week = MutableStateFlow(getCurrentWeek())
     val week = _week.asStateFlow()
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
@@ -54,20 +55,22 @@ class MainViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            mainGroup.collect { value ->
-                if (value == null)
-                    return@collect
+            launch {
+                mainGroup.collect { value ->
+                    if (value == null)
+                        return@collect
 
-                if (value != "") {
-                    updateTimetable()
-                } else {
-                    _uiState.update { UiState.Error(noGroup = true) }
+                    if (value != "") {
+                        updateTimetable()
+                    } else {
+                        _uiState.update { UiState.Error(noGroup = true) }
+                    }
                 }
             }
-        }
-        viewModelScope.launch {
-            week.collect {
-                updateTimetable()
+            launch {
+                week.collect {
+                    updateTimetable()
+                }
             }
         }
     }

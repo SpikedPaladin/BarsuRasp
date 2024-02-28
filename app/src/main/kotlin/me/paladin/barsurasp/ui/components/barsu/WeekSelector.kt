@@ -1,5 +1,7 @@
 package me.paladin.barsurasp.ui.components.barsu
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
@@ -9,6 +11,7 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import me.paladin.barsurasp.utils.formatWeek
@@ -22,29 +25,37 @@ fun WeekSelector(
     nextClicked: () -> Unit,
     weekClicked: () -> Unit
 ) {
-    SingleChoiceSegmentedButtonRow(
-        modifier = modifier
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
     ) {
-        SegmentedButton(
-            onClick = prevClicked,
-            selected = false,
-            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3)
+        SingleChoiceSegmentedButtonRow(
+            modifier = modifier
         ) {
-            Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = null)
-        }
-        SegmentedButton(
-            onClick = weekClicked,
-            selected = week == getCurrentWeek(),
-            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3)
-        ) {
-            Text(formatWeek(week))
-        }
-        SegmentedButton(
-            onClick = nextClicked,
-            selected = false,
-            shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3)
-        ) {
-            Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowForward, contentDescription = null)
+            SegmentedButton(
+                onClick = prevClicked,
+                selected = false,
+                shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3)
+            ) {
+                Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = null)
+            }
+            SegmentedButton(
+                onClick = weekClicked,
+                selected = week == getCurrentWeek(),
+                shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3)
+            ) {
+                Text(formatWeek(week))
+            }
+            SegmentedButton(
+                onClick = nextClicked,
+                selected = false,
+                shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+                    contentDescription = null
+                )
+            }
         }
     }
 }
