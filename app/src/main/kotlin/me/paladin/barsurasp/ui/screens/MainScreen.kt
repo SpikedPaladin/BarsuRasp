@@ -192,7 +192,7 @@ private fun MainToolbar(
             Text(text = title?.split(":", limit = 2)?.get(0) ?: stringResource(R.string.timetable_title))
         },
         actions = {
-            val tooltipState = rememberTooltipState()
+            val tooltipState = rememberTooltipState(isPersistent = true)
 
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
