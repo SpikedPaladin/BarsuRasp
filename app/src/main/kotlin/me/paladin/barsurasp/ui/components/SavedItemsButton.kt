@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -32,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,8 +45,8 @@ import me.paladin.barsurasp.ui.theme.BarsuRaspTheme
 fun SavedItemsButton(
     mainGroup: String?,
     savedItems: Set<String>,
-    groupSelected: (String) -> Unit,
-    groupRemoved: (String) -> Unit,
+    selectAction: (String) -> Unit,
+    starAction: (String) -> Unit,
     openFaculties: () -> Unit
 ) {
     var visible by remember { mutableStateOf(false) }
@@ -67,8 +67,8 @@ fun SavedItemsButton(
         visible = visible,
         mainGroup = mainGroup,
         savedItems = savedItems,
-        groupSelected = groupSelected,
-        groupRemoved = groupRemoved,
+        selectAction = selectAction,
+        starAction = starAction,
         openFaculties = openFaculties
     ) {
         visible = false
@@ -80,8 +80,8 @@ private fun SavedSheet(
     visible: Boolean,
     mainGroup: String?,
     savedItems: Set<String>,
-    groupSelected: (String) -> Unit,
-    groupRemoved: (String) -> Unit,
+    selectAction: (String) -> Unit,
+    starAction: (String) -> Unit,
     openFaculties: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -91,15 +91,15 @@ private fun SavedSheet(
         SavedSheetContent(
             mainGroup = mainGroup,
             savedItems = savedItems,
-            groupSelected = { item ->
+            selectAction = { item ->
                 coroutineScope
                     .launch { sheetState.hide() }
                     .invokeOnCompletion {
                         onDismiss()
-                        groupSelected(item)
+                        selectAction(item)
                     }
             },
-            groupRemoved = groupRemoved,
+            starAction = starAction,
             openFaculties = {
                 coroutineScope
                     .launch { sheetState.hide() }
@@ -116,8 +116,8 @@ private fun SavedSheet(
 private fun SavedSheetContent(
     mainGroup: String?,
     savedItems: Set<String>,
-    groupSelected: (String) -> Unit,
-    groupRemoved: (String) -> Unit,
+    selectAction: (String) -> Unit,
+    starAction: (String) -> Unit,
     openFaculties: () -> Unit
 ) {
     LazyColumn(
@@ -137,7 +137,9 @@ private fun SavedSheetContent(
                 SavedItem(
                     title = title,
                     subtitle = subtitle,
-                    selected = true
+                    selected = true,
+                    isSaved = false,
+                    onStar = { starAction(mainGroup) }
                 )
                 Spacer(Modifier.height(12.dp))
             }
@@ -163,8 +165,8 @@ private fun SavedSheetContent(
                 title = title,
                 subtitle = subtitle,
                 selected = title == mainGroup?.splitItem()?.first,
-                onRemove = { groupRemoved(item) },
-                onClick = { groupSelected(title) }
+                onStar = { starAction(item) },
+                onClick = { selectAction(title) }
             )
             Spacer(Modifier.size(2.dp))
             if (selectedIndex != index && selectedIndex - 1 != index && index != savedItems.size - 1)
@@ -193,8 +195,9 @@ private fun SavedItem(
     title: String,
     subtitle: String? = null,
     selected: Boolean,
-    onRemove: (() -> Unit)? = null,
-    onClick: (() -> Unit)? = null
+    isSaved: Boolean = true,
+    onClick: (() -> Unit)? = null,
+    onStar: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -230,14 +233,14 @@ private fun SavedItem(
                 )
             }
         }
-        if (onRemove != null)
-            IconButton(onClick = onRemove) {
-                Icon(
-                    imageVector = Icons.Filled.Star,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+        IconButton(onClick = onStar) {
+            Icon(
+                painter = if (isSaved) painterResource(R.drawable.ic_star)
+                else painterResource(R.drawable.ic_star_outline),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
     }
 }
 
@@ -265,9 +268,7 @@ private fun String.splitItem(): Pair<String, String?> {
 private fun SavedItemPreview() {
     BarsuRaspTheme {
         Surface {
-            SavedItem(title = "ТОСП11", subtitle = "ИФ", selected = true, onRemove = { /*TODO*/ }) {
-
-            }
+            SavedItem(title = "ТОСП11", subtitle = "ИФ", selected = true, onStar = {}, onClick = {})
         }
     }
 }

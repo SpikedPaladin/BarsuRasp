@@ -75,8 +75,8 @@ fun MainScreen(
             SavedItemsButton(
                 mainGroup = mainGroup,
                 savedItems = savedItems,
-                groupSelected = { viewModel.setMainGroup(it) },
-                groupRemoved = { viewModel.saveItem(it) },
+                selectAction = { viewModel.setMainGroup(it) },
+                starAction = { viewModel.saveItem(it) },
                 openFaculties = openFaculties
             )
         }
