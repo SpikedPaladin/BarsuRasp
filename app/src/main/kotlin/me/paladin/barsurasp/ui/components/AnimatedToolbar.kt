@@ -26,7 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -64,7 +64,10 @@ fun CustomToolbar(
     }
 
     val centralContentAlpha = lerp(1F, 0F, collapsedFraction)
-    val elevationState = animateDpAsState(lerp(0.dp, collapsedElevation, collapsedFraction))
+    val elevationState = animateDpAsState(
+        targetValue = lerp(0.dp, collapsedElevation, collapsedFraction),
+        label = "toolbarElevation",
+    )
 
     Surface(
         modifier = modifier,
@@ -343,7 +346,7 @@ class CustomToolbarScrollState(
      *
      * Use this limit to coerce the [heightOffset] value when it's updated.
      */
-    var heightOffsetLimit by mutableStateOf(initialHeightOffsetLimit)
+    var heightOffsetLimit by mutableFloatStateOf(initialHeightOffsetLimit)
 
     /**
      * The top app bar's current height offset in pixels. This height offset is applied to the fixed
@@ -367,7 +370,7 @@ class CustomToolbarScrollState(
      * consumes scroll events. A common implementation would update the value to be the sum of all
      * [NestedScrollConnection.onPostScroll] `consumed.y` values.
      */
-    var contentOffset by mutableStateOf(initialContentOffset)
+    var contentOffset by mutableFloatStateOf(initialContentOffset)
 
     /**
      * A value that represents the collapsed height percentage of the app bar.
@@ -382,7 +385,7 @@ class CustomToolbarScrollState(
             0f
         }
 
-    private var _heightOffset = mutableStateOf(initialHeightOffset)
+    private var _heightOffset = mutableFloatStateOf(initialHeightOffset)
 
 }
 

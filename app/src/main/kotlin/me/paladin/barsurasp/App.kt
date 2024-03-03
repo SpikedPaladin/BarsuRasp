@@ -11,6 +11,7 @@ import com.google.android.gms.ads.MobileAds
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import me.paladin.barsurasp.data.UserPreferencesRepository
+import java.io.File
 import java.security.KeyManagementException
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
@@ -77,6 +78,6 @@ class App : Application() {
             UserPreferencesRepository(application.dataStore)
         }
 
-        fun getCacheDir() = application.cacheDir
+        fun getCacheDir(): File = application.cacheDir
     }
 }

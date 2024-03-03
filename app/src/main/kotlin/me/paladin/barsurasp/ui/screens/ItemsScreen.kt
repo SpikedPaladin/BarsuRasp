@@ -34,6 +34,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -164,7 +165,7 @@ private fun GroupsPage(
             }
 
             is FacultiesUiState.Success -> {
-                var expandedFaculty by remember { mutableStateOf(-1) }
+                var expandedFaculty by remember { mutableIntStateOf(-1) }
 
                 LazyColumn(Modifier.fillMaxSize()) {
                     itemsIndexed(state.data) { index, item ->
@@ -246,7 +247,7 @@ private fun TeachersPage(
             }
 
             is TeachersUiState.Success -> {
-                var expandedDepartment by remember { mutableStateOf(-1) }
+                var expandedDepartment by remember { mutableIntStateOf(-1) }
 
                 LazyColumn(Modifier.fillMaxSize()) {
                     itemsIndexed(state.data) { index, item ->
