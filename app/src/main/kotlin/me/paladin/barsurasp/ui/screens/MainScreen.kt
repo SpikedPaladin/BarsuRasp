@@ -66,9 +66,7 @@ fun MainScreen(
         topBar = {
             MainToolbar(
                 title = if (!mainGroup.isNullOrEmpty()) mainGroup else null,
-                lastUpdate = if (uiState is UiState.Success) {
-                    (uiState as UiState.Success).data.lastSiteUpdate
-                } else null,
+                lastUpdate = (uiState as? UiState.Success)?.data?.lastSiteUpdate,
                 refreshAction = { viewModel.refreshTimetable() },
                 settingsAction = navigateToSettings
             )
