@@ -152,7 +152,7 @@ private fun SavedSheetContent(
         }
 
         val selectedIndex = if (mainGroup != null)
-            savedItems.indexOfFirst { it.startsWith(mainGroup) }
+            savedItems.indexOfFirst { it.splitItem().first == mainGroup.splitItem().first }
         else -1
 
         itemsIndexed(savedItems.toList()) { index, item ->
@@ -162,7 +162,7 @@ private fun SavedSheetContent(
             SavedItem(
                 title = title,
                 subtitle = subtitle,
-                selected = title == mainGroup,
+                selected = title == mainGroup?.splitItem()?.first,
                 onRemove = { groupRemoved(item) },
                 onClick = { groupSelected(title) }
             )
