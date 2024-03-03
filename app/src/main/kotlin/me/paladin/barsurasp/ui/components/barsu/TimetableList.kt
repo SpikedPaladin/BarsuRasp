@@ -1,12 +1,10 @@
 package me.paladin.barsurasp.ui.components.barsu
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.getCurrentApiDate
@@ -22,7 +20,6 @@ fun TimetableList(
     )
 
     HorizontalPager(
-        modifier = Modifier.animateContentSize(),
         contentPadding = PaddingValues(
             bottom = 8.dp,
             top = 4.dp,
