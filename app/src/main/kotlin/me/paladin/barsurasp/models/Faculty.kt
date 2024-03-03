@@ -14,3 +14,16 @@ data class Faculty(
         val faculties: List<Faculty>
     )
 }
+
+fun List<Faculty>.forGroup(group: String): String {
+    for (item in this) {
+        item.specialities.forEach { speciality ->
+            speciality.groups.forEach {
+                if (it == group)
+                    return item.name
+            }
+        }
+    }
+
+    return "Группа"
+}

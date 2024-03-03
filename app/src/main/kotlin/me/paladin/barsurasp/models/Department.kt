@@ -14,3 +14,14 @@ data class Department(
         val departments: List<Department>
     )
 }
+
+fun List<Department>.forTeacher(teacher: String): String {
+    for (item in this) {
+        item.teachers.forEach {
+            if (it == teacher)
+                return item.name
+        }
+    }
+
+    return "Преподаватель"
+}

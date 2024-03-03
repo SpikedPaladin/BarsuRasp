@@ -68,8 +68,11 @@ class UserPreferencesRepository(
             val group = preferences.mainGroup
             if (group.contains(":"))
                 group
-            else
-                "$group:?"
+            else {
+                val migrated = "$group:${ItemsRepository.getItemDescription(group)}"
+                changeMainGroup(migrated)
+                migrated
+            }
         }.distinctUntilChanged()
 
     suspend fun changeMainGroup(group: String) {

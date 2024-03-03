@@ -5,6 +5,9 @@ import me.paladin.barsurasp.data.loaders.GroupLoader
 import me.paladin.barsurasp.data.loaders.TeacherLoader
 import me.paladin.barsurasp.models.Department
 import me.paladin.barsurasp.models.Faculty
+import me.paladin.barsurasp.models.forGroup
+import me.paladin.barsurasp.models.forTeacher
+import me.paladin.barsurasp.utils.isGroup
 import me.paladin.barsurasp.utils.loadFromFile
 import me.paladin.barsurasp.utils.saveToFile
 import java.io.File
@@ -39,6 +42,18 @@ object ItemsRepository {
         }
 
         return departments
+    }
+
+    suspend fun getItemDescription(item: String): String {
+        return try {
+            if (isGroup(item)) {
+                getFaculties().forGroup(item)
+            } else {
+                getDepartments().forTeacher(item)
+            }
+        } catch (_: Exception) {
+            "Неизвестно"
+        }
     }
 
     private fun getFacultiesFile() = File(App.getCacheDir(), FACULTIES_CACHE_FILE)

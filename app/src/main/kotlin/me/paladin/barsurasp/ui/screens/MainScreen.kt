@@ -65,7 +65,7 @@ fun MainScreen(
     Scaffold(
         topBar = {
             MainToolbar(
-                title = if (mainGroup != "") mainGroup!!.split(":", limit = 2)[0] else null,
+                title = if (!mainGroup.isNullOrEmpty()) mainGroup else null,
                 lastUpdate = if (uiState is UiState.Success) {
                     (uiState as UiState.Success).data.lastSiteUpdate
                 } else null,
@@ -191,7 +191,7 @@ private fun MainToolbar(
 ) {
     TopAppBar(
         title = {
-            Text(text = title ?: stringResource(R.string.timetable_title))
+            Text(text = title?.split(":", limit = 2)?.get(0) ?: stringResource(R.string.timetable_title))
         },
         actions = {
             val tooltipState = rememberTooltipState()

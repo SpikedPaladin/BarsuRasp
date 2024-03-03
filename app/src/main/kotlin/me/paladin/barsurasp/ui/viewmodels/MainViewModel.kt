@@ -47,7 +47,6 @@ class MainViewModel : ViewModel() {
         setOf()
     )
 
-
     private val _week = MutableStateFlow(getCurrentWeek())
     val week = _week.asStateFlow()
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
