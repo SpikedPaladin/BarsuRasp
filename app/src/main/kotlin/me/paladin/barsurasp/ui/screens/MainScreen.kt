@@ -4,6 +4,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,12 +27,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
@@ -56,6 +60,8 @@ fun MainScreen(
     openFaculties: () -> Unit,
     openBusConfig: () -> Unit
 ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
     val selectedWeek by viewModel.week.collectAsState()
     val showBuses by viewModel.showBuses.collectAsState()
     val mainGroup by viewModel.mainGroup.collectAsState()
@@ -67,6 +73,7 @@ fun MainScreen(
             MainToolbar(
                 title = if (!mainGroup.isNullOrEmpty()) mainGroup else null,
                 lastUpdate = (uiState as? UiState.Success)?.data?.lastSiteUpdate,
+                scrollBehavior = scrollBehavior,
                 refreshAction = { viewModel.refreshTimetable() },
                 settingsAction = navigateToSettings
             )
@@ -79,12 +86,14 @@ fun MainScreen(
                 starAction = { viewModel.saveItem(it) },
                 openFaculties = openFaculties
             )
-        }
+        },
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxSize()
+                .fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 72.dp)
         ) {
             item {
                 WeekSelector(
@@ -184,6 +193,7 @@ private fun ErrorState(
 private fun MainToolbar(
     title: String? = null,
     lastUpdate: String? = null,
+    scrollBehavior: TopAppBarScrollBehavior,
     refreshAction: () -> Unit,
     settingsAction: () -> Unit
 ) {
@@ -219,6 +229,7 @@ private fun MainToolbar(
                     contentDescription = stringResource(R.string.description_settings)
                 )
             }
-        }
+        },
+        scrollBehavior = scrollBehavior,
     )
 }
