@@ -14,9 +14,8 @@ object TimetableRepository {
     private const val TEACHERS_CACHE_FOLDER = "app/teachers"
 
     fun refreshTimetable(item: String) {
-        val itemFolder = File(getCacheFolder(item).path, "$item.json")
-
-        itemFolder.delete()
+        val finalItem = item.split(":", limit = 2)[0]
+        File(getCacheFolder(finalItem).path, "$finalItem.json").delete()
     }
 
     suspend fun getTimetable(item: String, date: String): Timetable? {
