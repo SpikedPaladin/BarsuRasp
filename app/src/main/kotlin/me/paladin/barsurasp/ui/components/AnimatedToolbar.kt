@@ -119,13 +119,13 @@ fun CustomToolbar(
                             .layoutId(CentralContentId)
                             .alpha(centralContentAlpha)
                     ) {
-                        val mergedStyle =
-                            LocalTextStyle.current.merge(MaterialTheme.typography.titleLarge)
+                        val mergedStyle = LocalTextStyle.current
+                            .merge(MaterialTheme.typography.titleLarge)
+
                         CompositionLocalProvider(
                             LocalTextStyle provides mergedStyle,
                             content = centralContent
                         )
-
                     }
                 }
                 if (additionalContent != null) {
@@ -142,21 +142,24 @@ fun CustomToolbar(
                 WindowInsets
                     .systemBars
                     .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-            ).then(Modifier.heightIn(min = MinCollapsedHeight))
+            )
+            .then(Modifier.heightIn(min = MinCollapsedHeight))
         ) { measurables, constraints ->
             val horizontalPaddingPx = HorizontalPadding.toPx()
             val expandedTitleBottomPaddingPx = ExpandedTitleBottomPadding.toPx()
 
             // Measuring widgets inside toolbar:
 
-            val navigationIconPlaceable =
-                measurables.firstOrNull { it.layoutId == NavigationIconId }
-                    ?.measure(constraints.copy(minWidth = 0))
-
-            val actionsPlaceable = measurables.firstOrNull { it.layoutId == ActionsId }
+            val navigationIconPlaceable = measurables
+                .firstOrNull { it.layoutId == NavigationIconId }
                 ?.measure(constraints.copy(minWidth = 0))
 
-            val expandedTitlePlaceable = measurables.firstOrNull { it.layoutId == ExpandedTitleId }
+            val actionsPlaceable = measurables
+                .firstOrNull { it.layoutId == ActionsId }
+                ?.measure(constraints.copy(minWidth = 0))
+
+            val expandedTitlePlaceable = measurables
+                .firstOrNull { it.layoutId == ExpandedTitleId }
                 ?.measure(
                     constraints.copy(
                         maxWidth = (constraints.maxWidth - 2 * horizontalPaddingPx).roundToInt(),
@@ -165,9 +168,9 @@ fun CustomToolbar(
                     )
                 )
 
-            val additionalContentPlaceable =
-                measurables.firstOrNull { it.layoutId == AdditionalContentId }
-                    ?.measure(constraints)
+            val additionalContentPlaceable = measurables
+                .firstOrNull { it.layoutId == AdditionalContentId }
+                ?.measure(constraints)
 
             val navigationIconOffset = when (navigationIconPlaceable) {
                 null -> horizontalPaddingPx
@@ -182,29 +185,28 @@ fun CustomToolbar(
             val collapsedTitleMaxWidthPx =
                 (constraints.maxWidth - navigationIconOffset - actionsOffset) / 1
 
-            val collapsedTitlePlaceable =
-                measurables.firstOrNull { it.layoutId == CollapsedTitleId }
-                    ?.measure(
-                        constraints.copy(
-                            maxWidth = collapsedTitleMaxWidthPx.roundToInt(),
-                            minWidth = 0,
-                            minHeight = 0
-                        )
+            val collapsedTitlePlaceable = measurables
+                .firstOrNull { it.layoutId == CollapsedTitleId }
+                ?.measure(
+                    constraints.copy(
+                        maxWidth = collapsedTitleMaxWidthPx.roundToInt(),
+                        minWidth = 0,
+                        minHeight = 0
                     )
+                )
 
-            val centralContentPlaceable =
-                measurables.firstOrNull { it.layoutId == CentralContentId }
-                    ?.measure(
-                        constraints.copy(
-                            minWidth = 0,
-                            maxWidth = (constraints.maxWidth - navigationIconOffset - actionsOffset).roundToInt()
-                        )
+            val centralContentPlaceable = measurables
+                .firstOrNull { it.layoutId == CentralContentId }
+                ?.measure(
+                    constraints.copy(
+                        minWidth = 0,
+                        maxWidth = (constraints.maxWidth - navigationIconOffset - actionsOffset).roundToInt()
                     )
+                )
 
             val collapsedHeightPx = MinCollapsedHeight.toPx()
 
             var layoutHeightPx = collapsedHeightPx
-
 
             // Calculating coordinates of widgets inside toolbar:
 
@@ -254,7 +256,6 @@ fun CustomToolbar(
 
             val toolbarHeightPx =
                 layoutHeightPx.roundToInt() + (additionalContentPlaceable?.height ?: 0)
-
 
             // Placing toolbar widgets:
 
@@ -355,9 +356,9 @@ class CustomToolbarScrollState(
      * Updates to the [heightOffset] value are coerced between zero and [heightOffsetLimit].
      */
     var heightOffset: Float
-        get() = _heightOffset.value
+        get() = _heightOffset.floatValue
         set(newOffset) {
-            _heightOffset.value = newOffset.coerceIn(
+            _heightOffset.floatValue = newOffset.coerceIn(
                 minimumValue = heightOffsetLimit,
                 maximumValue = 0f
             )
