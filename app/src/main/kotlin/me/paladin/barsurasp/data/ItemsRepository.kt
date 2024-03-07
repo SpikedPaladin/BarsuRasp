@@ -1,5 +1,8 @@
 package me.paladin.barsurasp.data
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import me.paladin.barsurasp.App
 import me.paladin.barsurasp.data.loaders.GroupLoader
 import me.paladin.barsurasp.data.loaders.TeacherLoader
@@ -17,39 +20,38 @@ object ItemsRepository {
     private const val FACULTIES_CACHE_FILE = "app/faculties.json"
     private const val DEPARTMENTS_CACHE_FILE = "app/departments.json"
 
-    suspend fun getFaculties(useCache: Boolean = true): List<Faculty> {
+    fun fetchFaculties(fromCache: Boolean = true): Flow<List<Faculty>> = flow {
         val faculties: List<Faculty>
         val file = getFacultiesFile()
-        if (file.exists() && useCache) {
+        if (file.exists() && fromCache) {
             faculties = loadFromFile<Faculty.Wrapper>(file).faculties
         } else {
             faculties = GroupLoader.getFaculties()
 
             saveToFile(file, Faculty.Wrapper(Calendar.getInstance().time.toString(), faculties))
         }
-        return faculties
+        emit(faculties)
     }
 
-    suspend fun getDepartments(useCache: Boolean = true): List<Department> {
+    fun fetchDepartments(fromCache: Boolean = true): Flow<List<Department>> = flow {
         val departments: List<Department>
         val file = getDepartmentsFile()
-        if (file.exists() && useCache) {
+        if (file.exists() && fromCache) {
             departments = loadFromFile<Department.Wrapper>(file).departments
         } else {
             departments = TeacherLoader.getDepartments()
 
             saveToFile(file, Department.Wrapper(Calendar.getInstance().time.toString(), departments))
         }
-
-        return departments
+        emit(departments)
     }
 
     suspend fun getItemDescription(item: String): String {
         return try {
             if (isGroup(item)) {
-                getFaculties().forGroup(item)
+                fetchFaculties().first().forGroup(item)
             } else {
-                getDepartments().forTeacher(item)
+                fetchDepartments().first().forTeacher(item)
             }
         } catch (_: Exception) {
             "Неизвестно"

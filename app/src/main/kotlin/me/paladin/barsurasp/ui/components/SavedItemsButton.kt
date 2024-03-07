@@ -191,13 +191,13 @@ private fun SavedSheetContent(
 }
 
 @Composable
-private fun SavedItem(
+fun SavedItem(
     title: String,
     subtitle: String? = null,
     selected: Boolean,
     isSaved: Boolean = true,
     onClick: (() -> Unit)? = null,
-    onStar: () -> Unit
+    onStar: (() -> Unit)? = null
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -233,7 +233,7 @@ private fun SavedItem(
                 )
             }
         }
-        IconButton(onClick = onStar) {
+        if (onStar != null) IconButton(onClick = onStar) {
             Icon(
                 painter = if (isSaved) painterResource(R.drawable.ic_star)
                 else painterResource(R.drawable.ic_star_outline),
@@ -252,7 +252,7 @@ private fun Set<String>.hasItem(item: String): Boolean {
     return false
 }
 
-private fun String.splitItem(): Pair<String, String?> {
+fun String.splitItem(): Pair<String, String?> {
     val parts = split(":", limit = 2)
     val title = parts[0]
     val subtitle = if (parts.size > 1)

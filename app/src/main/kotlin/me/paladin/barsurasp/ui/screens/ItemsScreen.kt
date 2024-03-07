@@ -3,14 +3,23 @@ package me.paladin.barsurasp.ui.screens
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -18,20 +27,23 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -41,6 +53,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -51,11 +64,12 @@ import kotlinx.coroutines.launch
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.ui.components.ExpandableCard
 import me.paladin.barsurasp.ui.components.ExpandableItem
+import me.paladin.barsurasp.ui.components.SavedItem
 import me.paladin.barsurasp.ui.components.barsu.GroupItem
-import me.paladin.barsurasp.ui.viewmodels.FacultiesUiState
-import me.paladin.barsurasp.ui.viewmodels.FacultiesViewModel
+import me.paladin.barsurasp.ui.components.splitItem
+import me.paladin.barsurasp.ui.viewmodels.GroupsUiState
+import me.paladin.barsurasp.ui.viewmodels.ItemsViewModel
 import me.paladin.barsurasp.ui.viewmodels.TeachersUiState
-import me.paladin.barsurasp.ui.viewmodels.TeachersViewModel
 
 @Composable
 fun ItemsScreen(
@@ -64,8 +78,8 @@ fun ItemsScreen(
     itemSaved: ((item: String) -> Unit)? = null,
     itemSelected: (item: String) -> Unit
 ) {
-    val facultiesViewModel: FacultiesViewModel = viewModel()
-    val teachersViewModel: TeachersViewModel = viewModel()
+    val viewModel: ItemsViewModel = viewModel()
+    val searchResults by viewModel.searchResults.collectAsState()
 
     val pagerState = rememberPagerState(pageCount = { 2 })
 
@@ -73,12 +87,10 @@ fun ItemsScreen(
         topBar = {
             Column {
                 ItemsToolbar(
-                    refreshAction = {
-                        if (pagerState.currentPage == 0)
-                            facultiesViewModel.refresh()
-                        else
-                            teachersViewModel.refresh()
-                    },
+                    searchQuery = viewModel.searchQuery,
+                    onQueryChange = { viewModel.onSearchQueryChanged(it) },
+                    searchResults = searchResults,
+                    itemSelected = itemSelected,
                     backAction = backAction
                 )
                 PrimaryTabRow(
@@ -120,14 +132,14 @@ fun ItemsScreen(
         ) {
             when (it) {
                 0 -> GroupsPage(
-                    facultiesViewModel,
+                    viewModel,
                     savedItems = savedItems,
                     groupSaved = itemSaved,
                     groupSelected = itemSelected
                 )
 
                 else -> TeachersPage(
-                    teachersViewModel,
+                    viewModel,
                     savedItems = savedItems,
                     teacherSaved = itemSaved,
                     teacherSelected = itemSelected
@@ -139,32 +151,34 @@ fun ItemsScreen(
 
 @Composable
 private fun GroupsPage(
-    viewModel: FacultiesViewModel,
+    viewModel: ItemsViewModel,
     savedItems: Set<String>,
     groupSaved: ((group: String) -> Unit)? = null,
     groupSelected: (item: String) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.groupsUiState.collectAsState()
+    val refreshState = rememberPullToRefreshState()
 
-    Crossfade(
-        modifier = Modifier
-            .fillMaxWidth(),
-        targetState = uiState,
-        label = "facultiesState"
-    ) { state ->
-        when (state) {
-            FacultiesUiState.Loading -> {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator()
-                    Text(text = stringResource(R.string.faculty_loading))
-                }
+    if (refreshState.isRefreshing) {
+        LaunchedEffect(true) {
+            viewModel.refreshGroups().invokeOnCompletion {
+                refreshState.endRefresh()
             }
+        }
+    }
 
-            is FacultiesUiState.Success -> {
+    Box(
+        modifier = Modifier
+            .nestedScroll(refreshState.nestedScrollConnection)
+            .fillMaxSize()
+    ) {
+        Crossfade(
+            modifier = Modifier
+                .fillMaxWidth(),
+            targetState = uiState,
+            label = "facultiesState"
+        ) { state ->
+            if (state is GroupsUiState.Success) {
                 var expandedFaculty by remember { mutableIntStateOf(-1) }
 
                 LazyColumn(Modifier.fillMaxSize()) {
@@ -211,84 +225,94 @@ private fun GroupsPage(
                 }
             }
 
-            is FacultiesUiState.Error -> ErrorState(refreshAction = { viewModel.refresh() })
+            if (state is GroupsUiState.Error) ErrorState(refreshAction = { viewModel.refreshGroups() })
         }
+        PullToRefreshContainer(
+            modifier = Modifier.align(Alignment.TopCenter),
+            state = refreshState
+        )
     }
 }
 
 @Composable
 private fun TeachersPage(
-    viewModel: TeachersViewModel,
+    viewModel: ItemsViewModel,
     savedItems: Set<String>,
     teacherSaved: ((teacher: String) -> Unit)? = null,
     teacherSelected: (item: String) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.teachersUiState.collectAsState()
+    val refreshState = rememberPullToRefreshState()
 
-    Crossfade(
-        modifier = Modifier
-            .fillMaxSize(),
-        targetState = uiState,
-        label = "facultiesState"
-    ) { state ->
-        when (state) {
-            TeachersUiState.Loading -> {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator()
-                    Text(text = stringResource(R.string.faculty_loading))
-                }
+    if (refreshState.isRefreshing) {
+        LaunchedEffect(true) {
+            viewModel.refreshTeachers().invokeOnCompletion {
+                refreshState.endRefresh()
             }
+        }
+    }
 
-            is TeachersUiState.Success -> {
-                var expandedDepartment by remember { mutableIntStateOf(-1) }
+    Box(
+        modifier = Modifier
+            .nestedScroll(refreshState.nestedScrollConnection)
+            .fillMaxSize()
+    ) {
+        Crossfade(
+            modifier = Modifier
+                .fillMaxSize(),
+            targetState = uiState,
+            label = "facultiesState"
+        ) { state ->
+                if (state is TeachersUiState.Success) {
+                    var expandedDepartment by remember { mutableIntStateOf(-1) }
 
-                LazyColumn(Modifier.fillMaxSize()) {
-                    itemsIndexed(state.data) { index, item ->
-                        ExpandableItem(
-                            expanded = expandedDepartment == index,
-                            onClick = {
-                                expandedDepartment = if (expandedDepartment == index)
-                                    -1
-                                else index
-                            },
-                            title = {
-                                Text(
-                                    text = item.name,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
+                    LazyColumn(Modifier.fillMaxSize()) {
+                        itemsIndexed(state.data) { index, item ->
+                            ExpandableItem(
+                                expanded = expandedDepartment == index,
+                                onClick = {
+                                    expandedDepartment = if (expandedDepartment == index)
+                                        -1
+                                    else index
+                                },
+                                title = {
+                                    Text(
+                                        text = item.name,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                }
+                            ) {
+                                for (teacher in item.teachers) {
+                                    GroupItem(
+                                        group = teacher,
+                                        saved = savedItems.find { it.startsWith(teacher) } != null,
+                                        onSaveClick = if (teacherSaved != null) {
+                                            { teacherSaved("$teacher:${item.name}") }
+                                        } else null,
+                                        onClick = {
+                                            teacherSelected("$teacher:${item.name}")
+                                        }
+                                    )
+                                }
+                                if (state.data.size != index + 1)
+                                    HorizontalDivider(Modifier.padding(horizontal = 8.dp))
                             }
-                        ) {
-                            for (teacher in item.teachers) {
-                                GroupItem(
-                                    group = teacher,
-                                    saved = savedItems.find { it.startsWith(teacher) } != null,
-                                    onSaveClick = if (teacherSaved != null) {
-                                        { teacherSaved("$teacher:${item.name}") }
-                                    } else null,
-                                    onClick = {
-                                        teacherSelected("$teacher:${item.name}")
-                                    }
-                                )
-                            }
-                            if (state.data.size != index + 1)
-                                HorizontalDivider(Modifier.padding(horizontal = 8.dp))
                         }
                     }
                 }
-            }
 
-            is TeachersUiState.Error -> ErrorState(
-                refreshAction = { viewModel.refresh() }
-            )
+                if (state is TeachersUiState.Error) ErrorState(
+                    refreshAction = { viewModel.refreshTeachers() }
+                )
         }
+        PullToRefreshContainer(
+            modifier = Modifier.align(Alignment.TopCenter),
+            state = refreshState
+        )
     }
 }
 
@@ -319,29 +343,61 @@ private fun ErrorState(refreshAction: () -> Unit) {
 
 @Composable
 private fun ItemsToolbar(
-    refreshAction: () -> Unit,
+    searchQuery: String,
+    onQueryChange: (String) -> Unit,
+    searchResults: List<String>,
+    itemSelected: (item: String) -> Unit,
     backAction: (() -> Unit)? = null
 ) {
-    TopAppBar(
-        title = {
-            Text(text = stringResource(R.string.faculty_title))
-        },
-        navigationIcon = {
-            if (backAction != null) {
-                IconButton(onClick = backAction) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                        contentDescription = stringResource(R.string.description_back)
+    var active by remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier.windowInsetsPadding(
+            WindowInsets
+                .systemBars
+                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+        )
+    ) {
+        if (backAction != null) Box(
+            modifier = Modifier.height(SearchBarDefaults.InputFieldHeight),
+            contentAlignment = Alignment.Center
+        ) {
+            IconButton(onClick = backAction, modifier = Modifier.padding(horizontal = 4.dp)) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.description_back)
+                )
+            }
+        }
+        DockedSearchBar(
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 2.dp),
+            query = searchQuery,
+            onQueryChange = onQueryChange,
+            onSearch = {},
+            active = active,
+            onActiveChange = { active = it },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null
+                )
+            },
+            placeholder = { Text("Поиск") }
+        ) {
+            LazyColumn {
+                items(searchResults) {
+                    val (title, subtitle) = it.splitItem()
+                    SavedItem(
+                        title = title,
+                        subtitle = subtitle,
+                        selected = false,
+                        isSaved = true,
+                        onClick = { itemSelected(it) }
                     )
                 }
             }
-        },
-        actions = {
-            IconButton(onClick = refreshAction) {
-                Icon(imageVector = Icons.Filled.Refresh, contentDescription = null)
-            }
         }
-    )
+    }
 }
 
 private fun Modifier.pagerTabIndicatorOffset(
