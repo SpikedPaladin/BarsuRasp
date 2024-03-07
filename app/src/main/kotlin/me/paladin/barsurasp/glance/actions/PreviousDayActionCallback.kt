@@ -8,6 +8,7 @@ import androidx.glance.appwidget.state.updateAppWidgetState
 import me.paladin.barsurasp.data.TimetableRepository
 import me.paladin.barsurasp.glance.TimetableWidget
 import me.paladin.barsurasp.glance.WidgetKeys
+import me.paladin.barsurasp.models.Item
 import me.paladin.barsurasp.utils.getCurrentWeek
 import me.paladin.barsurasp.utils.getPrevApiDate
 import me.paladin.barsurasp.utils.getWeekForDate
@@ -27,7 +28,7 @@ class PreviousDayActionCallback : ActionCallback {
 
             try {
                 val timetable = TimetableRepository.getTimetable(
-                    prefs[WidgetKeys.group]!!,
+                    Item(prefs[WidgetKeys.group]!!),
                     getWeekForDate(prevDay)
                 )
 

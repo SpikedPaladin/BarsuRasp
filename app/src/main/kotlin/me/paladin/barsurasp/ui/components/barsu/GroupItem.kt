@@ -17,31 +17,32 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.paladin.barsurasp.R
+import me.paladin.barsurasp.models.Item
 import me.paladin.barsurasp.ui.theme.BarsuRaspTheme
 
 @Composable
 fun GroupItem(
-    group: String,
+    item: Item,
     saved: Boolean = false,
-    onSaveClick: (() -> Unit)? = null,
-    onClick: () -> Unit
+    onSaveClick: ((Item) -> Unit)? = null,
+    onClick: (Item) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .clickable(onClick = { onClick(item) }),
     ) {
         Text(
-            text = group,
+            text = item.title,
             modifier = Modifier
                 .padding(8.dp)
                 .weight(1F),
             style = MaterialTheme.typography.headlineMedium
         )
         if (onSaveClick != null) {
-            IconButton(onClick = onSaveClick) {
+            IconButton(onClick = { onSaveClick(item) }) {
                 Icon(
                     painter = if (saved) painterResource(R.drawable.ic_star)
                     else painterResource(R.drawable.ic_star_outline),
@@ -61,7 +62,7 @@ fun GroupItem(
 fun GroupItemPreview() {
     BarsuRaspTheme {
         Surface {
-            GroupItem(group = "TSAPP") {
+            GroupItem(Item("ТОСП11", "ИФ")) {
 
             }
         }

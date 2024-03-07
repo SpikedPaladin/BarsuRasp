@@ -37,16 +37,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import me.paladin.barsurasp.R
+import me.paladin.barsurasp.models.Item
 import me.paladin.barsurasp.ui.components.sheets.ModalSheet
 import me.paladin.barsurasp.ui.icons.Group
 import me.paladin.barsurasp.ui.theme.BarsuRaspTheme
 
 @Composable
 fun SavedItemsButton(
-    mainGroup: String?,
-    savedItems: Set<String>,
-    selectAction: (String) -> Unit,
-    starAction: (String) -> Unit,
+    mainGroup: Item?,
+    savedItems: List<Item>,
+    selectAction: (Item) -> Unit,
+    starAction: (Item) -> Unit,
     openFaculties: () -> Unit
 ) {
     var visible by remember { mutableStateOf(false) }
@@ -78,10 +79,10 @@ fun SavedItemsButton(
 @Composable
 private fun SavedSheet(
     visible: Boolean,
-    mainGroup: String?,
-    savedItems: Set<String>,
-    selectAction: (String) -> Unit,
-    starAction: (String) -> Unit,
+    mainGroup: Item?,
+    savedItems: List<Item>,
+    selectAction: (Item) -> Unit,
+    starAction: (Item) -> Unit,
     openFaculties: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -114,35 +115,31 @@ private fun SavedSheet(
 
 @Composable
 private fun SavedSheetContent(
-    mainGroup: String?,
-    savedItems: Set<String>,
-    selectAction: (String) -> Unit,
-    starAction: (String) -> Unit,
+    mainGroup: Item?,
+    savedItems: List<Item>,
+    selectAction: (Item) -> Unit,
+    starAction: (Item) -> Unit,
     openFaculties: () -> Unit
 ) {
     LazyColumn(
         Modifier.padding(bottom = 16.dp, start = 8.dp, end = 8.dp)
     ) {
-        if (mainGroup != null && !savedItems.hasItem(mainGroup))
-            item {
-                val (title, subtitle) = mainGroup.splitItem()
-
-                Text(
-                    text = "Выбрано",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .padding(4.dp)
-                )
-                SavedItem(
-                    title = title,
-                    subtitle = subtitle,
-                    selected = true,
-                    isSaved = false,
-                    onStar = { starAction(mainGroup) }
-                )
-                Spacer(Modifier.height(12.dp))
-            }
+        if (mainGroup != null && !savedItems.hasItem(mainGroup)) item {
+            Text(
+                text = "Выбрано",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .padding(4.dp)
+            )
+            SavedItem(
+                item = mainGroup,
+                selected = true,
+                isSaved = false,
+                onStar = { starAction(mainGroup) }
+            )
+            Spacer(Modifier.height(12.dp))
+        }
         item {
             Text(
                 text = "Сохраненные",
@@ -154,19 +151,16 @@ private fun SavedSheetContent(
         }
 
         val selectedIndex = if (mainGroup != null)
-            savedItems.indexOfFirst { it.splitItem().first == mainGroup.splitItem().first }
+            savedItems.indexOfFirst { it.title == mainGroup.title }
         else -1
 
         itemsIndexed(savedItems.toList()) { index, item ->
-            val (title, subtitle) = item.splitItem()
-
             Spacer(Modifier.size(2.dp))
             SavedItem(
-                title = title,
-                subtitle = subtitle,
-                selected = title == mainGroup?.splitItem()?.first,
+                item = item,
+                selected = item.title == mainGroup?.title,
                 onStar = { starAction(item) },
-                onClick = { selectAction(title) }
+                onClick = { selectAction(item) }
             )
             Spacer(Modifier.size(2.dp))
             if (selectedIndex != index && selectedIndex - 1 != index && index != savedItems.size - 1)
@@ -192,8 +186,7 @@ private fun SavedSheetContent(
 
 @Composable
 fun SavedItem(
-    title: String,
-    subtitle: String? = null,
+    item: Item,
     selected: Boolean,
     isSaved: Boolean = true,
     onClick: (() -> Unit)? = null,
@@ -222,16 +215,14 @@ fun SavedItem(
                 .weight(1F)
         ) {
             Text(
-                text = title,
+                text = item.title,
                 style = MaterialTheme.typography.titleMedium
             )
-            subtitle?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            Text(
+                text = item.subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
         if (onStar != null) IconButton(onClick = onStar) {
             Icon(
@@ -244,23 +235,12 @@ fun SavedItem(
     }
 }
 
-private fun Set<String>.hasItem(item: String): Boolean {
+private fun List<Item>.hasItem(item: Item): Boolean {
     for (element in this) {
-        if (element.splitItem().first == item.splitItem().first)
+        if (element.title == item.title)
             return true
     }
     return false
-}
-
-fun String.splitItem(): Pair<String, String?> {
-    val parts = split(":", limit = 2)
-    val title = parts[0]
-    val subtitle = if (parts.size > 1)
-        if (parts[1] == "") null
-        else parts[1]
-    else null
-
-    return Pair(title, subtitle)
 }
 
 @Preview
@@ -268,7 +248,7 @@ fun String.splitItem(): Pair<String, String?> {
 private fun SavedItemPreview() {
     BarsuRaspTheme {
         Surface {
-            SavedItem(title = "ТОСП11", subtitle = "ИФ", selected = true, onStar = {}, onClick = {})
+            SavedItem(Item("ТОСП11", "ИФ"), selected = true, onStar = {}, onClick = {})
         }
     }
 }

@@ -3,8 +3,8 @@ package me.paladin.barsurasp.data
 import me.paladin.barsurasp.App
 import me.paladin.barsurasp.data.loaders.GroupLoader
 import me.paladin.barsurasp.data.loaders.TeacherLoader
+import me.paladin.barsurasp.models.Item
 import me.paladin.barsurasp.models.Timetable
-import me.paladin.barsurasp.utils.isGroup
 import me.paladin.barsurasp.utils.loadFromFile
 import me.paladin.barsurasp.utils.saveToFile
 import java.io.File
@@ -13,22 +13,18 @@ object TimetableRepository {
     private const val GROUPS_CACHE_FOLDER = "app/groups"
     private const val TEACHERS_CACHE_FOLDER = "app/teachers"
 
-    fun refreshTimetable(item: String) {
-        val finalItem = item.split(":", limit = 2)[0]
-        File(getCacheFolder(finalItem).path, "$finalItem.json").delete()
+    fun refreshTimetable(item: Item) {
+        File(getCacheFolder(item).path, "${item.title}.json").delete()
     }
 
-    suspend fun getTimetable(item: String, date: String): Timetable? {
-        var finalItem = item
-        if (finalItem.contains(":"))
-            finalItem = item.split(":", limit = 2)[0]
-
-        return if (isGroup(finalItem))
-            getGroupTimetable(finalItem, date)
-        else getTeacherTimetable(finalItem, date)
+    suspend fun getTimetable(item: Item, date: String): Timetable? {
+        return if (item.isGroup())
+            getGroupTimetable(item, date)
+        else getTeacherTimetable(item, date)
     }
 
-    private suspend fun getGroupTimetable(group: String, date: String): Timetable.Group? {
+    private suspend fun getGroupTimetable(item: Item, date: String): Timetable.Group? {
+        val group = item.title
         var timetable: Timetable.Group?
         val cacheFolder = getGroupsCacheFolder()
 
@@ -59,7 +55,8 @@ object TimetableRepository {
         return timetable
     }
 
-    private suspend fun getTeacherTimetable(name: String, date: String): Timetable.Teacher? {
+    private suspend fun getTeacherTimetable(item: Item, date: String): Timetable.Teacher? {
+        val name = item.title
         var timetable: Timetable.Teacher?
         val cacheFolder = getTeachersCacheFolder()
 
@@ -90,7 +87,7 @@ object TimetableRepository {
         return timetable
     }
 
-    private fun getCacheFolder(item: String) = if (isGroup(item))
+    private fun getCacheFolder(item: Item) = if (item.isGroup())
         getGroupsCacheFolder()
     else
         getTeachersCacheFolder()

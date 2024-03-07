@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import me.paladin.barsurasp.R
+import me.paladin.barsurasp.models.Item
 import me.paladin.barsurasp.ui.components.SavedItemsButton
 import me.paladin.barsurasp.ui.components.barsu.TimetableList
 import me.paladin.barsurasp.ui.components.barsu.WeekSelector
@@ -71,7 +72,7 @@ fun MainScreen(
     Scaffold(
         topBar = {
             MainToolbar(
-                title = if (!mainGroup.isNullOrEmpty()) mainGroup else null,
+                item = mainGroup,
                 lastUpdate = (uiState as? UiState.Success)?.data?.lastSiteUpdate,
                 scrollBehavior = scrollBehavior,
                 refreshAction = { viewModel.refreshTimetable() },
@@ -191,7 +192,7 @@ private fun ErrorState(
 
 @Composable
 private fun MainToolbar(
-    title: String? = null,
+    item: Item? = null,
     lastUpdate: String? = null,
     scrollBehavior: TopAppBarScrollBehavior,
     refreshAction: () -> Unit,
@@ -199,7 +200,7 @@ private fun MainToolbar(
 ) {
     TopAppBar(
         title = {
-            Text(text = title?.split(":", limit = 2)?.get(0) ?: stringResource(R.string.timetable_title))
+            Text(text = item?.title ?: stringResource(R.string.timetable_title))
         },
         actions = {
             val tooltipState = rememberTooltipState(isPersistent = true)

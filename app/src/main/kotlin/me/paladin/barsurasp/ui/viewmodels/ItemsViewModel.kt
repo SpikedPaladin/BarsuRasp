@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import me.paladin.barsurasp.data.ItemsRepository
 import me.paladin.barsurasp.models.Department
 import me.paladin.barsurasp.models.Faculty
+import me.paladin.barsurasp.models.Item
 
 class ItemsViewModel : ViewModel() {
     private val _groupsUiState = MutableStateFlow<GroupsUiState>(GroupsUiState.Loading)
@@ -28,17 +29,17 @@ class ItemsViewModel : ViewModel() {
     var searchQuery by mutableStateOf("")
         private set
 
-    val searchResults: StateFlow<List<String>> =
+    val searchResults: StateFlow<List<Item>> =
         snapshotFlow { searchQuery }
             .combine(ItemsRepository.fetchFaculties()) { query, faculties ->
                 when {
                     query.isNotEmpty() -> {
-                        val searchResult = mutableListOf<String>()
+                        val searchResult = mutableListOf<Item>()
                         for (faculty in faculties) {
                             for (speciality in faculty.specialities) {
                                 for (group in speciality.groups) {
                                     if (group.lowercase().contains(query.lowercase()))
-                                        searchResult += "$group:${faculty.name}"
+                                        searchResult += Item(group, faculty.name)
                                 }
                             }
                         }

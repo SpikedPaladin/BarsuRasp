@@ -62,21 +62,21 @@ import androidx.compose.ui.unit.lerp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import me.paladin.barsurasp.R
+import me.paladin.barsurasp.models.Item
 import me.paladin.barsurasp.ui.components.ExpandableCard
 import me.paladin.barsurasp.ui.components.ExpandableItem
 import me.paladin.barsurasp.ui.components.SavedItem
 import me.paladin.barsurasp.ui.components.barsu.GroupItem
-import me.paladin.barsurasp.ui.components.splitItem
 import me.paladin.barsurasp.ui.viewmodels.GroupsUiState
 import me.paladin.barsurasp.ui.viewmodels.ItemsViewModel
 import me.paladin.barsurasp.ui.viewmodels.TeachersUiState
 
 @Composable
 fun ItemsScreen(
-    savedItems: Set<String> = setOf(),
+    savedItems: List<Item> = listOf(),
     backAction: (() -> Unit)? = null,
-    itemSaved: ((item: String) -> Unit)? = null,
-    itemSelected: (item: String) -> Unit
+    itemSaved: ((item: Item) -> Unit)? = null,
+    itemSelected: (item: Item) -> Unit
 ) {
     val viewModel: ItemsViewModel = viewModel()
     val searchResults by viewModel.searchResults.collectAsState()
@@ -152,9 +152,9 @@ fun ItemsScreen(
 @Composable
 private fun GroupsPage(
     viewModel: ItemsViewModel,
-    savedItems: Set<String>,
-    groupSaved: ((group: String) -> Unit)? = null,
-    groupSelected: (item: String) -> Unit
+    savedItems: List<Item>,
+    groupSaved: ((item: Item) -> Unit)? = null,
+    groupSelected: (item: Item) -> Unit
 ) {
     val uiState by viewModel.groupsUiState.collectAsState()
     val refreshState = rememberPullToRefreshState()
@@ -182,7 +182,7 @@ private fun GroupsPage(
                 var expandedFaculty by remember { mutableIntStateOf(-1) }
 
                 LazyColumn(Modifier.fillMaxSize()) {
-                    itemsIndexed(state.data) { index, item ->
+                    itemsIndexed(state.data) { index, faculty ->
                         ExpandableItem(
                             expanded = expandedFaculty == index,
                             onClick = {
@@ -192,7 +192,7 @@ private fun GroupsPage(
                             },
                             title = {
                                 Text(
-                                    text = item.name,
+                                    text = faculty.name,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(16.dp),
@@ -201,18 +201,14 @@ private fun GroupsPage(
                                 )
                             }
                         ) {
-                            for (speciality in item.specialities) {
+                            for (speciality in faculty.specialities) {
                                 ExpandableCard(title = speciality.name) {
                                     for (group in speciality.groups) {
                                         GroupItem(
-                                            group = group,
-                                            saved = savedItems.find { it.startsWith(group) } != null,
-                                            onSaveClick = if (groupSaved != null) {
-                                                { groupSaved("$group:${item.name}") }
-                                            } else null,
-                                            onClick = {
-                                                groupSelected("$group:${item.name}")
-                                            }
+                                            item = Item(group, faculty.name),
+                                            saved = savedItems.find { it.title == group } != null,
+                                            onSaveClick = groupSaved,
+                                            onClick = groupSelected
                                         )
                                     }
                                 }
@@ -237,9 +233,9 @@ private fun GroupsPage(
 @Composable
 private fun TeachersPage(
     viewModel: ItemsViewModel,
-    savedItems: Set<String>,
-    teacherSaved: ((teacher: String) -> Unit)? = null,
-    teacherSelected: (item: String) -> Unit
+    savedItems: List<Item>,
+    teacherSaved: ((item: Item) -> Unit)? = null,
+    teacherSelected: (item: Item) -> Unit
 ) {
     val uiState by viewModel.teachersUiState.collectAsState()
     val refreshState = rememberPullToRefreshState()
@@ -288,14 +284,10 @@ private fun TeachersPage(
                             ) {
                                 for (teacher in item.teachers) {
                                     GroupItem(
-                                        group = teacher,
-                                        saved = savedItems.find { it.startsWith(teacher) } != null,
-                                        onSaveClick = if (teacherSaved != null) {
-                                            { teacherSaved("$teacher:${item.name}") }
-                                        } else null,
-                                        onClick = {
-                                            teacherSelected("$teacher:${item.name}")
-                                        }
+                                        item = Item(teacher, item.name),
+                                        saved = savedItems.find { it.title == teacher } != null,
+                                        onSaveClick = teacherSaved,
+                                        onClick = teacherSelected
                                     )
                                 }
                                 if (state.data.size != index + 1)
@@ -345,8 +337,8 @@ private fun ErrorState(refreshAction: () -> Unit) {
 private fun ItemsToolbar(
     searchQuery: String,
     onQueryChange: (String) -> Unit,
-    searchResults: List<String>,
-    itemSelected: (item: String) -> Unit,
+    searchResults: List<Item>,
+    itemSelected: (item: Item) -> Unit,
     backAction: (() -> Unit)? = null
 ) {
     var active by remember { mutableStateOf(false) }
@@ -386,10 +378,8 @@ private fun ItemsToolbar(
         ) {
             LazyColumn {
                 items(searchResults) {
-                    val (title, subtitle) = it.splitItem()
                     SavedItem(
-                        title = title,
-                        subtitle = subtitle,
+                        item = it,
                         selected = false,
                         isSaved = true,
                         onClick = { itemSelected(it) }

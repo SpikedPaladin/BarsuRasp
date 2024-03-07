@@ -13,6 +13,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import me.paladin.barsurasp.models.AppTheme
 import me.paladin.barsurasp.models.BusPath
+import me.paladin.barsurasp.models.Item
 
 class UserPreferencesRepository(
     private val dataStore: DataStore<Preferences>
@@ -66,17 +67,20 @@ class UserPreferencesRepository(
     val mainGroup = dataStore.data
         .map { preferences ->
             val group = preferences.mainGroup
-            if (group.contains(":"))
-                group
-            else {
-                val migrated = "$group:${ItemsRepository.getItemDescription(group)}"
+            if (group.isEmpty())
+                null
+            else if (group.contains(":")) {
+                val (title, subtitle) = group.split(":", limit = 2)
+                Item(title, subtitle)
+            } else {
+                val migrated = Item(group, ItemsRepository.getItemDescription(group))
                 changeMainGroup(migrated)
                 migrated
             }
         }.distinctUntilChanged()
 
-    suspend fun changeMainGroup(group: String) {
-        dataStore.edit { it[Keys.mainGroup] = group }
+    suspend fun changeMainGroup(item: Item) {
+        dataStore.edit { it[Keys.mainGroup] = item.toPref() }
     }
 
     val adsWatched = dataStore.data
@@ -143,19 +147,21 @@ class UserPreferencesRepository(
 
     val savedItems = dataStore.data
         .map { preferences ->
-            preferences.savedItems
+            preferences.savedItems.map {
+                val (title, subtitle) = it.split(":", limit = 2)
+                Item(title, subtitle)
+            }
         }.distinctUntilChanged()
 
-    suspend fun saveItem(item: String) {
+    suspend fun saveItem(item: Item) {
         dataStore.edit {
             if (it[Keys.savedItems] == null)
                 it[Keys.savedItems] = setOf()
 
-            val itemName = item.split(":", limit = 2)[0]
-            if (it[Keys.savedItems]!!.firstOrNull { predicate -> predicate.startsWith(itemName) } != null)
-                it[Keys.savedItems] = it[Keys.savedItems]!!.toMutableSet() - item
+            if (it[Keys.savedItems]!!.firstOrNull { predicate -> predicate.startsWith(item.title) } != null)
+                it[Keys.savedItems] = it[Keys.savedItems]!!.toMutableSet() - item.toPref()
             else
-                it[Keys.savedItems] = it[Keys.savedItems]!! + item
+                it[Keys.savedItems] = it[Keys.savedItems]!! + item.toPref()
         }
     }
 }

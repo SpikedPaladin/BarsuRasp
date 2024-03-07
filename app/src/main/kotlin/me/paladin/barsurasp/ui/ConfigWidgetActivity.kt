@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import me.paladin.barsurasp.data.TimetableRepository
 import me.paladin.barsurasp.glance.TimetableWidget
 import me.paladin.barsurasp.glance.WidgetKeys
+import me.paladin.barsurasp.models.Item
 import me.paladin.barsurasp.ui.screens.ItemsScreen
 import me.paladin.barsurasp.ui.theme.BarsuRaspTheme
 import me.paladin.barsurasp.ui.viewmodels.SettingsViewModel
@@ -38,24 +39,22 @@ class ConfigWidgetActivity : ComponentActivity() {
             val monet by viewModel.monet.collectAsState()
 
             BarsuRaspTheme(theme.isDark(), monet) {
-                ItemsScreen(itemSelected = { handleSelectGroup(it) })
+                ItemsScreen(itemSelected = {
+                    setResult(RESULT_OK, result)
+                    saveWidgetState(it)
+                })
             }
         }
     }
 
-    private fun handleSelectGroup(group: String) {
-        setResult(RESULT_OK, result)
-        saveWidgetState(group)
-    }
-
-    private fun saveWidgetState(group: String) = lifecycleScope.launch(Dispatchers.IO) {
+    private fun saveWidgetState(item: Item) = lifecycleScope.launch(Dispatchers.IO) {
         val glanceId = GlanceAppWidgetManager(applicationContext).getGlanceIdBy(widgetId)
-        val timetable = TimetableRepository.getTimetable(group, getCurrentWeek())
+        val timetable = TimetableRepository.getTimetable(item, getCurrentWeek())
 
         updateAppWidgetState(applicationContext, glanceId) { prefs ->
             prefs[WidgetKeys.date] = getCurrentApiDate()
-            prefs[WidgetKeys.group] = group
-            Log.i("Widget", "saveWidgetState: $group")
+            prefs[WidgetKeys.group] = item.toPref()
+            Log.i("Widget", "saveWidgetState: ${item.title}")
             timetable?.let {
                 prefs[WidgetKeys.timetable] = it.encode()
             }

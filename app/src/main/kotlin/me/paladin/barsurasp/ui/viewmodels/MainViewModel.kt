@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.paladin.barsurasp.App
+import me.paladin.barsurasp.data.ItemsRepository
 import me.paladin.barsurasp.data.TimetableRepository
+import me.paladin.barsurasp.models.Item
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.getCurrentWeek
 
@@ -44,7 +46,7 @@ class MainViewModel : ViewModel() {
     val savedItems = App.prefs.savedItems.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
-        setOf()
+        listOf()
     )
 
     private val _week = MutableStateFlow(getCurrentWeek())
@@ -56,10 +58,7 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             launch {
                 mainGroup.collect { value ->
-                    if (value == null)
-                        return@collect
-
-                    if (value != "") {
+                    if (value != null) {
                         updateTimetable()
                     } else {
                         _uiState.update { UiState.Error(noGroup = true) }
@@ -82,7 +81,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun updateTimetable() {
-        if (mainGroup.value == null || mainGroup.value == "")
+        if (mainGroup.value == null)
             return
 
         _uiState.update { UiState.Loading }
@@ -106,11 +105,15 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun saveItem(item: String) {
+    fun saveItem(item: Item) {
         viewModelScope.launch { App.prefs.saveItem(item) }
     }
 
-    fun setMainGroup(group: String) {
-        viewModelScope.launch { App.prefs.changeMainGroup(group) }
+    fun setMainGroup(item: Item) {
+        viewModelScope.launch { App.prefs.changeMainGroup(item) }
+    }
+
+    fun setMainGroup(item: String) {
+        viewModelScope.launch { setMainGroup(Item(item, ItemsRepository.getItemDescription(item))) }
     }
 }

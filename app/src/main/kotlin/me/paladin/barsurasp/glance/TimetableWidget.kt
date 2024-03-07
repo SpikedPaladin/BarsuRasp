@@ -24,9 +24,9 @@ import androidx.glance.text.TextStyle
 import me.paladin.barsurasp.R
 import me.paladin.barsurasp.glance.components.GlanceTimetableHeader
 import me.paladin.barsurasp.glance.components.GlanceTimetableList
+import me.paladin.barsurasp.models.Item
 import me.paladin.barsurasp.models.Timetable
 import me.paladin.barsurasp.utils.getCurrentApiDate
-import me.paladin.barsurasp.utils.isGroup
 
 class TimetableWidget : GlanceAppWidget() {
     override var stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
@@ -49,8 +49,8 @@ class TimetableWidget : GlanceAppWidget() {
                 .appWidgetBackground()
                 .background(GlanceTheme.colors.background)
         ) {
-            val item = prefs[WidgetKeys.group] ?: LocalContext.current.getString(R.string.widget_error)
-            GlanceTimetableHeader(item, prefs[WidgetKeys.date] ?: getCurrentApiDate())
+            val item = Item(prefs[WidgetKeys.group]!!)
+            GlanceTimetableHeader(item.title, prefs[WidgetKeys.date] ?: getCurrentApiDate())
 
             if (prefs[WidgetKeys.networkError] == true) {
                 Text(
@@ -70,7 +70,7 @@ class TimetableWidget : GlanceAppWidget() {
                 )
                 return@Column
             }
-            val timetable: Timetable = Timetable.decode(prefs[WidgetKeys.timetable]!!, isGroup(item))
+            val timetable: Timetable = Timetable.decode(prefs[WidgetKeys.timetable]!!, item.isGroup())
 
             val day = timetable.getDayFromDate(prefs[WidgetKeys.date] ?: getCurrentApiDate())
             if (day != null)
