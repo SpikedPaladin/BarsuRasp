@@ -98,10 +98,6 @@ fun MainScreen(
         ) {
             item {
                 WeekSelector(
-                    modifier = Modifier.padding(
-                        top = 8.dp,
-                        bottom = 8.dp
-                    ),
                     week = selectedWeek,
                     prevClicked = { viewModel.setWeek(getPrevWeek(selectedWeek)) },
                     nextClicked = { viewModel.setWeek(getNextWeek(selectedWeek)) },

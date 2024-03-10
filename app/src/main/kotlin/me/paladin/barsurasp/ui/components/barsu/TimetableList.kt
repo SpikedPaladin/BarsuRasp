@@ -21,7 +21,7 @@ fun TimetableList(
 
     HorizontalPager(
         contentPadding = PaddingValues(
-            bottom = 8.dp,
+            bottom = 12.dp,
             top = 4.dp,
             start = 20.dp,
             end = 20.dp

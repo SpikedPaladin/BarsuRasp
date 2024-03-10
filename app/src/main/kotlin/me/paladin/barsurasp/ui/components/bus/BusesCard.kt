@@ -61,8 +61,8 @@ fun BusesCard(
     ElevatedCard(
         modifier = Modifier
             .animateContentSize()
-            .padding(8.dp)
-            .padding(bottom = 12.dp),
+            .padding(horizontal = 8.dp)
+            .padding(top = 2.dp, bottom = 12.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column {
