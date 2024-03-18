@@ -8,6 +8,7 @@ import me.paladin.barsurasp.data.loaders.GroupLoader
 import me.paladin.barsurasp.data.loaders.TeacherLoader
 import me.paladin.barsurasp.models.Department
 import me.paladin.barsurasp.models.Faculty
+import me.paladin.barsurasp.models.Item
 import me.paladin.barsurasp.models.forGroup
 import me.paladin.barsurasp.models.forTeacher
 import me.paladin.barsurasp.utils.isGroup
@@ -44,6 +45,24 @@ object ItemsRepository {
             saveToFile(file, Department.Wrapper(Calendar.getInstance().time.toString(), departments))
         }
         emit(departments)
+    }
+
+    fun itemsFlow(): Flow<List<Item>> = flow {
+        val faculties = fetchFaculties().first()
+        val departments = fetchDepartments().first()
+
+        val items = mutableListOf<Item>()
+
+        for (faculty in faculties)
+            for (speciality in faculty.specialities)
+                for (group in speciality.groups)
+                    items += Item(group, faculty.name)
+
+        for (department in departments)
+            for (teacher in department.teachers)
+                items += Item(teacher, department.name)
+
+        emit(items)
     }
 
     suspend fun getItemDescription(item: String): String {

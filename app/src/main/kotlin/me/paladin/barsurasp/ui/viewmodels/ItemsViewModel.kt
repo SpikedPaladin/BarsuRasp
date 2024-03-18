@@ -31,18 +31,13 @@ class ItemsViewModel : ViewModel() {
 
     val searchResults: StateFlow<List<Item>> =
         snapshotFlow { searchQuery }
-            .combine(ItemsRepository.fetchFaculties()) { query, faculties ->
+            .combine(ItemsRepository.itemsFlow()) { query, items ->
                 when {
                     query.isNotEmpty() -> {
                         val searchResult = mutableListOf<Item>()
-                        for (faculty in faculties) {
-                            for (speciality in faculty.specialities) {
-                                for (group in speciality.groups) {
-                                    if (group.lowercase().contains(query.lowercase()))
-                                        searchResult += Item(group, faculty.name)
-                                }
-                            }
-                        }
+                        for (item in items)
+                            if (item.title.lowercase().contains(query.lowercase()))
+                                searchResult += item
                         searchResult
                     }
                     else -> listOf()
